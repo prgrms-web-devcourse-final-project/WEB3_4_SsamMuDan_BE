@@ -1,5 +1,9 @@
 package ssammudan.cotree.global.response;
 
+import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class BaseResponse<T> {
 
+	@JsonIgnore
+	private final HttpStatus httpStatus;
 	@NotNull
 	private final Boolean isSuccess;
 	@NotNull
@@ -21,6 +27,7 @@ public class BaseResponse<T> {
 
 	public static <T> BaseResponse<T> success(final SuccessCode successCode, final T data) {
 		return BaseResponse.<T>builder()
+				.httpStatus(successCode.getStatus())
 				.isSuccess(true)
 				.code(successCode.getCode())
 				.message(successCode.getMessage())
@@ -30,6 +37,7 @@ public class BaseResponse<T> {
 
 	public static <T> BaseResponse<T> success(final SuccessCode successCode) {
 		return BaseResponse.<T>builder()
+				.httpStatus(successCode.getStatus())
 				.isSuccess(true)
 				.code(successCode.getCode())
 				.message(successCode.getMessage())
@@ -39,6 +47,7 @@ public class BaseResponse<T> {
 
 	public static <T> BaseResponse<T> fail(final ErrorCode errorCode) {
 		return BaseResponse.<T>builder()
+				.httpStatus(errorCode.getStatus())
 				.isSuccess(false)
 				.code(errorCode.getCode())
 				.message(errorCode.getMessage())
@@ -47,6 +56,7 @@ public class BaseResponse<T> {
 
 	public static <T> BaseResponse<T> fail(final ErrorCode errorCode, final String message) {
 		return BaseResponse.<T>builder()
+				.httpStatus(errorCode.getStatus())
 				.isSuccess(false)
 				.code(errorCode.getCode())
 				.message(message)
