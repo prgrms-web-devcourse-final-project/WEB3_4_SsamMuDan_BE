@@ -21,7 +21,7 @@ public class MemberServiceImpl implements MemberService {
 			Member newMember = Member.createSignUpMember(signupRequest);
 			return memberRepository.save(newMember);
 		} catch (Exception e) {
-			throw new GlobalException(ErrorCode.DUPLICATED_EMAIL);
+			throw new GlobalException(ErrorCode.DUPLICATED_MEMBER);
 		}
 	}
 }

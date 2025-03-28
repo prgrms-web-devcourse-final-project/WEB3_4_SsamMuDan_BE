@@ -11,9 +11,8 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorCode {
 
 	//Member: 0001 ~ 1000
-	DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "0001", "이미 사용중인 이메일입니다."),
-	DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "0002", "이미 사용중인 닉네임입니다."),
-	NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "0003", "회원을 찾을 수 없습니다."),
+	DUPLICATED_MEMBER(HttpStatus.BAD_REQUEST, "0001", "이미 존재하는 회원입니다."),
+	NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
 
 	//Education: 1001 ~ 2000
 
