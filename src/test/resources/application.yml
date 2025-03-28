@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: CoTree
+  config:
+    import:
+      - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_db.yml
+      - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_auth.yml
+  profiles:
+    group:
+      test: [ "test_auth", "test_db" ]
+    active: test

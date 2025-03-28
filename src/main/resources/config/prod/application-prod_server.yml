@@ -1,0 +1,20 @@
+server:
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+    max-connections: 8192
+    accept-count: 100
+    uri-encoding: UTF-8
+    max-http-form-post-size: 2MB
+    max-swallow-size: 2MB
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
