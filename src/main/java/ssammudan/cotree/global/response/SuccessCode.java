@@ -3,35 +3,37 @@ package ssammudan.cotree.global.response;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum SuccessCode {
 
-    //Member
+	//Member
 
-    //Education
+	//Education
 
-    //Payment
+	//Payment
 
-    //Recruitment
+	//Recruitment
 
-    //Project
+	//Project
 
-    //Community
+	//Community
+	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
 
-    //${}: 6001 ~ 7000
+	//${}: 6001 ~ 7000
 
-    //${}: 7001 ~ 8000
+	//${}: 7001 ~ 8000
 
-    //${}: 8001 ~ 9000
+	//${}: 8001 ~ 9000
 
-    //Common: 9001 ~ 9999
-    ;
+	//Common: 9001 ~ 9999
+	;
 
-    private final HttpStatus status;
-    private final String     code;
-    private final String     message;
+	private final HttpStatus status;
+	private final String code;
+	private final String message;
 
 }
