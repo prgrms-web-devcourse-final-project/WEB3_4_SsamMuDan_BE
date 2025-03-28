@@ -9,17 +9,17 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum SuccessCode {
 
-    //Member: 0001 ~ 1000
+    //Member
 
-    //${}: 1001 ~ 2000
+    //Education
 
-    //${}: 2001 ~ 3000
+    //Payment
 
-    //${}: 3001 ~ 4000
+    //Recruitment
 
-    //${}: 4001 ~ 5000
+    //Project
 
-    //${}: 5001 ~ 6000
+    //Community
 
     //${}: 6001 ~ 7000
 
