@@ -3,11 +3,10 @@ name: Build Test
 on:
   pull_request:
     paths:
-      - 'backend/src/**'
-      - 'backend/build.gradle'
-      - 'backend/build.gradle.kts'
-#    branches:
-#      - dev
+      - 'src/**'
+      - 'build.gradle'
+    branches:
+      - dev
 
 jobs:
   build:
