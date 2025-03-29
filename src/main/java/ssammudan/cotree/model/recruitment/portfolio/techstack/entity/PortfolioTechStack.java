@@ -9,7 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.recruitment.portfolio.portfolio.entity.Portfolio;
 
@@ -27,10 +31,12 @@ import ssammudan.cotree.model.recruitment.portfolio.portfolio.entity.Portfolio;
 @Entity
 @Getter
 @Table(name = "portfolio_techStack")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 public class PortfolioTechStack {
 
 	@Id
-	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
@@ -38,7 +44,7 @@ public class PortfolioTechStack {
 	@JoinColumn(name = "portfolio_id", nullable = false)
 	private Portfolio portfolio;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "tech_stack_id", nullable = false)
 	private TechStack techStack;
 }

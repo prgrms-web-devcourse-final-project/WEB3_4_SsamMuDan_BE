@@ -6,7 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * PackageName : ssammudan.cotree.model.common.developmentposition.entity
@@ -22,13 +26,15 @@ import lombok.Getter;
 @Entity
 @Getter
 @Table(name = "development_position")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 public class DevelopmentPosition {
 
 	@Id
-	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name", nullable = false, unique = true)
+	@Column(name = "name", nullable = false, length = 255)
 	private String name;
 }

@@ -1,7 +1,11 @@
 package ssammudan.cotree.model.recruitment.portfolio.portfolio.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.annotation.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,9 +14,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ssammudan.cotree.global.entity.BaseEntity;
+import ssammudan.cotree.model.recruitment.portfolio.techstack.entity.PortfolioTechStack;
 import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
 
 /**
@@ -29,10 +39,11 @@ import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
 @Entity
 @Getter
 @Table(name = "portfolio")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 public class Portfolio extends BaseEntity {
-
 	@Id
-	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
@@ -40,18 +51,22 @@ public class Portfolio extends BaseEntity {
 	@JoinColumn(name = "resume_id", nullable = false)
 	private Resume resume;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, length = 255)
 	private String name;
 
-	@Column(name = "description", nullable = false, columnDefinition = "TEXT")
+	@Column(name = "description", columnDefinition = "TEXT", nullable = false)
 	private String description;
 
 	@Column(name = "is_developing", nullable = false)
-	private Boolean isDeveloping;
+	private boolean isDeveloping = true;
 
 	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
 
+	@Nullable
 	@Column(name = "end_date")
 	private LocalDate endDate;
+
+	@OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<PortfolioTechStack> portfolioTechStacks = new ArrayList<>();
 }
