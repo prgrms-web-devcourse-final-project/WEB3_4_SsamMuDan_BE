@@ -28,29 +28,29 @@ public class HttpResponseStatusAspect {
 	private final HttpServletResponse response;
 
 	@Around("""
-            (
-                within
-                (
-                    @org.springframework.web.bind.annotation.RestController *
-                )
-                &&
-                (
-                    @annotation(org.springframework.web.bind.annotation.GetMapping)
-                    ||
-                    @annotation(org.springframework.web.bind.annotation.PostMapping)
-                    ||
-                    @annotation(org.springframework.web.bind.annotation.PutMapping)
-                    ||
-                    @annotation(org.springframework.web.bind.annotation.PatchMapping)
-                    ||
-                    @annotation(org.springframework.web.bind.annotation.DeleteMapping)
-                    ||
-                    @annotation(org.springframework.web.bind.annotation.RequestMapping)
-                )
-            )
-            ||
-            @annotation(org.springframework.web.bind.annotation.ResponseBody)
-            """)
+			(
+			    within
+			    (
+			        @org.springframework.web.bind.annotation.RestController *
+			    )
+			    &&
+			    (
+			        @annotation(org.springframework.web.bind.annotation.GetMapping)
+			        ||
+			        @annotation(org.springframework.web.bind.annotation.PostMapping)
+			        ||
+			        @annotation(org.springframework.web.bind.annotation.PutMapping)
+			        ||
+			        @annotation(org.springframework.web.bind.annotation.PatchMapping)
+			        ||
+			        @annotation(org.springframework.web.bind.annotation.DeleteMapping)
+			        ||
+			        @annotation(org.springframework.web.bind.annotation.RequestMapping)
+			    )
+			)
+			||
+			@annotation(org.springframework.web.bind.annotation.ResponseBody)
+			""")
 	public Object handleResponse(ProceedingJoinPoint joinPoint) throws Throwable {
 		Object proceed = joinPoint.proceed();
 
