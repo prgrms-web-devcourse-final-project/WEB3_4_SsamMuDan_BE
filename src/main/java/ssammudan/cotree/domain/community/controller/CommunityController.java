@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.domain.community.dto.CommunityRequest;
 import ssammudan.cotree.domain.community.service.CommunityService;
 import ssammudan.cotree.global.response.BaseResponse;
@@ -31,7 +30,6 @@ import ssammudan.cotree.global.response.SuccessCode;
 @RequestMapping("/api/v1/community")
 @RequiredArgsConstructor
 @Tag(name = "Community Controller", description = "커뮤니티 API")
-@Slf4j
 public class CommunityController {
 
 	private final CommunityService communityService;
@@ -39,9 +37,7 @@ public class CommunityController {
 	@PostMapping("/board")
 	@Operation(summary = "커뮤니티 글 작성")
 	@SecurityRequirement(name = "bearerAuth")
-	public BaseResponse<Void> createNewBoard(
-			@Valid @RequestBody CommunityRequest.CreateBoard createBoard
-	) {
+	public BaseResponse<Void> createNewBoard(@Valid @RequestBody CommunityRequest.CreateBoard createBoard) {
 		//todo : 로그인 회원 정보 입력 받아야됨, 현재 임시로 진행
 		String dummyUserId = "1";
 

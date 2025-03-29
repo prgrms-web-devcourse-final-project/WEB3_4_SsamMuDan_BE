@@ -41,10 +41,12 @@ public class CommunityServiceImpl implements CommunityService {
 				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
 
 		//userId 로 회원 정보 검색
+		Member findMember = memberRepository.findById(userId)
+				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_MEMBER_NOTFOUND));
 
 		// 새 글 저장
-		Community newCommunityBoard = Community.createNewCommunityBoard(findCommunityCategory, findMember,
-				createBoard.getTitle(), createBoard.getContent());
+		Community newCommunityBoard =
+				Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(), createBoard.getContent());
 		communityRepository.save(newCommunityBoard);
 	}
 }
