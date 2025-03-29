@@ -1,4 +1,4 @@
-INSERT INTO auth_provider (name)
+INSERT INTO oauth_provider (name)
 VALUES ('KAKAO'),
        ('NAVER'),
        ('GOOGLE');
