@@ -2,7 +2,7 @@ package ssammudan.cotree.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ssammudan.cotree.model.member.repository.MemberRepository;
+import ssammudan.cotree.model.member.member.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
