@@ -21,16 +21,16 @@ CREATE TABLE `member`
 
 CREATE TABLE `auth_provider`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`   BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     PRIMARY KEY `pk_auth_provider_id` (`id`)
 );
 
 CREATE TABLE `auth`
 (
-    `id`               BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`               BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `member_id`        VARCHAR(255) NOT NULL,
-    `auth_provider_id` BIGINT       NOT NULL,
+    `auth_provider_id` BIGINT UNSIGNED       NOT NULL,
     `provider_id`      VARCHAR(255) NOT NULL,
     `created_at`       DATETIME     NOT NULL,
     PRIMARY KEY `pk_auth_id` (`id`),
@@ -40,14 +40,14 @@ CREATE TABLE `auth`
 
 CREATE TABLE `resume`
 (
-    `id`            BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`            BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `member_id`     VARCHAR(255) NOT NULL,
     `email`         VARCHAR(255) NOT NULL,
     `profile_image` VARCHAR(255) NOT NULL,
     `introduction`  TEXT         NOT NULL,
-    `years`         INTEGER      NOT NULL,
+    `years`         INTEGER UNSIGNED      NOT NULL,
     `is_open`       BOOLEAN      NOT NULL DEFAULT TRUE,
-    `view_count`    INTEGER      NOT NULL DEFAULT 0,
+    `view_count`    INTEGER UNSIGNED      NOT NULL DEFAULT 0,
     `created_at`    DATETIME     NOT NULL,
     `modified_at`   DATETIME     NOT NULL,
     PRIMARY KEY `pk_resume_id` (`id`),
@@ -56,7 +56,7 @@ CREATE TABLE `resume`
 
 CREATE TABLE `offer`
 (
-    `id`          BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`          BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `normal_id`   VARCHAR(255) NOT NULL,
     `hunter_id`   VARCHAR(255) NOT NULL,
     `content`     TEXT         NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE `offer`
 
 CREATE TABLE `tech_stack`
 (
-    `id`        BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`        BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name`      VARCHAR(255) NOT NULL,
     `image_url` VARCHAR(255) DEFAULT NULL,
     PRIMARY KEY `pk_tech_stack_id` (`id`),
@@ -78,9 +78,9 @@ CREATE TABLE `tech_stack`
 
 CREATE TABLE `resume_techStack`
 (
-    `id`            BIGINT NOT NULL AUTO_INCREMENT,
-    `resume_id`     BIGINT NOT NULL,
-    `tech_stack_id` BIGINT NOT NULL,
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `resume_id`     BIGINT UNSIGNED NOT NULL,
+    `tech_stack_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY `pk_resume_tech_stack_id` (`id`),
     FOREIGN KEY `fk_resume_tech_stack_resume_id` (`resume_id`) REFERENCES `resume` (`id`),
     FOREIGN KEY `fk_resume_tech_stack_tech_stack_id` (`tech_stack_id`) REFERENCES `tech_stack` (`id`)
@@ -88,7 +88,7 @@ CREATE TABLE `resume_techStack`
 
 CREATE TABLE `development_position`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`   BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     PRIMARY KEY `pk_development_position_id` (`id`),
     UNIQUE KEY `uq_development_position_name` (`name`)
@@ -96,9 +96,9 @@ CREATE TABLE `development_position`
 
 CREATE TABLE `resume_developmentPosition`
 (
-    `id`                      BIGINT NOT NULL AUTO_INCREMENT,
-    `resume_id`               BIGINT NOT NULL,
-    `development_position_id` BIGINT NOT NULL,
+    `id`                      BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `resume_id`               BIGINT UNSIGNED NOT NULL,
+    `development_position_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY `pk_resume_development_position_id` (`id`),
     FOREIGN KEY `fk_resume_development_resume_id` (`resume_id`) REFERENCES `resume` (`id`),
     FOREIGN KEY `fk_resume_development_development_position_id` (`development_position_id`) REFERENCES `development_position` (`id`)
@@ -106,8 +106,8 @@ CREATE TABLE `resume_developmentPosition`
 
 CREATE TABLE `career`
 (
-    `id`          BIGINT       NOT NULL AUTO_INCREMENT,
-    `resume_id`   BIGINT       NOT NULL,
+    `id`          BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
+    `resume_id`   BIGINT UNSIGNED       NOT NULL,
     `position`    VARCHAR(255) NOT NULL,
     `company`     VARCHAR(255) NOT NULL,
     `description` TEXT         NOT NULL,
@@ -122,9 +122,9 @@ CREATE TABLE `career`
 
 CREATE TABLE `career_techStack`
 (
-    `id`            BIGINT NOT NULL AUTO_INCREMENT,
-    `career_id`     BIGINT NOT NULL,
-    `tech_stack_id` BIGINT NOT NULL,
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `career_id`     BIGINT UNSIGNED NOT NULL,
+    `tech_stack_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY `pk_career_tech_stack_id` (`id`),
     FOREIGN KEY `fk_career_tech_stack_career_id` (`career_id`) REFERENCES `career` (`id`),
     FOREIGN KEY `fk_career_tech_stack_tech_stack_id` (`tech_stack_id`) REFERENCES `tech_stack` (`id`)
@@ -132,8 +132,8 @@ CREATE TABLE `career_techStack`
 
 CREATE TABLE `portfolio`
 (
-    `id`            BIGINT       NOT NULL AUTO_INCREMENT,
-    `resume_id`     BIGINT       NOT NULL,
+    `id`            BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
+    `resume_id`     BIGINT UNSIGNED       NOT NULL,
     `name`          VARCHAR(255) NOT NULL,
     `description`   TEXT         NOT NULL,
     `is_developing` BOOLEAN      NOT NULL DEFAULT TRUE,
@@ -147,9 +147,9 @@ CREATE TABLE `portfolio`
 
 CREATE TABLE `portfolio_techStack`
 (
-    `id`            BIGINT NOT NULL AUTO_INCREMENT,
-    `portfolio_id`  BIGINT NOT NULL,
-    `tech_stack_id` BIGINT NOT NULL,
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `portfolio_id`  BIGINT UNSIGNED NOT NULL,
+    `tech_stack_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY `pk_portfolio_tech_stack_id` (`id`),
     FOREIGN KEY `fk_portfolio_tech_stack_portfolio_id` (`portfolio_id`) REFERENCES `portfolio` (`id`),
     FOREIGN KEY `fk_portfolio_tech_stack_tech_stack_id` (`tech_stack_id`) REFERENCES `tech_stack` (`id`)
@@ -157,47 +157,47 @@ CREATE TABLE `portfolio_techStack`
 
 CREATE TABLE `education_level`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`   BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
-    PRIMARY KEY `pk_edu_level_id` (`id`),
-    UNIQUE KEY `uq_edu_level_name` (`name`)
+    PRIMARY KEY `pk_education_level_id` (`id`),
+    UNIQUE KEY `uq_education_level_name` (`name`)
 );
 
 CREATE TABLE `tech_tube`
 (
-    `id`                      BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`                      BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `member_id`               VARCHAR(255) NOT NULL,
-    `education_level_id`      BIGINT       NOT NULL,
+    `education_level_id`      BIGINT UNSIGNED       NOT NULL,
     `title`                   VARCHAR(255) NOT NULL,
     `description`             VARCHAR(255) NOT NULL,
     `introduction`            TEXT         NOT NULL,
-    `total_rating`            INTEGER      NOT NULL,
-    `total_review_count`      INTEGER      NOT NULL,
+    `total_rating`            INTEGER UNSIGNED      NOT NULL,
+    `total_review_count`      INTEGER UNSIGNED      NOT NULL,
     `tech_tube_url`           VARCHAR(255) NOT NULL,
     `tech_tube_duration`      TIME         NOT NULL,
     `tech_tube_thumbnail_url` VARCHAR(255) NOT NULL,
-    `price`                   INTEGER      NOT NULL,
-    `view_count`              INTEGER      NOT NULL DEFAULT 0,
+    `price`                   INTEGER UNSIGNED      NOT NULL,
+    `view_count`              INTEGER UNSIGNED      NOT NULL DEFAULT 0,
     `created_at`              DATETIME     NOT NULL,
     `modified_at`             DATETIME     NOT NULL,
     PRIMARY KEY `pk_tech_tube_id` (`id`),
     FOREIGN KEY `fk_tech_tube_member_id` (`member_id`) REFERENCES `member` (`id`),
-    FOREIGN KEY `fk_tech_tube_edu_level_id` (`education_level_id`) REFERENCES `education_level` (`id`)
+    FOREIGN KEY `fk_tech_tube_education_level_id` (`education_level_id`) REFERENCES `education_level` (`id`)
 );
 
 CREATE TABLE `education_category`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`   BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
-    PRIMARY KEY `pk_edu_category_id` (`id`),
-    UNIQUE KEY `uq_edu_category_name` (`name`)
+    PRIMARY KEY `pk_education_category_id` (`id`),
+    UNIQUE KEY `uq_education_category_name` (`name`)
 );
 
 CREATE TABLE `techTube_educationCategory`
 (
-    `id`                    BIGINT NOT NULL AUTO_INCREMENT,
-    `tech_tube_id`          BIGINT NOT NULL,
-    `education_category_id` BIGINT NOT NULL,
+    `id`                    BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `tech_tube_id`          BIGINT UNSIGNED NOT NULL,
+    `education_category_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY `pk_tech_tube_education_category_id` (`id`),
     FOREIGN KEY `fk_tech_tube_education_category_tech_tube_id` (`tech_tube_id`) REFERENCES `tech_tube` (`id`),
     FOREIGN KEY `fk_tech_tube_education_category_education_category_id` (`education_category_id`) REFERENCES `education_category` (`id`)
@@ -205,7 +205,7 @@ CREATE TABLE `techTube_educationCategory`
 
 CREATE TABLE `techEducation_type`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`   BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     PRIMARY KEY `pk_tech_education_type_id` (`id`),
     UNIQUE KEY `uq_tech_education_type_name` (`name`)
@@ -213,37 +213,37 @@ CREATE TABLE `techEducation_type`
 
 CREATE TABLE `techEducation_review`
 (
-    `id`                     BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`                     BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `member_id`              VARCHAR(255) NOT NULL,
-    `tech_education_type_id` BIGINT       NOT NULL,
-    `rating`                 INTEGER      NOT NULL,
+    `tech_education_type_id` BIGINT UNSIGNED       NOT NULL,
+    `rating`                 INTEGER UNSIGNED      NOT NULL,
     `content`                VARCHAR(255) NOT NULL,
-    `item_id`                BIGINT       NOT NULL,
+    `item_id`                BIGINT UNSIGNED       NOT NULL,
     `created_at`             DATETIME     NOT NULL,
     `modified_at`            DATETIME     NOT NULL,
-    PRIMARY KEY `pk_tech_tube_review_id` (`id`),
-    FOREIGN KEY `fk_tech_tube_review_member_id` (`member_id`) REFERENCES `member` (`id`),
-    FOREIGN KEY `fk_tech_tube_review_tech_education_type_id` (`tech_education_type_id`) REFERENCES `techEducation_type` (`id`)
+    PRIMARY KEY `pk_tech_education_review_id` (`id`),
+    FOREIGN KEY `fk_tech_education_review_member_id` (`member_id`) REFERENCES `member` (`id`),
+    FOREIGN KEY `fk_tech_education_review_tech_education_type_id` (`tech_education_type_id`) REFERENCES `techEducation_type` (`id`)
 );
 
 CREATE TABLE `tech_book`
 (
-    `id`                    BIGINT       NOT NULL AUTO_INCREMENT,
-    `member_id`             VARCHAR(255) NOT NULL,
-    `education_level_id`    BIGINT       NOT NULL,
-    `title`                 VARCHAR(255) NOT NULL,
-    `description`           VARCHAR(255) NOT NULL,
-    `introduction`          TEXT         NOT NULL,
-    `total_rating`          INTEGER      NOT NULL,
-    `total_review_count`    INTEGER      NOT NULL,
-    `tech_book_url`         VARCHAR(255) NOT NULL,
-    `tech_book_preview_url` VARCHAR(255) NOT NULL,
-    `tech_book_thumbnail`   VARCHAR(255) NOT NULL,
-    `tech_book_page`        INTEGER      NOT NULL,
-    `price`                 INTEGER      NOT NULL,
-    `view_count`            INTEGER      NOT NULL DEFAULT 0,
-    `created_at`            DATETIME     NOT NULL,
-    `modified_at`           DATETIME     NOT NULL,
+    `id`                      BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
+    `member_id`               VARCHAR(255) NOT NULL,
+    `education_level_id`      BIGINT UNSIGNED       NOT NULL,
+    `title`                   VARCHAR(255) NOT NULL,
+    `description`             VARCHAR(255) NOT NULL,
+    `introduction`            TEXT         NOT NULL,
+    `total_rating`            INTEGER UNSIGNED      NOT NULL,
+    `total_review_count`      INTEGER UNSIGNED      NOT NULL,
+    `tech_book_url`           VARCHAR(255) NOT NULL,
+    `tech_book_preview_url`   VARCHAR(255) NOT NULL,
+    `tech_book_thumbnail_url` VARCHAR(255) NOT NULL,
+    `tech_book_page`          INTEGER UNSIGNED      NOT NULL,
+    `price`                   INTEGER UNSIGNED      NOT NULL,
+    `view_count`              INTEGER UNSIGNED      NOT NULL DEFAULT 0,
+    `created_at`              DATETIME     NOT NULL,
+    `modified_at`             DATETIME     NOT NULL,
     PRIMARY KEY `pk_tech_book_id` (`id`),
     FOREIGN KEY `fk_tech_book_member_id` (`member_id`) REFERENCES `member` (`id`),
     FOREIGN KEY `fk_tech_book_edu_level_id` (`education_level_id`) REFERENCES `education_level` (`id`)
@@ -251,17 +251,17 @@ CREATE TABLE `tech_book`
 
 CREATE TABLE `techBook_educationCategory`
 (
-    `id`                    BIGINT NOT NULL AUTO_INCREMENT,
-    `tech_book_id`          BIGINT NOT NULL,
-    `education_category_id` BIGINT NOT NULL,
+    `id`                    BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `tech_book_id`          BIGINT UNSIGNED NOT NULL,
+    `education_category_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY `pk_tech_book_education_category_id` (`id`),
     FOREIGN KEY `fk_tech_book_education_category_tech_book_id` (`tech_book_id`) REFERENCES `tech_book` (`id`),
-    FOREIGN KEY `fk_tech_book_education_category_edu_category_id` (`education_category_id`) REFERENCES `education_category` (`id`)
+    FOREIGN KEY `fk_tech_book_education_category_education_category_id` (`education_category_id`) REFERENCES `education_category` (`id`)
 );
 
 CREATE TABLE `order_category`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`   BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     PRIMARY KEY `pk_product_type_id` (`id`),
     UNIQUE KEY `uq_product_type_name` (`name`)
@@ -269,13 +269,13 @@ CREATE TABLE `order_category`
 
 CREATE TABLE `order_history`
 (
-    `id`                BIGINT       NOT NULL AUTO_INCREMENT,
-    `order_category_id` BIGINT       NOT NULL,
+    `id`                BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
+    `order_category_id` BIGINT UNSIGNED       NOT NULL,
     `member_id`         VARCHAR(255) NOT NULL,
     `order_id`          VARCHAR(255) NOT NULL,
-    `product_id`        BIGINT       NOT NULL,
-    `product_name`      INTEGER      NOT NULL,
-    `price`             INTEGER      NOT NULL,
+    `product_id`        BIGINT UNSIGNED       NOT NULL,
+    `product_name`      INTEGER UNSIGNED      NOT NULL,
+    `price`             INTEGER UNSIGNED      NOT NULL,
     `created_at`        DATETIME     NOT NULL,
     `modified_at`       DATETIME     NOT NULL,
     PRIMARY KEY `pk_order_item_id` (`id`),
@@ -286,7 +286,7 @@ CREATE TABLE `order_history`
 
 CREATE TABLE `project`
 (
-    `id`                BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`                BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `member_id`         VARCHAR(255) NOT NULL,
     `title`             VARCHAR(255) NOT NULL,
     `description`       TEXT         NOT NULL,
@@ -296,7 +296,7 @@ CREATE TABLE `project`
     `is_open`           BOOLEAN      NOT NULL DEFAULT TRUE,
     `start_date`        DATE         NOT NULL,
     `end_date`          DATE                  DEFAULT NULL,
-    `view_count`        INTEGER      NOT NULL DEFAULT 0,
+    `view_count`        INTEGER UNSIGNED      NOT NULL DEFAULT 0,
     `created_at`        DATETIME     NOT NULL,
     `modified_at`       DATETIME     NOT NULL,
     PRIMARY KEY `pk_project_id` (`id`),
@@ -305,9 +305,9 @@ CREATE TABLE `project`
 
 CREATE TABLE `project_techStack`
 (
-    `id`            BIGINT NOT NULL AUTO_INCREMENT,
-    `project_id`    BIGINT NOT NULL,
-    `tech_stack_id` BIGINT NOT NULL,
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `project_id`    BIGINT UNSIGNED NOT NULL,
+    `tech_stack_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY `pk_project_tech_stack_id` (`id`),
     FOREIGN KEY `fk_project_tech_stack_project_id` (`project_id`) REFERENCES `project` (`id`),
     FOREIGN KEY `fk_project_tech_stack_tech_stack_id` (`tech_stack_id`) REFERENCES `tech_stack` (`id`)
@@ -315,10 +315,10 @@ CREATE TABLE `project_techStack`
 
 CREATE TABLE `project_devPosition`
 (
-    `id`                      BIGINT  NOT NULL AUTO_INCREMENT,
-    `project_id`              BIGINT  NOT NULL,
-    `development_position_id` BIGINT  NOT NULL,
-    `amount`                  INTEGER NOT NULL DEFAULT 0,
+    `id`                      BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
+    `project_id`              BIGINT UNSIGNED  NOT NULL,
+    `development_position_id` BIGINT UNSIGNED  NOT NULL,
+    `amount`                  INTEGER UNSIGNED NOT NULL DEFAULT 0,
     PRIMARY KEY `pk_project_development_position_id` (`id`),
     FOREIGN KEY `fk_project_development_position_project_id` (`project_id`) REFERENCES `project` (`id`),
     FOREIGN KEY `fk_project_development_position_development_position_id` (`development_position_id`) REFERENCES `development_position` (`id`)
@@ -326,8 +326,8 @@ CREATE TABLE `project_devPosition`
 
 CREATE TABLE `project_membership`
 (
-    `id`                        BIGINT       NOT NULL AUTO_INCREMENT,
-    `project_id`                BIGINT       NOT NULL,
+    `id`                        BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
+    `project_id`                BIGINT UNSIGNED       NOT NULL,
     `member_id`                 VARCHAR(255) NOT NULL,
     `project_membership_status` ENUM('PENDING', 'JOINED', 'LEAVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
     `created_at`                DATETIME     NOT NULL,
@@ -339,7 +339,7 @@ CREATE TABLE `project_membership`
 
 CREATE TABLE `community_category`
 (
-    `id`   BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`   BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     PRIMARY KEY `pk_community_category_id` (`id`),
     UNIQUE KEY `uq_community_category_name` (`name`)
@@ -347,12 +347,12 @@ CREATE TABLE `community_category`
 
 CREATE TABLE `community`
 (
-    `id`                    BIGINT       NOT NULL AUTO_INCREMENT,
-    `community_category_id` BIGINT       NOT NULL,
+    `id`                    BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
+    `community_category_id` BIGINT UNSIGNED       NOT NULL,
     `member_id`             VARCHAR(255) NOT NULL,
     `title`                 VARCHAR(255) NOT NULL,
     `content`               TEXT         NOT NULL,
-    `view_count`            INTEGER      NOT NULL DEFAULT 0,
+    `view_count`            INTEGER UNSIGNED      NOT NULL DEFAULT 0,
     `created_at`            DATETIME     NOT NULL,
     `modified_at`           DATETIME     NOT NULL,
     PRIMARY KEY `pk_community_id` (`id`),
@@ -362,11 +362,11 @@ CREATE TABLE `community`
 
 CREATE TABLE `comment`
 (
-    `id`           BIGINT       NOT NULL AUTO_INCREMENT,
-    `parent_id`    BIGINT DEFAULT NULL,
+    `id`           BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
+    `parent_id`    BIGINT UNSIGNED DEFAULT NULL,
     `member_id`    VARCHAR(255) NOT NULL,
-    `community_id` BIGINT DEFAULT NULL,
-    `resume_id`    BIGINT DEFAULT NULL,
+    `community_id` BIGINT UNSIGNED DEFAULT NULL,
+    `resume_id`    BIGINT UNSIGNED DEFAULT NULL,
     `content`      TEXT         NOT NULL,
     `created_at`   DATETIME     NOT NULL,
     `modified_at`  DATETIME     NOT NULL,
@@ -379,12 +379,12 @@ CREATE TABLE `comment`
 
 CREATE TABLE `likes`
 (
-    `id`           BIGINT       NOT NULL AUTO_INCREMENT,
+    `id`           BIGINT UNSIGNED       NOT NULL AUTO_INCREMENT,
     `member_id`    VARCHAR(255) NOT NULL,
-    `tech_tube_id` BIGINT DEFAULT NULL,
-    `tech_book_id` BIGINT DEFAULT NULL,
-    `project_id`   BIGINT DEFAULT NULL,
-    `community_id` BIGINT DEFAULT NULL,
+    `tech_tube_id` BIGINT UNSIGNED DEFAULT NULL,
+    `tech_book_id` BIGINT UNSIGNED DEFAULT NULL,
+    `project_id`   BIGINT UNSIGNED DEFAULT NULL,
+    `community_id` BIGINT UNSIGNED DEFAULT NULL,
     `created_at`   DATETIME     NOT NULL,
     `modified_at`  DATETIME     NOT NULL,
     PRIMARY KEY `pk_likes_id` (`id`),
