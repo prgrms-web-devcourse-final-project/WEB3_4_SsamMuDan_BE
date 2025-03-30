@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ssammudan.cotree.domain.resume.dto.CareerInfo;
 import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.recruitment.career.techstack.entity.CareerTechStack;
@@ -74,19 +75,19 @@ public class Career extends BaseEntity {
 	@OneToMany(mappedBy = "career", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CareerTechStack> careerTechStacks = new ArrayList<>();
 
-	// public static Career create(CareerInfo careerInfo, Resume resume, List<TechStack> techStacks) {
-	// 	Career career = Career.builder()
-	// 			.resume(resume)
-	// 			.position(careerInfo.position())
-	// 			.company(careerInfo.companyName())
-	// 			.description(careerInfo.careerDescription())
-	// 			.isWorking(careerInfo.isWorking())
-	// 			.startDate(careerInfo.startDate())
-	// 			.endDate(careerInfo.endDate())
-	// 			.build();
-	// 	career.addCareerTechStack(techStacks);
-	// 	return career;
-	// }
+	public static Career create(CareerInfo careerInfo, Resume resume, List<TechStack> techStacks) {
+		Career career = Career.builder()
+				.resume(resume)
+				.position(careerInfo.position())
+				.company(careerInfo.companyName())
+				.description(careerInfo.careerDescription())
+				.isWorking(careerInfo.isWorking())
+				.startDate(careerInfo.startDate())
+				.endDate(careerInfo.endDate())
+				.build();
+		career.addCareerTechStack(techStacks);
+		return career;
+	}
 
 	private void addCareerTechStack(List<TechStack> techStacks) {
 		techStacks.stream().map(techStack ->
