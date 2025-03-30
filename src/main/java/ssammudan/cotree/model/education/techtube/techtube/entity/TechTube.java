@@ -82,10 +82,12 @@ public class TechTube extends BaseEntity {
 	private String introduction;    //TechTube 소개
 
 	@Column(name = "total_rating", nullable = false)
-	private Integer totalRating;    //TechTube 전체 누적 평점
+	@Builder.Default
+	private Integer totalRating = 0;    //TechTube 전체 누적 평점
 
 	@Column(name = "total_review_count", nullable = false)
-	private Integer totalReviewCount;    //TechTube 전체 리뷰 수
+	@Builder.Default
+	private Integer totalReviewCount = 0;    //TechTube 전체 리뷰 수
 
 	@Column(name = "tech_tube_url", nullable = false)
 	private String techTubeUrl;    //TechTube 영상 URL
@@ -135,9 +137,18 @@ public class TechTube extends BaseEntity {
 
 	@PrePersist
 	private void prePersist() {
+		if (this.totalRating == null) {
+			this.totalRating = 0;
+		}
+
+		if (this.totalReviewCount == null) {
+			this.totalReviewCount = 0;
+		}
+
 		if (this.viewCount == null) {
 			this.viewCount = 0;
 		}
+
 		if (this.techTubeEducationCategories == null) {
 			this.techTubeEducationCategories = new ArrayList<>();
 		}

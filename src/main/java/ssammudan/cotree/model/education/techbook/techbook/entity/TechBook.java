@@ -78,10 +78,12 @@ public class TechBook extends BaseEntity {
 	private String introduction;    //TechBook 소개
 
 	@Column(name = "total_rating", nullable = false)
-	private Integer totalRating;    //TechBook 전체 누적 평점
+	@Builder.Default
+	private Integer totalRating = 0;    //TechBook 전체 누적 평점
 
 	@Column(name = "total_review_count", nullable = false)
-	private Integer totalReviewCount;    //TechBook 전체 리뷰 수
+	@Builder.Default
+	private Integer totalReviewCount = 0;    //TechBook 전체 리뷰 수
 
 	@Column(name = "tech_book_url", nullable = false)
 	private String techBookUrl;    //TechBook PDF URL
@@ -136,9 +138,18 @@ public class TechBook extends BaseEntity {
 
 	@PrePersist
 	private void prePersist() {
+		if (this.totalRating == null) {
+			this.totalRating = 0;
+		}
+
+		if (this.totalReviewCount == null) {
+			this.totalReviewCount = 0;
+		}
+
 		if (this.viewCount == null) {
 			this.viewCount = 0;
 		}
+
 		if (this.techBookEducationCategories == null) {
 			this.techBookEducationCategories = new ArrayList<>();
 		}

@@ -69,16 +69,16 @@ public class OrderHistory extends BaseEntity {
 	)
 	private Member customer;    //구매자
 
-	@Column(nullable = false)
+	@Column(name = "order_id", nullable = false)
 	private String orderId;    //주문 번호
 
-	@Column(nullable = false)
+	@Column(name = "product_id", nullable = false)
 	private Long productId;    //제품 ID
 
-	@Column(nullable = false)
+	@Column(name = "product_name", nullable = false)
 	private String productName;    //상품명
 
-	@Column(nullable = false)
+	@Column(name = "price", nullable = false)
 	private Integer price;    //가격
 
 	public static OrderHistory create(
