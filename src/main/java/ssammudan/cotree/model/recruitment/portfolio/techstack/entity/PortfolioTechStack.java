@@ -1,6 +1,5 @@
 package ssammudan.cotree.model.recruitment.portfolio.techstack.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -47,4 +46,11 @@ public class PortfolioTechStack {
 	@ManyToOne
 	@JoinColumn(name = "tech_stack_id", nullable = false)
 	private TechStack techStack;
+
+	public static PortfolioTechStack create(Portfolio portfolio, TechStack techStack) {
+		return PortfolioTechStack.builder()
+			.portfolio(portfolio)
+			.techStack(techStack)
+			.build();
+	}
 }
