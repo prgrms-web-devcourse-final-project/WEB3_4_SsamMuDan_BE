@@ -59,6 +59,7 @@ resource "aws_route_table_association" "public_assoc" {
 
 # 보안 그룹 (EC2-1: NginX + Spring Boot)
 resource "aws_security_group" "web_sg" {
+  name   = "team15-api-server-sg"
   vpc_id = aws_vpc.main_vpc.id
 
   ingress {
@@ -85,6 +86,7 @@ resource "aws_security_group" "web_sg" {
 
 # 보안 그룹 (EC2-2: MySQL 서버)
 resource "aws_security_group" "db_sg" {
+  name   = "team15-db-sg"
   vpc_id = aws_vpc.main_vpc.id
 
   ingress {
