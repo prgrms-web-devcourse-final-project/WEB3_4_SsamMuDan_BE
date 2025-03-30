@@ -103,6 +103,7 @@ resource "aws_instance" "web_server" {
   instance_type = var.instance_type
   subnet_id     = aws_subnet.public_subnet.id
   security_groups = [aws_security_group.web_sg.id]
+  key_name      = "team15-api-server-key"
 
   root_block_device {
     volume_size           = 30
@@ -122,6 +123,7 @@ resource "aws_instance" "db_server" {
   instance_type = var.instance_type
   subnet_id     = aws_subnet.private_subnet.id
   security_groups = [aws_security_group.db_sg.id]
+  key_name      = "team15-db-server-key"
 
   root_block_device {
     volume_size           = 30
