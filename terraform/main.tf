@@ -104,6 +104,14 @@ resource "aws_instance" "web_server" {
   subnet_id     = aws_subnet.public_subnet.id
   security_groups = [aws_security_group.web_sg.id]
 
+  # EBS 볼륨 (gp3)
+  block_device {
+    device_name = "/dev/sda1"  # 루트 디바이스로 사용될 디바이스
+    volume_type = "gp3"        # gp3 타입 볼륨
+    volume_size = 30           # 30GB
+    delete_on_termination = true
+  }
+
   tags = {
     Name = "Team15-api-server"
     Team = "devcos4-team15"
@@ -116,6 +124,14 @@ resource "aws_instance" "db_server" {
   instance_type = var.instance_type
   subnet_id     = aws_subnet.private_subnet.id
   security_groups = [aws_security_group.db_sg.id]
+
+  # EBS 볼륨 (gp3)
+  block_device {
+    device_name = "/dev/sda1"  # 루트 디바이스로 사용될 디바이스
+    volume_type = "gp3"        # gp3 타입 볼륨
+    volume_size = 30           # 30GB
+    delete_on_termination = true
+  }
 
   tags = {
     Name = "Team15-db-server"
