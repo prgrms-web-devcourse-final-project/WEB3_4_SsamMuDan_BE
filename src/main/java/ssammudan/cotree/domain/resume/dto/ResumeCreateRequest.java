@@ -2,6 +2,9 @@ package ssammudan.cotree.domain.resume.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 /**
  * PackageName : ssammudan.cotree.domain.resume.dto
  * FileName    : ResumeCreateRequest
@@ -15,7 +18,11 @@ import java.util.List;
  */
 public record ResumeCreateRequest(
 	BasicInfo basicInfo,
+	@NotNull
+	@Size(min = 1, max = 9, message = "커리어 정보는 1개 이상 10개 미만이어야 합니다")
 	List<CareerInfo> careerInfos,
+	@NotNull
+	@Size(min = 1, max = 9, message = "포트폴리오 정보는 1개 이상 10개 미만이어야 합니다")
 	List<PortfolioInfo> portfolioInfos
 ) {
 }
