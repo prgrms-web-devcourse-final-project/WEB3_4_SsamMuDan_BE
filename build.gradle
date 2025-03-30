@@ -47,11 +47,21 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // P6Spy Spring Boot Starter
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.11.0'
+
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // Fixture Monkey
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-autoparams:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-mockito:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.11'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
