@@ -1,19 +1,26 @@
 package ssammudan.cotree.model.education.techbook.techbook.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * PackageName : ssammudan.cotree.model.education.techbook.techbook.repository
- * FileName    : TechBookRepository
+ * FileName    : TechBookRepositoryImpl
  * Author      : loadingKKamo21
  * Date        : 25. 3. 28.
- * Description : TechBook JPA 리포지토리
+ * Description : TechBook Querydsl 리포지토리 구현체
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 28.    loadingKKamo21       Initial creation
  */
-public interface TechBookRepository extends JpaRepository<TechBook, Long>, TechBookRepositoryCustom {
+@Repository
+@RequiredArgsConstructor
+public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
+
+	private final JPAQueryFactory jpaQueryFactory;
+
 }
