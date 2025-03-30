@@ -5,15 +5,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ssammudan.cotree.model.education.techtube.category.entity.TechTubeEducationCategory;
 
 /**
- * PackageName : ssammudan.cotree.model.education.techtube.educationcategory.repository
+ * PackageName : ssammudan.cotree.model.education.techtube.category.repository
  * FileName    : TechTubeEducationCategoryRepository
- * Author      : SSamMuDan
+ * Author      : loadingKKamo21
  * Date        : 25. 3. 29.
  * Description : TechTubeEducationCategory JPA 리포지토리
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 25. 3. 29.    SSamMuDan            Initial creation
+ * 25. 3. 29.    loadingKKamo21       Initial creation
  */
-public interface TechTubeEducationCategoryRepository extends JpaRepository<TechTubeEducationCategory, Long> {
+public interface TechTubeEducationCategoryRepository
+	extends JpaRepository<TechTubeEducationCategory, Long>, TechTubeEducationCategoryRepositoryCustom {
 }

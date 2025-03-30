@@ -1,19 +1,15 @@
 package ssammudan.cotree.model.education.techtube.techtube.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
-
 /**
  * PackageName : ssammudan.cotree.model.education.techtube.techtube.repository
- * FileName    : TechTubeRepository
+ * FileName    : TechTubeRepositoryCustom
  * Author      : loadingKKamo21
- * Date        : 25. 3. 29.
- * Description : TechTube JPA 리포지토리
+ * Date        : 25. 3. 30.
+ * Description : TechTube Querydsl 리포지토리
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 25. 3. 29.    loadingKKamo21       Initial creation
+ * 25. 3. 30.    loadingKKamo21       Initial creation
  */
-public interface TechTubeRepository extends JpaRepository<TechTube, Long>, TechTubeRepositoryCustom {
+public interface TechTubeRepositoryCustom {
 }
