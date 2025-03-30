@@ -42,3 +42,6 @@ out/
 
 ### .DS_Store ###
 .DS_Store
+
+### Querydsl QClass ###
+**/generated/**/Q*.java
