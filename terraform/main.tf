@@ -74,6 +74,13 @@ resource "aws_security_group" "web_sg" {
     protocol  = "tcp"
     cidr_blocks = ["0.0.0.0/0"]  # HTTP 허용
   }
+
+  ingress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # HTTPS 허용
+  }
 }
 
 # 보안 그룹 (EC2-2: MySQL 서버)
