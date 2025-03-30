@@ -122,3 +122,19 @@ resource "aws_instance" "db_server" {
     Team = "devcos4-team15"
   }
 }
+
+# 탄력적 IP (Web Server)
+resource "aws_eip" "web_server_eip" {
+  instance = aws_instance.web_server.id
+
+  tags = {
+    Name = "Team15-api-server-eip"
+    Team = "devcos4-team15"
+  }
+}
+
+# EIP와 EC2 인스턴스를 연결 (자동 재연결)
+resource "aws_eip_association" "web_server_eip_assoc" {
+  instance_id   = aws_instance.web_server.id
+  allocation_id = aws_eip.web_server_eip.id
+}
