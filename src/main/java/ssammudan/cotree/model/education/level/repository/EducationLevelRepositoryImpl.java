@@ -1,19 +1,26 @@
 package ssammudan.cotree.model.education.level.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import ssammudan.cotree.model.education.level.entity.EducationLevel;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * PackageName : ssammudan.cotree.model.education.level.repository
- * FileName    : EducationLevelRepository
+ * FileName    : EducationLevelRepositoryImpl
  * Author      : loadingKKamo21
  * Date        : 25. 3. 29.
- * Description : EducationLevel JPA 리포지토리
+ * Description : EducationLevel Querydsl 리포지토리 구현체
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 29.    loadingKKamo21       Initial creation
  */
-public interface EducationLevelRepository extends JpaRepository<EducationLevel, Long> {
+@Repository
+@RequiredArgsConstructor
+public class EducationLevelRepositoryImpl implements EducationLevelRepositoryCustom {
+
+	private final JPAQueryFactory jpaQueryFactory;
+
 }
