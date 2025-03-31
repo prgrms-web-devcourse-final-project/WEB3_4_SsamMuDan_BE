@@ -1,0 +1,79 @@
+package ssammudan.cotree.integration;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.persistence.EntityManager;
+import ssammudan.cotree.domain.community.service.CommunityService;
+import ssammudan.cotree.domain.education.techbook.service.TechBookService;
+import ssammudan.cotree.integration.factory.CommunityDataFactory;
+import ssammudan.cotree.integration.factory.MemberDataFactory;
+import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
+import ssammudan.cotree.model.community.community.repository.CommunityRepository;
+import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
+
+/**
+ * PackageName : ssammudan.cotree.integration
+ * FileName    : SpringBootTestSupporter
+ * Author      : Baekgwa
+ * Date        : 2025-03-28
+ * Description : SpringBoot Test Supporter / 공통 Spring Context 생성
+ * =====================================================================================================================
+ * DATE          AUTHOR               NOTE
+ * ---------------------------------------------------------------------------------------------------------------------
+ * 2025-03-28    Baekgwa              Initial creation
+ * 2025-03-31    loadingKKamo21		  TechBook 관련 리포지토리, 서비스 추가
+ */
+@SpringBootTest
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
+public abstract class SpringBootTestSupporter {
+
+	/**
+	 * mock Mvc
+	 */
+	@Autowired
+	public MockMvc mockMvc;
+
+	/**
+	 * Entity save factory
+	 */
+	@Autowired
+	protected CommunityDataFactory communityFactory;
+	@Autowired
+	protected MemberDataFactory memberDataFactory;
+
+	/**
+	 * Common
+	 */
+	@Autowired
+	protected EntityManager em;
+	@Autowired
+	protected PasswordEncoder passwordEncoder;
+	@Autowired
+	protected ObjectMapper objectMapper;
+
+	/**
+	 * Repository
+	 */
+	@Autowired
+	protected CommunityCategoryRepository communityCategoryRepository;
+	@Autowired
+	protected CommunityRepository communityRepository;
+	@Autowired
+	protected TechBookRepository techBookRepository;
+
+	/**
+	 * service
+	 */
+	@Autowired
+	protected CommunityService communityService;
+	@Autowired
+	protected TechBookService techBookService;
+}

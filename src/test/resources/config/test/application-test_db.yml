@@ -15,3 +15,10 @@ spring:
       open-in-view: false
   flyway:
     enabled: false
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+      logging: slf4j
+      multiline: true

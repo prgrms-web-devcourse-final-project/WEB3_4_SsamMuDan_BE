@@ -15,6 +15,9 @@ public enum ErrorCode {
 	NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
 
 	//Education: 1001 ~ 2000
+	EDUCATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "학습 카테고리를 찾을 수 없습니다."),
+	EDUCATION_LEVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "1002", "학습 난이도를 찾을 수 없습니다."),
+	TECH_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "1003", "TechBook을 찾을 수 없습니다."),
 
 	//Payment: 2001 ~ 3000
 
@@ -23,6 +26,8 @@ public enum ErrorCode {
 	//Project: 4001 ~ 5000
 
 	//Community: 5001 ~ 6000
+	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
+	COMMUNITY_MEMBER_NOTFOUND(HttpStatus.BAD_REQUEST, "5002", "존재하지 않은 회원입니다."),
 
 	//${}: 6001 ~ 7000
 
