@@ -18,3 +18,10 @@ spring:
     baseline-on-migrate: true
     baseline-version: 1
     locations: classpath:db/migration, classpath:db/seed/dev
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+      logging: slf4j
+      multiline: true

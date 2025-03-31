@@ -11,10 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.EntityManager;
 import ssammudan.cotree.domain.community.service.CommunityService;
+import ssammudan.cotree.domain.education.techbook.service.TechBookService;
 import ssammudan.cotree.integration.factory.CommunityDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
+import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
 
 /**
  * PackageName : ssammudan.cotree.integration
@@ -25,7 +27,8 @@ import ssammudan.cotree.model.community.community.repository.CommunityRepository
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 2025-03-28     Baekgwa               Initial creation
+ * 2025-03-28    Baekgwa              Initial creation
+ * 2025-03-31    loadingKKamo21		  TechBook 관련 리포지토리, 서비스 추가
  */
 @SpringBootTest
 @ActiveProfiles("test")
@@ -63,10 +66,14 @@ public abstract class SpringBootTestSupporter {
 	protected CommunityCategoryRepository communityCategoryRepository;
 	@Autowired
 	protected CommunityRepository communityRepository;
+	@Autowired
+	protected TechBookRepository techBookRepository;
 
 	/**
 	 * service
 	 */
 	@Autowired
 	protected CommunityService communityService;
+	@Autowired
+	protected TechBookService techBookService;
 }
