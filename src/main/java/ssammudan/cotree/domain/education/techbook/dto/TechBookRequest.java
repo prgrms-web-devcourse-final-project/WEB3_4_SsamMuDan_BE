@@ -21,14 +21,14 @@ public class TechBookRequest {
 	public record Create(
 		//TODO: EducationLevel 파라미터 PK(Long) vs 난이도 명칭(String)
 		@NotBlank(message = "{NotBlank}") String educationLevel,
-		@NotBlank(message = "{NotBlank}") @Size(max = 20, message = "{Size}") String title,
-		@NotBlank(message = "{NotBlank}") @Size(max = 50, message = "{Size}") String description,
-		@NotBlank(message = "{NotBlank}") @Size(max = 500, message = "{Size}") String introduction,
+		@NotBlank(message = "{NotBlank}") @Size(max = 20) String title,
+		@NotBlank(message = "{NotBlank}") @Size(max = 50) String description,
+		@NotBlank(message = "{NotBlank}") @Size(max = 500) String introduction,
 		@NotBlank(message = "{NotBlank}") String techBookUrl,
 		@NotBlank(message = "{NotBlank}") String techBookPreviewUrl,
 		@NotBlank(message = "{NotBlank}") String techBookThumbnailUrl,
-		@NotNull(message = "{NotNull}") @Min(value = 1, message = "{Min}") Integer techBookPage,
-		@NotNull(message = "{NotNull}") @Min(value = 1, message = "{Min}") Integer price
+		@NotNull(message = "{NotNull}") @Min(1) Integer techBookPage,
+		@NotNull(message = "{NotNull}") @Min(1) Integer price
 	) {
 	}
 
