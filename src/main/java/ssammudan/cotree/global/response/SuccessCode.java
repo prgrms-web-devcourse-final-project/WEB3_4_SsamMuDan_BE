@@ -22,7 +22,8 @@ public enum SuccessCode {
 
 	//Community
 
-	//${}: 6001 ~ 7000
+	//S3 Upload
+	S3_FILE_UPLOAD_SUCCESS(HttpStatus.CREATED, "201", "파일 업로드 성공."),
 
 	//${}: 7001 ~ 8000
 
