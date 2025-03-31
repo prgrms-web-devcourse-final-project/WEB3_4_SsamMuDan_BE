@@ -1,5 +1,6 @@
 package ssammudan.cotree.domain.community.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.community.dto.CommunityRequest;
+import ssammudan.cotree.domain.community.dto.CommunityResponse;
 import ssammudan.cotree.domain.community.service.CommunityService;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.SuccessCode;
@@ -43,5 +45,11 @@ public class CommunityController {
 
 		communityService.createNewBoard(createBoard, dummyUserId);
 		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_CREATE_SUCCESS);
+	}
+
+	@GetMapping("/board")
+	@Operation(summary = "커뮤니티 글 목록 조회")
+	public BaseResponse<CommunityResponse.BoardList> getBoardList(
+	) {
 	}
 }
