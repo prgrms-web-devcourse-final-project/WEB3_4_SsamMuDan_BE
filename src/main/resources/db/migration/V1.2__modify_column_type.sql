@@ -12,4 +12,7 @@ ALTER TABLE tech_tube MODIFY COLUMN total_rating INTEGER UNSIGNED NOT NULL DEFAU
 ALTER TABLE tech_tube MODIFY COLUMN total_review_count INTEGER UNSIGNED NOT NULL DEFAULT 0;
 
 -- Fix order_history product_name column
-ALTER TABLE order_history MODIFY COLUMN product_name VARCHAR(255) NOT NULL;
+ALTER TABLE order_history MODIFY COLUMN product_name VARCHAR (255) NOT NULL;
+
+-- Fix member name column
+ALTER TABLE member CHANGE COLUMN `name` username VARCHAR (255) NOT NULL;

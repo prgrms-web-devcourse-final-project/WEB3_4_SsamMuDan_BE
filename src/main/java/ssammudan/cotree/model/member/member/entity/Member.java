@@ -37,8 +37,8 @@ public class Member extends BaseEntity {
 	@Column(name = "email", nullable = false)
 	private String email;
 
-	@Column(name = "name", nullable = false)
-	private String name;
+	@Column(name = "username", nullable = false)
+	private String username;
 
 	@Column(name = "nickname", nullable = false, unique = true) // todo : DDL에서 unique 제약조건 추가
 	private String nickname;
