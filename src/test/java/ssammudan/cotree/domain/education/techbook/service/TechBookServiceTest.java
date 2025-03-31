@@ -8,6 +8,7 @@ import javax.validation.constraints.Min;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import net.jqwik.api.Arbitraries;
 
@@ -35,6 +36,7 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 31.    loadingKKamo21       Initial creation
  */
+@Transactional
 class TechBookServiceTest extends SpringBootTestSupporter {
 
 	private Member createMember() {
