@@ -45,3 +45,14 @@ out/
 
 ### Querydsl QClass ###
 **/generated/**/Q*.java
+
+### terraform ###
+# Terraform 상태 파일 (보안상 중요)
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+# Terraform 상태 디렉터리
+terraform/.terraform
+terraform/.terraform.lock.hcl
+# Terraform 변수 파일 (AWS Access Key 등 민감 정보 포함)
+terraform/terraform.tfvars
+terraform/terraform.tfvars.json

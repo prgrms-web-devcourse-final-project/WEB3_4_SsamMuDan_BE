@@ -5,34 +5,37 @@ import org.springframework.http.HttpStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ErrorCode {
 
 	//Member: 0001 ~ 1000
+	DUPLICATED_MEMBER(HttpStatus.BAD_REQUEST, "0001", "이미 존재하는 회원입니다."),
+	NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
 
 	//Education: 1001 ~ 2000
 	EDUCATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "학습 카테고리를 찾을 수 없습니다."),
 	EDUCATION_LEVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "1002", "학습 난이도를 찾을 수 없습니다."),
 	TECH_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "1003", "TechBook을 찾을 수 없습니다."),
 
-	//Payment: 2001 ~ 3000
+    //Payment: 2001 ~ 3000
 
-	//Recruitment: 3001 ~ 4000
+    //Recruitment: 3001 ~ 4000
 
-	//Project: 4001 ~ 5000
+    //Project: 4001 ~ 5000
 
-	//Community: 5001 ~ 6000
+    //Community: 5001 ~ 6000
 
-	//${}: 6001 ~ 7000
+    //${}: 6001 ~ 7000
 
-	//${}: 7001 ~ 8000
+    //${}: 7001 ~ 8000
 
-	//${}: 8001 ~ 9000
+    //${}: 8001 ~ 9000
 
 	//Common: 9001 ~ 9999
-	NOT_FOUND_URL(HttpStatus.NOT_FOUND, "9001", "요청하신 URL을 찾을 수 없습니다."),
+	NOT_FOUND_URL(HttpStatus.NOT_FOUND, "9001", "요청하신 URL 을 찾을 수 없습니다."),
 	NOT_SUPPORTED_METHOD(HttpStatus.METHOD_NOT_ALLOWED, "9002", "요청 메서드를 찾을 수 없습니다."),
 	VALIDATION_FAIL_ERROR(HttpStatus.BAD_REQUEST, "9003", ""),
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "9004", "올바르지 않은 입력값입니다."),
