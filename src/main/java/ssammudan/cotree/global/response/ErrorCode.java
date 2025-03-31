@@ -23,6 +23,8 @@ public enum ErrorCode {
 	//Project: 4001 ~ 5000
 
 	//Community: 5001 ~ 6000
+	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
+	COMMUNITY_MEMBER_NOTFOUND(HttpStatus.BAD_REQUEST, "5002", "존재하지 않은 회원입니다."),
 
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
