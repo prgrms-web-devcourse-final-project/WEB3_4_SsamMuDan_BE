@@ -6,6 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * PackageName : ssammudan.cotree.model.community.category.entity
@@ -19,6 +23,8 @@ import jakarta.persistence.Table;
  * 2025-03-28     Baekgwa               Initial creation
  */
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "community_category")
 public class CommunityCategory {
 
@@ -28,4 +34,13 @@ public class CommunityCategory {
 
 	@Column(name = "name", nullable = false, unique = true)
 	private String name;
+
+	@Builder
+	private CommunityCategory(String name) {
+		this.name = name;
+	}
+
+	public static CommunityCategory createNewCommunityCategory(String name) {
+		return CommunityCategory.builder().name(name).build();
+	}
 }

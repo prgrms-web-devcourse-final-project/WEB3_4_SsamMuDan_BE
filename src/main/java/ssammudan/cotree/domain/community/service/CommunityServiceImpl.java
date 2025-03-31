@@ -11,8 +11,8 @@ import ssammudan.cotree.model.community.category.entity.CommunityCategory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.entity.Community;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
-import ssammudan.cotree.model.member.entity.Member;
-import ssammudan.cotree.model.member.repository.MemberRepository;
+import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.repository.MemberRepository;
 
 /**
  * PackageName : ssammudan.cotree.domain.community.service
@@ -40,13 +40,15 @@ public class CommunityServiceImpl implements CommunityService {
 		CommunityCategory findCommunityCategory = communityCategoryRepository.findByName(createBoard.getCategory())
 				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
 
-		//userId 로 회원 정보 검색
+		// userId 로 회원 정보 검색
 		Member findMember = memberRepository.findById(userId)
 				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_MEMBER_NOTFOUND));
 
 		// 새 글 저장
 		Community newCommunityBoard =
-				Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(), createBoard.getContent());
+				Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(),
+						createBoard.getContent());
+
 		communityRepository.save(newCommunityBoard);
 	}
 }
