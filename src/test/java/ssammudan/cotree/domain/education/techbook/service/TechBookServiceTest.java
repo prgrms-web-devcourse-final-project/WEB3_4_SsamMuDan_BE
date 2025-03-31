@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,16 +15,20 @@ import net.jqwik.api.Arbitraries;
 
 import autoparams.AutoSource;
 import autoparams.Repeat;
-import ssammudan.cotree.domain.education.supporter.SpringBootTestSupporter;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookRequest;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.integration.SpringBootTestSupporter;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.member.member.entity.Member;
 
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
+import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
 
 /**
  * PackageName : ssammudan.cotree.domain.education.techbook.service
@@ -38,6 +43,22 @@ import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
  */
 @Transactional
 class TechBookServiceTest extends SpringBootTestSupporter {
+
+	private final FixtureMonkey entityFixtureMonkey = FixtureMonkey.builder()
+		.objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+		.defaultNotNull(true)
+		.build();
+
+	private final FixtureMonkey dtoFixtureMonkey = FixtureMonkey.builder()
+		.plugin(new JakartaValidationPlugin())
+		.objectIntrospector(ConstructorPropertiesArbitraryIntrospector.INSTANCE)
+		.build();
+
+	@AfterEach
+	void clearEntityContext() {
+		em.flush();
+		em.clear();
+	}
 
 	private Member createMember() {
 		return entityFixtureMonkey.giveMeBuilder(Member.class)
@@ -67,7 +88,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		//TODO: 저자 추가 로직 및 검증
 		//Given
 		EducationLevel educationLevel = createEducationLevel();
-		entityManager.persist(educationLevel);
+		em.persist(educationLevel);
 
 		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(TechBookRequest.Create.class)
 			.set("educationLevel", educationLevel.getName())
@@ -116,11 +137,11 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	void findTechBookById() {
 		//Given
 		Member member = createMember();
-		entityManager.persist(member);
+		em.persist(member);
 		EducationLevel educationLevel = createEducationLevel();
-		entityManager.persist(educationLevel);
+		em.persist(educationLevel);
 		TechBook techBook = createTechBook(member, educationLevel);
-		entityManager.persist(techBook);
+		em.persist(techBook);
 
 		Long id = techBook.getId();
 		clearEntityContext();
