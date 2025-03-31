@@ -1,11 +1,10 @@
 package ssammudan.cotree.domain.community.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * PackageName : ssammudan.cotree.domain.community.dto
@@ -23,6 +22,7 @@ public class CommunityRequest {
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class CreateBoard {
+		@NotBlank(message = "글 카테고리는 필수값 입니다.")
 		private String category;
 
 		@Size(min = 1, max = 50, message = "제목은 1자 이상 50자 이하로 입력해주세요.")

@@ -7,14 +7,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.entity.MemberFactory;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
 
 /**
  * PackageName : ssammudan.cotree.integration.factory
- * FileName    : MemberFactory
+ * FileName    : MemberDataFactory
  * Author      : Baekgwa
  * Date        : 2025-03-31
  * Description : 
@@ -25,7 +27,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  */
 @Component
 @RequiredArgsConstructor
-public class MemberFactory {
+public class MemberDataFactory {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -43,16 +45,13 @@ public class MemberFactory {
 		List<Member> newMemberList = new ArrayList<>();
 
 		for (int index = 1; index <= count; index++) {
-			newMemberList.add(new Member(
-					String.format("%d", index),
+
+			newMemberList.add(MemberFactory.createSignUpMember(new MemberSignupRequest(
 					String.format("email%d@email.com", index),
+					passwordEncoder.encode(String.format("패스워드%d", index)),
 					String.format("이름%d", index),
 					String.format("닉네임%d", index),
-					passwordEncoder.encode(String.format("패스워드%d", index)),
-					String.format("0101234%4d", index),
-					null,
-					MemberRole.USER,
-					MemberStatus.ACTIVE));
+					String.format("0101234%4d", index))));
 		}
 
 		return memberRepository.saveAll(newMemberList);

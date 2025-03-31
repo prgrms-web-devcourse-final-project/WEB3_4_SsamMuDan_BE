@@ -11,9 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.EntityManager;
 import ssammudan.cotree.domain.community.service.CommunityService;
-import ssammudan.cotree.integration.factory.CommunityFactory;
-import ssammudan.cotree.integration.factory.MemberFactory;
-import ssammudan.cotree.model.community.category.entity.CommunityCategory;
+import ssammudan.cotree.integration.factory.CommunityDataFactory;
+import ssammudan.cotree.integration.factory.MemberDataFactory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
 
@@ -43,9 +42,9 @@ public abstract class SpringBootTestSupporter {
 	 * Entity save factory
 	 */
 	@Autowired
-	protected CommunityFactory communityFactory;
+	protected CommunityDataFactory communityFactory;
 	@Autowired
-	protected MemberFactory memberFactory;
+	protected MemberDataFactory memberDataFactory;
 
 	/**
 	 * Common

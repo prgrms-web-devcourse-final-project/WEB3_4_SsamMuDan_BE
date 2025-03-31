@@ -12,7 +12,7 @@ import ssammudan.cotree.model.community.community.repository.CommunityRepository
 
 /**
  * PackageName : ssammudan.cotree.integration.factory
- * FileName    : CommunityFactory
+ * FileName    : CommunityDataFactory
  * Author      : Baekgwa
  * Date        : 2025-03-31
  * Description : 
@@ -23,7 +23,7 @@ import ssammudan.cotree.model.community.community.repository.CommunityRepository
  */
 @Component
 @RequiredArgsConstructor
-public class CommunityFactory {
+public class CommunityDataFactory {
 
 	private final CommunityCategoryRepository communityCategoryRepository;
 	private final CommunityRepository communityRepository;
