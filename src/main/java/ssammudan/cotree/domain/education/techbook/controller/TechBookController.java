@@ -39,7 +39,7 @@ public class TechBookController {
 	@Operation(summary = "TechBook 조회")
 	@GetMapping("/{id}/info")
 	public BaseResponse<TechBookResponse.Detail> getTechBookById(
-		@PathVariable @Min(value = 1, message = "{Min}") Long id
+		@PathVariable @Min(1) Long id
 	) {
 		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_READ_SUCCESS, responseDto);
