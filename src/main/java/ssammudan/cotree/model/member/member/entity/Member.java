@@ -23,7 +23,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
 @Entity
 @Getter
 @Table(name = "member")
-@Builder(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PROTECTED)
 @AllArgsConstructor // (access = AccessLevel.PUBLIC) // Test를 위해 public으로 변경
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
