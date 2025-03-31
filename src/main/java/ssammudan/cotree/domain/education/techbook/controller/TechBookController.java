@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
@@ -29,10 +31,12 @@ import ssammudan.cotree.global.response.SuccessCode;
 	consumes = MediaType.APPLICATION_JSON_VALUE,
 	produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Tag(name = "TechBook Controller", description = "TechBook API")
 public class TechBookController {
 
 	private final TechBookService techBookService;
 
+	@Operation(summary = "TechBook 조회")
 	@GetMapping("/{id}/info")
 	public BaseResponse<TechBookResponse.Detail> getTechBookById(
 		@PathVariable @Min(value = 1, message = "{Min}") Long id
