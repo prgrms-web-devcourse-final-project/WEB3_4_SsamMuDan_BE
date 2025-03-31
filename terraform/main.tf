@@ -1,6 +1,8 @@
 # VPC 생성
 resource "aws_vpc" "main_vpc" {
-  cidr_block = var.vpc_cidr
+  cidr_block           = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = {
     Name = "Team15-VPC"
@@ -110,6 +112,31 @@ resource "aws_instance" "web_server" {
     volume_type           = "gp3"
     delete_on_termination = true
   }
+  user_data = <<-EOF
+# 가상 메모리 4GB 설정
+sudo dd if=/dev/zero of=/swapfile bs=128M count=32
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo sh -c 'echo "/swapfile swap swap defaults 0 0" >> /etc/fstab'
+
+# 도커 설치 및 실행/활성화
+yum install docker -y
+systemctl enable docker
+systemctl start docker
+
+# nginx 설치
+docker run -d \
+  --name npm_1 \
+  --restart unless-stopped \
+  -p 80:80 \
+  -p 443:443 \
+  -p 81:81 \
+  -e TZ=Asia/Seoul \
+  -v /dockerProjects/npm_1/volumes/data:/data \
+  -v /dockerProjects/npm_1/volumes/etc/letsencrypt:/etc/letsencrypt \
+  jc21/nginx-proxy-manager:latest
+EOF
 
   tags = {
     Name = "Team15-api-server"
@@ -124,6 +151,53 @@ resource "aws_instance" "db_server" {
   subnet_id     = aws_subnet.private_subnet.id
   security_groups = [aws_security_group.db_sg.id]
   key_name      = "team15-db-server-key"
+
+  user_data = <<-EOF
+# 가상 메모리 4GB 설정
+sudo dd if=/dev/zero of=/swapfile bs=128M count=32
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo sh -c 'echo "/swapfile swap swap defaults 0 0" >> /etc/fstab'
+
+# 도커 설치 및 실행/활성화
+yum install docker -y
+systemctl enable docker
+systemctl start docker
+
+# mysql 설치
+docker run -d \
+  --name mysql_1 \
+  --restart unless-stopped \
+  -v /dockerProjects/mysql_1/volumes/var/lib/mysql:/var/lib/mysql \
+  -v /dockerProjects/mysql_1/volumes/etc/mysql/conf.d:/etc/mysql/conf.d \
+  -p 3306:3306 \
+  -e MYSQL_ROOT_PASSWORD=1234 \
+  -e TZ=Asia/Seoul \
+  mysql:latest
+
+# MySQL 컨테이너가 준비될 때까지 대기
+echo "MySQL이 기동될 때까지 대기 중..."
+until docker exec mysql_1 mysql -uroot -p1234 -e "SELECT 1" &> /dev/null; do
+  echo "MySQL이 아직 준비되지 않음. 5초 후 재시도..."
+  sleep 5
+done
+echo "MySQL이 준비됨. 초기화 스크립트 실행 중..."
+
+docker exec mysql_1 mysql -uroot -p1234 -e "
+CREATE USER 'team15local'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '1234';
+CREATE USER 'team15local'@'${aws_instance.web_server.private_ip}' IDENTIFIED WITH caching_sha2_password BY '1234';
+CREATE USER 'team15'@'%' IDENTIFIED WITH caching_sha2_password BY '1234';
+
+GRANT ALL PRIVILEGES ON *.* TO 'team15local'@'127.0.0.1';
+GRANT ALL PRIVILEGES ON *.* TO 'team15local'@'${aws_instance.web_server.private_ip}';
+
+CREATE DATABASE glog_prod;
+
+FLUSH PRIVILEGES;
+"
+
+EOF
 
   root_block_device {
     volume_size           = 30
