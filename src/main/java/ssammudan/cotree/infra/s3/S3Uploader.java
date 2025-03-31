@@ -40,7 +40,7 @@ public class S3Uploader {
 	 * 단일 멀티파트파일 전송
 	 * 파일 S3 업로드 시, 다음 관례에 따라 경로 저장
 	 * domain/sub-domain/member_uuid/{currentTime}_file_name;
-	 * currentTime 은, 하나의 member 가 여러개의 파일을 가질 수 있는 경우, 파일별 식별을 위한 용도
+	 * currentTime 은, 하나의 멤버 가 여러개의 파일을 가질 수 있는 경우, 파일별 식별을 위한 용도
 	 * return : 읽기 가능한 저장된 파일 url
 	 */
 	public S3UploadResult upload(String memberId, MultipartFile file, S3Directory directory) {
