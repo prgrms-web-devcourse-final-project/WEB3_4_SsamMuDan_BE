@@ -23,6 +23,7 @@ public enum SuccessCode {
 	//Project
 
 	//Community
+	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
 
 	//${}: 6001 ~ 7000
 
