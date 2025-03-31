@@ -56,6 +56,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    // AutoParams
+    testImplementation 'io.github.autoparams:autoparams:9.0.0'
+
     // Fixture Monkey
     testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-autoparams:1.1.11'
     testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.11'
