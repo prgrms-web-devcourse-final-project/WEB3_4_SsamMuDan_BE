@@ -46,6 +46,11 @@ public class ResumeTestHelper {
 
 	@Transactional
 	public String setData() {
+		// 테스트 전 기존 데이터 삭제
+		memberRepository.deleteAll();
+		techStackRepository.deleteAll();
+		developmentPositionRepository.deleteAll();
+
 		// ID 시퀀스 초기화 1부터 시작
 		entityManager.createNativeQuery("ALTER TABLE tech_stack ALTER COLUMN id RESTART WITH 1").executeUpdate();
 		entityManager.createNativeQuery("ALTER TABLE development_position ALTER COLUMN id RESTART WITH 1")

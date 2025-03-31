@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.resume.controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,10 +38,10 @@ public class ResumeController {
 	@Operation(summary = "이력서 작성", description = "이력서를 작성합니다.")
 	@PostMapping
 	public BaseResponse<ResumeCreateResponse> register(
-		@Valid @RequestBody ResumeCreateRequest request
+		@Valid @RequestBody ResumeCreateRequest request,
+		@RequestParam("id") String dummyMemberId
 	) {
 		// todo 추후 수정
-		String dummyMemberId = "1";
 		ResumeCreateResponse response = resumeService.register(request, dummyMemberId);
 		return BaseResponse.success(SuccessCode.RESUME_CREATE_SUCCESS, response);
 	}
