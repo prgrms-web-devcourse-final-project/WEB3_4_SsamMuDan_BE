@@ -12,11 +12,14 @@ public enum SuccessCode {
 
 	//Member
 	MEMBER_CREATE_SUCCESS(HttpStatus.CREATED, "201", "회원가입을 완료했습니다."),
+
 	//Education
+	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 완료했습니다."),
 
 	//Payment
 
 	//Recruitment
+	RESUME_CREATE_SUCCESS(HttpStatus.CREATED, "201", "이력서 작성을 성공하였습니다."),
 
 	//Project
 

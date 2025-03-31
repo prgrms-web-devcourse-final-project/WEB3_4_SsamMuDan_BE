@@ -18,7 +18,7 @@ public class MemberFactory {
 		return Member.builder()
 			.email(request.email())
 			.password(request.password())
-			.name(request.name())
+			.username(request.name())
 			.nickname(request.nickname())
 			.phoneNumber(request.phoneNumber()
 			).build();

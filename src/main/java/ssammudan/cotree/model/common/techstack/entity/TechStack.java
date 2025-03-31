@@ -40,4 +40,11 @@ public class TechStack {
 
 	@Column(name = "image_url", length = 255)
 	private String imageUrl;
+
+	public static TechStack create(String name, String imageUrl) {
+		return TechStack.builder()
+			.name(name)
+			.imageUrl(imageUrl)
+			.build();
+	}
 }

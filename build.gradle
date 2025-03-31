@@ -28,15 +28,44 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
-    // flyway
-    implementation 'org.flywaydb:flyway-mysql:11.3.4'
+
+    // SpringDoc OpenAPI Starter WebMVC UI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+
+    // Flyway MySQL
+    implementation 'org.flywaydb:flyway-mysql:11.5.0'
+
+    // Querydsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+
+    // Jakarta Annotations API & Jakarta Persistence API
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // P6Spy Spring Boot Starter
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.11.0'
+
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // AutoParams
+    testImplementation 'io.github.autoparams:autoparams:9.0.0'
+
+    // Fixture Monkey
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-autoparams:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-jackson:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-jakarta-validation:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-mockito:1.1.11'
+    testImplementation 'com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.11'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     //S3
@@ -50,3 +79,21 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// Querydsl generated directory setting - start
+def generatedDir = "src/main/generated"
+
+sourceSets {
+    main.java.srcDirs += generatedDir
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.generatedSourceOutputDirectory = file(generatedDir)
+}
+
+clean {
+    doFirst {
+        delete file(generatedDir)
+    }
+}
+// Querydsl generated directory setting - end

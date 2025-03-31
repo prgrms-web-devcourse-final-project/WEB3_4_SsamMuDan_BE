@@ -7,13 +7,13 @@ import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
 /**
  * PackageName : ssammudan.cotree.model.payment.order.category.repository
  * FileName    : OrderCategoryRepository
- * Author      : SSamMuDan
+ * Author      : loadingKKamo21
  * Date        : 25. 3. 29.
  * Description : OrderCategory JPA 리포지토리
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 25. 3. 29.    SSamMuDan            Initial creation
+ * 25. 3. 29.    loadingKKamo21       Initial creation
  */
-public interface OrderCategoryRepository extends JpaRepository<OrderCategory, Long> {
+public interface OrderCategoryRepository extends JpaRepository<OrderCategory, Long>, OrderCategoryRepositoryCustom {
 }
