@@ -10,6 +10,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import ssammudan.cotree.global.response.BaseResponse;
@@ -59,6 +60,14 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NoResourceFoundException.class)
 	public ResponseEntity<BaseResponse<Void>> noResourceFoundException(NoResourceFoundException e) {
 		final ErrorCode errorCode = ErrorCode.NOT_FOUND_URL;
+		return ResponseEntity.status(errorCode.getStatus())
+				.body(BaseResponse.fail(errorCode));
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<BaseResponse<Void>> methodArgumentTypeMismatchException(
+			MethodArgumentTypeMismatchException e) {
+		final ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_TYPE_MISS_MATCH;
 		return ResponseEntity.status(errorCode.getStatus())
 				.body(BaseResponse.fail(errorCode));
 	}
