@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 /**
  * PackageName : ssammudan.cotree.domain.resume.dto
@@ -19,6 +20,7 @@ import jakarta.validation.constraints.Size;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 28.     kwak               Initial creation
  */
+@Builder
 public record BasicInfo(
 	@NotBlank(message = "프로필 이미지 URL은 필수입니다.")
 	String profileImage,

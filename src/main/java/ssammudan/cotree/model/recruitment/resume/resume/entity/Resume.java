@@ -6,9 +6,12 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -20,6 +23,7 @@ import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
+import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.recruitment.resume.developmentposition.entity.ResumeDevelopmentPosition;
 import ssammudan.cotree.model.recruitment.resume.techstack.entity.ResumeTechStack;
 
@@ -46,8 +50,9 @@ public class Resume extends BaseEntity {
 	@Column(name = "id", nullable = false, columnDefinition = "BIGINT")
 	private Long id;
 
-	@Column(name = "member_id", nullable = false, length = 255)
-	private String memberId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Member member;
 
 	@Column(name = "email", nullable = false, length = 255)
 	private String email;
@@ -68,17 +73,19 @@ public class Resume extends BaseEntity {
 	private Integer viewCount;
 
 	@OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
 	private List<ResumeTechStack> resumeTechStacks = new ArrayList<>();
 
 	@OneToMany(mappedBy = "resume", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
 	private List<ResumeDevelopmentPosition> resumeDevelopmentPositions = new ArrayList<>();
 
 	public static Resume create(
-			ResumeCreateRequest request, String memberId,
+			ResumeCreateRequest request, Member member,
 			List<TechStack> techStacks, List<DevelopmentPosition> developmentPositions
 	) {
 		Resume resume = Resume.builder()
-				.memberId(memberId)
+				.member(member)
 				.email(request.basicInfo().email())
 				.profileImage(request.basicInfo().profileImage())
 				.introduction(request.basicInfo().introduction())

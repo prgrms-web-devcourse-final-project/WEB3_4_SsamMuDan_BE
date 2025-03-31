@@ -73,6 +73,7 @@ public class Career extends BaseEntity {
 	private LocalDate endDate;
 
 	@OneToMany(mappedBy = "career", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
 	private List<CareerTechStack> careerTechStacks = new ArrayList<>();
 
 	public static Career create(CareerInfo careerInfo, Resume resume, List<TechStack> techStacks) {

@@ -70,6 +70,7 @@ public class Portfolio extends BaseEntity {
 	private LocalDate endDate;
 
 	@OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
 	private List<PortfolioTechStack> portfolioTechStacks = new ArrayList<>();
 
 	public static Portfolio create(PortfolioInfo portfolioInfo, Resume resume, List<TechStack> techStacks) {

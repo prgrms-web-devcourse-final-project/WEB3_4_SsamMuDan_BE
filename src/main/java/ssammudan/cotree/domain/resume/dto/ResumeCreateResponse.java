@@ -9,7 +9,7 @@ import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
  * FileName    : ResumeCreateResponse
  * Author      : kwak
  * Date        : 2025. 3. 30.
- * Description : 
+ * Description :
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------

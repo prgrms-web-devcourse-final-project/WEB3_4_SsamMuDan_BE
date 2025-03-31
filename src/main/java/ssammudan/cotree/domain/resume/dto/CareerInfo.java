@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 /**
  * PackageName : ssammudan.cotree.domain.resume.dto
@@ -24,6 +25,7 @@ import jakarta.validation.constraints.Size;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 28.     kwak               Initial creation
  */
+@Builder
 public record CareerInfo(
 	@NotNull(message = "시작 날짜는 필수입니다.")
 	@PastOrPresent(message = "시작 날짜는 현재 날짜 이후일 수 없습니다.")

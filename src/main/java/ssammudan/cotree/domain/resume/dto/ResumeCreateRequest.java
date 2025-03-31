@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 /**
  * PackageName : ssammudan.cotree.domain.resume.dto
@@ -16,6 +17,7 @@ import jakarta.validation.constraints.Size;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 28.     kwak               Initial creation
  */
+@Builder
 public record ResumeCreateRequest(
 	BasicInfo basicInfo,
 	@NotNull

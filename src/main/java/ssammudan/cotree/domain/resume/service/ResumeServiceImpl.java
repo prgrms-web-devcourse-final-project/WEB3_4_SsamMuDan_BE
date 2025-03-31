@@ -8,10 +8,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
+import ssammudan.cotree.global.error.GlobalException;
+import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.common.techstack.repository.TechStackRepository;
+import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.recruitment.career.career.entity.Career;
 import ssammudan.cotree.model.recruitment.career.career.repository.CareerRepository;
@@ -50,7 +53,11 @@ public class ResumeServiceImpl implements ResumeService {
 		List<DevelopmentPosition> developmentPositions = developmentPositionRepository
 			.findByIds(request.basicInfo().developPositionIds());
 
-		Resume resume = Resume.create(request, memberId, basicTechStacks, developmentPositions);
+		// todo 추후 적합한 에러코드로 수정
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.ENTITY_NOT_FOUND));
+
+		Resume resume = Resume.create(request, member, basicTechStacks, developmentPositions);
 		Resume savedResume = resumeRepository.save(resume);
 
 		// 커리어에서 기술스택 get, career 저장
