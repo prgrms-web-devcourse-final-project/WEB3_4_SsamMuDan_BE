@@ -61,7 +61,8 @@ class EducationLevelRepositoryTest extends DataJpaTestSupporter {
 	void findById() {
 		//Given
 		EducationLevel educationLevel = createEducationLevel();
-		Long id = entityManager.persist(educationLevel).getId();
+		entityManager.persist(educationLevel);
+		Long id = educationLevel.getId();
 		clearEntityContext();
 
 		//When
@@ -91,7 +92,8 @@ class EducationLevelRepositoryTest extends DataJpaTestSupporter {
 	void findByNameIgnoreCase() {
 		//Given
 		String name = fixtureMonkey.giveMeOne(String.class);
-		EducationLevel educationLevel = entityManager.persist(EducationLevel.create(name));
+		EducationLevel educationLevel = EducationLevel.create(name);
+		entityManager.persist(educationLevel);
 		clearEntityContext();
 
 		//When
