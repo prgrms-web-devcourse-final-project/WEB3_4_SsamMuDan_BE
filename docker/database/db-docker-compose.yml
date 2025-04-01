@@ -17,9 +17,24 @@ services:
       - ${MYSQL_QUERY_LOG_PATH}:/var/log/mysql
       - cotree-rdb-data:/var/lib/mysql
 
+  redis:
+    image: redis:7.4
+    container_name: cotreeRedisDb
+    restart: always
+    ports:
+      - ${REDIS_OUT_PORT}:${REDIS_IN_PORT}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - common-network
+    volumes:
+      - redis_data:/data
+    command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes" ]
+
 networks:
   common-network:
     external: true
 
 volumes:
   cotree-rdb-data:
+  redis_data:
