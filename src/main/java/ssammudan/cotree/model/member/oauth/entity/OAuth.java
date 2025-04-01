@@ -44,6 +44,9 @@ public class OAuth {
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
 
+	@Column(name = "provider_name", nullable = false)
+	private String providerName;
+
 	@Column(name = "provider_id", nullable = false)
 	private String providerId;
 

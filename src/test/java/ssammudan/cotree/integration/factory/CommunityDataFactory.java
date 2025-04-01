@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.model.community.category.entity.CommunityCategory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
+import ssammudan.cotree.model.community.community.entity.Community;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
+import ssammudan.cotree.model.member.member.entity.Member;
 
 /**
  * PackageName : ssammudan.cotree.integration.factory
@@ -46,5 +48,34 @@ public class CommunityDataFactory {
 		}
 
 		return communityCategoryRepository.saveAll(categoryList);
+	}
+
+	/**
+	 * count : 생성할 멤버당 수
+	 * 총 생성되는 수 : MemberList * CommunityCategory * count
+	 */
+	public List<Community> createAndSaveCommunity(List<Member> memberList,
+			List<CommunityCategory> communityCategoryList, final int count) {
+
+		if (count == 0) {
+			return List.of();
+		}
+
+		List<Community> communityList = new ArrayList<>();
+
+		for (int index = 1; index <= count; index++) {
+			for (Member member : memberList) {
+				for (CommunityCategory category : communityCategoryList) {
+					communityList.add(
+							Community.createNewCommunityBoard(
+									category,
+									member,
+									String.format("[%s카테고리]제목:%s멤버", category.getName(), member.getId()),
+									String.format("내용입니다. %s 카테고리 %s멤버의 글 입니다.", category.getName(), member.getId())));
+				}
+			}
+		}
+
+		return communityRepository.saveAll(communityList);
 	}
 }
