@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -22,12 +23,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.transaction.Transactional;
+import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.resume.ResumeTestHelper;
 import ssammudan.cotree.domain.resume.dto.BasicInfo;
 import ssammudan.cotree.domain.resume.dto.CareerInfo;
 import ssammudan.cotree.domain.resume.dto.PortfolioInfo;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.service.ResumeService;
+import ssammudan.cotree.infra.s3.S3Uploader;
 
 /**
  * PackageName : ssammudan.cotree.domain.resume.controller
@@ -54,6 +57,11 @@ class ResumeControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
+
+	@MockitoBean
+	private S3Client s3Client;
+	@MockitoBean
+	private S3Uploader s3Uploader;
 
 	private String memberId;
 
