@@ -15,6 +15,7 @@ public enum SuccessCode {
 
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 완료했습니다."),
+	TECH_BOOK_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechBook 목록 조회를 완료했습니다."),
 
 	//Payment
 
