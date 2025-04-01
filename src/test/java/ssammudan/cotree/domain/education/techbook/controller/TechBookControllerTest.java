@@ -27,11 +27,11 @@ import net.jqwik.api.Arbitraries;
 
 import autoparams.AutoSource;
 import autoparams.Repeat;
-import ssammudan.cotree.domain.education.supporter.WebMvcTestSupporter;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.SuccessCode;
+import ssammudan.cotree.integration.WebMvcTestSupporter;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 
 /**
