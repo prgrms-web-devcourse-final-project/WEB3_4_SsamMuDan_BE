@@ -12,14 +12,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import jakarta.transaction.Transactional;
+import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.resume.ResumeTestHelper;
 import ssammudan.cotree.domain.resume.dto.BasicInfo;
 import ssammudan.cotree.domain.resume.dto.CareerInfo;
 import ssammudan.cotree.domain.resume.dto.PortfolioInfo;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
+import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
 import ssammudan.cotree.model.recruitment.resume.resume.repository.ResumeRepository;
 
@@ -48,6 +51,14 @@ class ResumeServiceImplTest {
 
 	@Autowired
 	private ResumeService resumeService;
+
+	/**
+	 * MockBean
+	 */
+	@MockitoBean
+	private S3Client s3Client;
+	@MockitoBean
+	private S3Uploader s3Uploader;
 
 	private String memberId;
 

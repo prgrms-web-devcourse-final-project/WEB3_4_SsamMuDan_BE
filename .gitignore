@@ -43,6 +43,8 @@ out/
 ### .DS_Store ###
 .DS_Store
 
+### Querydsl QClass ###
+**/generated/**/Q*.java
 
 ### terraform ###
 # Terraform 상태 파일 (보안상 중요)
@@ -54,3 +56,4 @@ terraform/.terraform.lock.hcl
 # Terraform 변수 파일 (AWS Access Key 등 민감 정보 포함)
 terraform/terraform.tfvars
 terraform/terraform.tfvars.json
+/spy.log
