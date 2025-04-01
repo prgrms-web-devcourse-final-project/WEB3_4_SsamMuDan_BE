@@ -7,13 +7,14 @@ import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
 /**
  * PackageName : ssammudan.cotree.model.review.techeducationtype.repository
  * FileName    : TechEducationTypeRepository
- * Author      : SSamMuDan
+ * Author      : loadingKKamo21
  * Date        : 25. 3. 29.
  * Description : TechEducationType JPA 리포지토리
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 25. 3. 29.    SSamMuDan            Initial creation
+ * 25. 3. 29.    loadingKKamo21       Initial creation
  */
-public interface TechEducationTypeRepository extends JpaRepository<TechEducationType, Long> {
+public interface TechEducationTypeRepository extends JpaRepository<TechEducationType, Long>,
+	TechEducationTypeRepositoryCustom {
 }
