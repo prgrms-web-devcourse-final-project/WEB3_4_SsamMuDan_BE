@@ -25,7 +25,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * FileName    : TechBookController
  * Author      : loadingKKamo21
  * Date        : 25. 3. 28.
- * Description : 
+ * Description : TechBookController 컨트롤러
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
