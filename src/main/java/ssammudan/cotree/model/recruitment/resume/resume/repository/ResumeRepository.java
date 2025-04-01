@@ -26,7 +26,7 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
 	@Query("""
 		SELECT new ssammudan.cotree.domain.resume.dto.query.BasicInfoQueryDto
-		(m.username, m.profileImageUrl, r.years, r.email, r.introduction, r.viewCount)
+		(m.username, r.profileImage, r.years, r.email, r.introduction, r.viewCount)
 		FROM Resume r JOIN r.member m
 		WHERE r.id = :resumeId
 		""")
