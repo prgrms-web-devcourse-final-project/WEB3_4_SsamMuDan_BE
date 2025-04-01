@@ -17,7 +17,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import ssammudan.cotree.model.member.member.entity.Member;
-import ssammudan.cotree.model.member.oauthprovider.entity.OAuthProvider;
 
 /**
  * PackageName : ssammudan.cotree.model.member.oauth.entity
@@ -45,9 +44,8 @@ public class OAuth {
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "auth_provider_id", nullable = false)
-	private OAuthProvider oAuthProvider;
+	@Column(name = "provider_name", nullable = false)
+	private String providerName;
 
 	@Column(name = "provider_id", nullable = false)
 	private String providerId;
