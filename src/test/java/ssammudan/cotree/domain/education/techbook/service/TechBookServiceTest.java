@@ -116,6 +116,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	void createTechBook() {
 		//TODO: 저자 추가 로직 및 검증
 		//Given
+		setup();
+
 		EducationLevel educationLevel = createEducationLevel();
 		em.persist(educationLevel);
 
@@ -165,6 +167,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	@DisplayName("[Success] findTechBookById(): TechBook 단 건 조회")
 	void findTechBookById() {
 		//Given
+		setup();
+
 		Member member = createMember();
 		em.persist(member);
 		EducationLevel educationLevel = createEducationLevel();
@@ -219,6 +223,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	@DisplayName("[Success] findAllTechBooks(): TechBook 다 건 조회, 페이징 적용")
 	void findAllTechBooks() {
 		//Given
+		setup();
+
 		Member member = createMember();
 		em.persist(member);
 		EducationLevel educationLevel = createEducationLevel();

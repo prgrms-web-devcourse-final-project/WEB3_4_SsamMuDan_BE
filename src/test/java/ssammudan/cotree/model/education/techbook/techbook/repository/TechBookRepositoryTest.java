@@ -78,6 +78,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	@DisplayName("[Success] save(): TechBook 엔티티 저장")
 	void save() {
 		//Given
+		setup();
+
 		Member member = createMember();
 		entityManager.persist(member);
 		EducationLevel educationLevel = createEducationLevel();
@@ -108,6 +110,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	@DisplayName("[Success] findById(): TechBook 엔티티 단 건 조회")
 	void findById() {
 		//Given
+		setup();
+
 		Member member = createMember();
 		entityManager.persist(member);
 		EducationLevel educationLevel = createEducationLevel();
@@ -152,6 +156,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	@DisplayName("[Success] findAllTechBooksByKeyword(): TechBook 다 건 조회, 페이징 적용")
 	void findAllTechBooksByKeyword() {
 		//Given
+		setup();
+
 		Member member = createMember();
 		entityManager.persist(member);
 		EducationLevel educationLevel = createEducationLevel();
