@@ -21,7 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ssammudan.cotree.domain.resume.dto.PortfolioInfo;
 import ssammudan.cotree.global.entity.BaseEntity;
+import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.recruitment.portfolio.techstack.entity.PortfolioTechStack;
 import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
 
@@ -58,7 +60,7 @@ public class Portfolio extends BaseEntity {
 	private String description;
 
 	@Column(name = "is_developing", nullable = false)
-	private boolean isDeveloping = true;
+	private boolean isDeveloping;
 
 	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
@@ -68,5 +70,25 @@ public class Portfolio extends BaseEntity {
 	private LocalDate endDate;
 
 	@OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
 	private List<PortfolioTechStack> portfolioTechStacks = new ArrayList<>();
+
+	public static Portfolio create(PortfolioInfo portfolioInfo, Resume resume, List<TechStack> techStacks) {
+		Portfolio portfolio = Portfolio.builder()
+			.resume(resume)
+			.name(portfolioInfo.projectName())
+			.description(portfolioInfo.projectDescription())
+			.isDeveloping(true)
+			.startDate(portfolioInfo.startDate())
+			.endDate(portfolioInfo.endDate())
+			.build();
+		portfolio.addPortfolioTechStack(techStacks);
+		return portfolio;
+	}
+
+	private void addPortfolioTechStack(List<TechStack> techStacks) {
+		techStacks.stream().map(techStack ->
+			PortfolioTechStack.create(this, techStack)
+		).forEach(this.portfolioTechStacks::add);
+	}
 }

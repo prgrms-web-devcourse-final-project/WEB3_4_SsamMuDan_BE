@@ -37,4 +37,10 @@ public class DevelopmentPosition {
 
 	@Column(name = "name", nullable = false, length = 255)
 	private String name;
+
+	public static DevelopmentPosition create(String name) {
+		return DevelopmentPosition.builder()
+			.name(name)
+			.build();
+	}
 }

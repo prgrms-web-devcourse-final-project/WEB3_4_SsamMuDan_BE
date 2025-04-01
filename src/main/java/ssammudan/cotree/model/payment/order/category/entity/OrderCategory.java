@@ -7,18 +7,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * PackageName : ssammudan.cotree.model.payment.order.category.entity
  * FileName    : OrderCategory
- * Author      : SSamMuDan
+ * Author      : loadingKKamo21
  * Date        : 25. 3. 29.
  * Description : OrderCategory 엔티티
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 25. 3. 29.    SSamMuDan            Initial creation
+ * 25. 3. 29.    loadingKKamo21       Initial creation
  */
 @Entity
 @Table(
@@ -28,6 +32,9 @@ import lombok.Getter;
 	}
 )
 @Getter
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderCategory {
 
 	@Id
@@ -36,6 +43,23 @@ public class OrderCategory {
 	private Long id;
 
 	@Column(name = "name", nullable = false)
-	private String name;
+	private String name;    //판매 제품 타입
+
+	public static OrderCategory create(final String name) {
+		return OrderCategory.builder().name(name).build();
+	}
+
+	/**
+	 * OrderCategory 엔티티 정보 수정
+	 *
+	 * @param newName - 새로운 판매 제품 타입 명칭
+	 * @return this
+	 */
+	public OrderCategory modify(final String newName) {
+		if (!this.name.equals(newName) && !newName.isBlank()) {
+			this.name = newName;
+		}
+		return this;
+	}
 
 }
