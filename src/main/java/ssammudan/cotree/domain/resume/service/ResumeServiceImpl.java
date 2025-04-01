@@ -6,8 +6,14 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.resume.dto.BasicInfoResponse;
+import ssammudan.cotree.domain.resume.dto.CareerInfoResponse;
+import ssammudan.cotree.domain.resume.dto.PortfolioInfoResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
+import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
+import ssammudan.cotree.domain.resume.dto.query.BasicInfoQueryDto;
+import ssammudan.cotree.domain.resume.dto.query.TechStackInfo;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
@@ -18,8 +24,10 @@ import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.recruitment.career.career.entity.Career;
 import ssammudan.cotree.model.recruitment.career.career.repository.CareerRepository;
+import ssammudan.cotree.model.recruitment.career.techstack.entity.CareerTechStack;
 import ssammudan.cotree.model.recruitment.portfolio.portfolio.entity.Portfolio;
 import ssammudan.cotree.model.recruitment.portfolio.portfolio.repository.PortfolioRepository;
+import ssammudan.cotree.model.recruitment.portfolio.techstack.entity.PortfolioTechStack;
 import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
 import ssammudan.cotree.model.recruitment.resume.resume.repository.ResumeRepository;
 
@@ -74,5 +82,46 @@ public class ResumeServiceImpl implements ResumeService {
 		});
 
 		return ResumeCreateResponse.from(savedResume);
+	}
+
+	@Transactional
+	@Override
+	public ResumeDetailResponse detail(Long id) {
+		Resume resume = resumeRepository.findById(id)
+			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_RESUME));
+
+		// 기본정보에 있는 데이터 뽑기
+		BasicInfoQueryDto basicInfoQueryDto = resumeRepository.findBasicInfoQueryDto(id)
+			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_RESUME));
+
+		List<String> positionNames = resumeRepository.findDevelopmentPositionNames(id);
+		List<TechStackInfo> techStackInfos = resumeRepository.findTechStackInfos(id);
+		BasicInfoResponse basicInfoResponse = BasicInfoResponse.of(basicInfoQueryDto, positionNames, techStackInfos);
+
+		// 커리어에 있는 데이터 뽑기
+		// 커리어 n 개 , 커리어 1 개당 n개의 techStacks
+		// 커리어 1개 -> 커리어 careerTechStacks N개
+		List<CareerInfoResponse> careerInfoResponses = careerRepository.findByResume(resume).stream()
+			.map(career ->
+				CareerInfoResponse.of(career, getTechStackInfos(career)))
+			.toList();
+
+		// 포트폴리오에 있는 데이터 뽑기
+		List<PortfolioInfoResponse> portfolioInfoResponses = portfolioRepository.findByResume(resume).stream()
+			.map(portfolio ->
+				PortfolioInfoResponse.of(portfolio, getTechStackInfos(portfolio)))
+			.toList();
+
+		return ResumeDetailResponse.create(basicInfoResponse, careerInfoResponses, portfolioInfoResponses);
+	}
+
+	private List<TechStack> getTechStackInfos(Career career) {
+		return career.getCareerTechStacks().stream()
+			.map(CareerTechStack::getTechStack).toList();
+	}
+
+	private List<TechStack> getTechStackInfos(Portfolio portfolio) {
+		return portfolio.getPortfolioTechStacks().stream()
+			.map(PortfolioTechStack::getTechStack).toList();
 	}
 }
