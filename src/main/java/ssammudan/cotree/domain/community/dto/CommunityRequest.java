@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
  */
 public class CommunityRequest {
 
+	private CommunityRequest() {
+	}
+
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class CreateBoard {
@@ -35,20 +38,6 @@ public class CommunityRequest {
 			this.category = category;
 			this.title = title;
 			this.content = content;
-		}
-	}
-
-	@Getter
-	@NoArgsConstructor(access = AccessLevel.PROTECTED)
-	public static class FindBoardList {
-		private String category;
-		private String keyword;
-		private String sort;
-
-		public FindBoardList(String category, String keyword, String sort) {
-			this.category = category;
-			this.keyword = keyword;
-			this.sort = sort;
 		}
 	}
 }

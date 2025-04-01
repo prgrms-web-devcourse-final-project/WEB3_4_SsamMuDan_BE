@@ -1,12 +1,18 @@
 package ssammudan.cotree.domain.community.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.community.dto.CommunityRequest;
+import ssammudan.cotree.domain.community.dto.CommunityResponse;
+import ssammudan.cotree.domain.community.type.SearchBoardCategory;
+import ssammudan.cotree.domain.community.type.SearchBoardSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.community.category.entity.CommunityCategory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.entity.Community;
@@ -50,5 +56,21 @@ public class CommunityServiceImpl implements CommunityService {
 						createBoard.getContent());
 
 		communityRepository.save(newCommunityBoard);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public PageResponse<CommunityResponse.BoardListDetail> getBoardList(
+			final Pageable pageable,
+			final SearchBoardSort sort,
+			final SearchBoardCategory category,
+			final String keyword,
+			final String memberId) {
+
+		Page<CommunityResponse.BoardListDetail> findBoardList =
+				communityRepository.findBoardList(pageable, sort, category, keyword, memberId);
+
+		//todo : findBoardList 의 내용 중, Content 들, 글자수 제한 및 이미지 제거 필요.
+		return PageResponse.of(findBoardList);
 	}
 }
