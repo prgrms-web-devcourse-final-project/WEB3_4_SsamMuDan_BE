@@ -5,12 +5,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.EntityManager;
+import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.community.service.CommunityService;
+import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
 import ssammudan.cotree.integration.factory.CommunityDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
@@ -74,6 +77,14 @@ public abstract class SpringBootTestSupporter {
 	 */
 	@Autowired
 	protected CommunityService communityService;
-	@Autowired
+  @Autowired
 	protected TechBookService techBookService;
+
+	/**
+	 * MockBean
+	 */
+	@MockitoBean
+	private S3Client s3Client;
+	@MockitoBean
+	private S3Uploader s3Uploader;
 }
