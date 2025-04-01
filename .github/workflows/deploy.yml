@@ -87,7 +87,7 @@ jobs:
       - name: 인스턴스 ID 가져오기
         id: get_instance_id
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=team15-ec2-1" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
+          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Team15-ec2-1" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
           echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
           echo $INSTANCE_ID
       - name: AWS SSM Send-Command
