@@ -14,6 +14,7 @@ import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 28.    loadingKKamo21       Initial creation
+ * 25. 4. 1.	 loadingKKamo21       ListInfo 추가
  */
 public class TechBookResponse {
 
@@ -51,6 +52,25 @@ public class TechBookResponse {
 				techBook.getTechBookPage(),
 				techBook.getPrice(),
 				techBook.getViewCount(),
+				techBook.getCreatedAt().toLocalDate()
+			);
+		}
+	}
+
+	public record ListInfo(
+		//TODO: 좋아요 숫자 포함
+		long id,
+		String writer,
+		int price,
+		String techBookThumbnailUrl,
+		LocalDate createdAt
+	) {
+		public static ListInfo from(final TechBook techBook) {
+			return new ListInfo(
+				techBook.getId(),
+				techBook.getWriter().getNickname(),
+				techBook.getPrice(),
+				techBook.getTechBookThumbnailUrl(),
 				techBook.getCreatedAt().toLocalDate()
 			);
 		}

@@ -1,5 +1,7 @@
 package ssammudan.cotree.domain.education.techbook.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 28.    loadingKKamo21       Initial creation
+ * 25. 4. 1.     loadingKKamo21       findAllTechBooks() 구현
  */
 @Service
 @Transactional(readOnly = true)
@@ -83,6 +86,18 @@ public class TechBookServiceImpl implements TechBookService {
 		TechBook techBook = techBookRepository.findById(id)
 			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
 		return TechBookResponse.Detail.from(techBook);
+	}
+
+	/**
+	 * TechBook 다 건 조회
+	 *
+	 * @param keyword  - 검색어
+	 * @param pageable - 페이징 객체
+	 * @return Page TechBookResponse ListInfo DTO
+	 */
+	@Override
+	public Page<TechBookResponse.ListInfo> findAllTechBooks(final String keyword, final Pageable pageable) {
+		return techBookRepository.findAllTechBooksByKeyword(keyword, pageable).map(TechBookResponse.ListInfo::from);
 	}
 
 }
