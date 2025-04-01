@@ -387,3 +387,12 @@ resource "aws_instance" "ec2_1" {
 ${local.ec2_user_data_base}
 EOF
 }
+# Elastic IP 리소스 생성
+resource "aws_eip" "eip_1" {
+  instance = aws_instance.ec2_1.id
+
+  tags = {
+    Name = "${var.prefix}-eip-1"
+    Team = var.team_tag
+  }
+}
