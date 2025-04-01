@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -39,15 +40,17 @@ public class TechBookController {
 
 	private final TechBookService techBookService;
 
-	@Operation(summary = "TechBook 상세 조회")
 	@GetMapping("/{id}/info")
+	@Operation(summary = "TechBook 상세 조회", description = "ID를 통해 특정 TechBook을 조회")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<TechBookResponse.Detail> getTechBookById(@PathVariable @Min(1) Long id) {
 		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_READ_SUCCESS, responseDto);
 	}
 
-	@Operation(summary = "TechBook 목록 조회")
 	@GetMapping
+	@Operation(summary = "TechBook 목록 조회", description = "검색어를 사용해 TechBook 목록을 조회")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<Page<TechBookResponse.ListInfo>> getTechBooks(
 		@RequestParam(required = false) String keyword,
 		@PageableDefault(page = 0, size = 16, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
