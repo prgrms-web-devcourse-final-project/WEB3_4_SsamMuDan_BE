@@ -54,7 +54,6 @@ public class ResumeController {
 	public BaseResponse<ResumeDetailResponse> detail(
 		@PathVariable(name = "id") Long id
 	) {
-		ResumeDetailResponse response = resumeService.detail(id);
-		return BaseResponse.success(SuccessCode.RESUME_DETAIL_SUCCESS, response);
+		return BaseResponse.success(SuccessCode.RESUME_DETAIL_SUCCESS, resumeService.detail(id));
 	}
 }

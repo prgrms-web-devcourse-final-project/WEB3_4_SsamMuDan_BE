@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import ssammudan.cotree.domain.resume.dto.BasicInfoResponse;
 import ssammudan.cotree.domain.resume.dto.CareerInfoResponse;
 import ssammudan.cotree.domain.resume.dto.PortfolioInfoResponse;
@@ -89,7 +90,7 @@ public class ResumeServiceImpl implements ResumeService {
 	@Transactional(readOnly = true)
 	@Override
 	public ResumeDetailResponse detail(Long id) {
-		Resume resume = resumeRepository.findById(id)
+		val resume = resumeRepository.findById(id)
 			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_RESUME));
 
 		// 기본정보에 있는 데이터 뽑기

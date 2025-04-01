@@ -2,6 +2,8 @@ package ssammudan.cotree.domain.resume.dto;
 
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import ssammudan.cotree.domain.resume.dto.query.BasicInfoQueryDto;
 import ssammudan.cotree.domain.resume.dto.query.TechStackInfo;
 
@@ -16,6 +18,7 @@ import ssammudan.cotree.domain.resume.dto.query.TechStackInfo;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 30.     kwak               Initial creation
  */
+@Builder(access = AccessLevel.PRIVATE)
 public record BasicInfoResponse(
 	String name,
 	String imageUrl,
@@ -28,15 +31,15 @@ public record BasicInfoResponse(
 ) {
 	public static BasicInfoResponse of(BasicInfoQueryDto basicInfoQueryDto, List<String> positionNames,
 		List<TechStackInfo> techStackInfos) {
-		return new BasicInfoResponse(
-			basicInfoQueryDto.getName(),
-			basicInfoQueryDto.getImageUrl(),
-			positionNames,
-			techStackInfos,
-			basicInfoQueryDto.getYears(),
-			basicInfoQueryDto.getEmail(),
-			basicInfoQueryDto.getIntroduction(),
-			basicInfoQueryDto.getViewCount()
-		);
+		return BasicInfoResponse.builder()
+			.name(basicInfoQueryDto.getName())
+			.imageUrl(builder().imageUrl)
+			.positionNames(positionNames)
+			.techStackInfos(techStackInfos)
+			.years(basicInfoQueryDto.getYears())
+			.email(basicInfoQueryDto.getEmail())
+			.introduction(basicInfoQueryDto.getIntroduction())
+			.viewCount(basicInfoQueryDto.getViewCount())
+			.build();
 	}
 }
