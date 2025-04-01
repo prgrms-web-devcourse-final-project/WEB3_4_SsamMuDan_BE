@@ -52,5 +52,4 @@ terraform/terraform.tfstate.backup
 terraform/.terraform
 terraform/.terraform.lock.hcl
 # Terraform 변수 파일 (AWS Access Key 등 민감 정보 포함)
-terraform/terraform.tfvars
-terraform/terraform.tfvars.json
+terraform/secrets.tf
