@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
  */
 public class CommunityRequest {
 
+	private CommunityRequest() {
+	}
+
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class CreateBoard {
@@ -31,7 +34,6 @@ public class CommunityRequest {
 		@Size(min = 1, max = 1000, message = "내용은 1자 이상 1000자 이하로 입력해주세요.")
 		private String content;
 
-		//todo : 관련 테스트 목적 생성된 생성자. 방법이 있다면 삭제 필요.
 		public CreateBoard(String category, String title, String content) {
 			this.category = category;
 			this.title = title;

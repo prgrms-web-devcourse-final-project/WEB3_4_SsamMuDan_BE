@@ -66,7 +66,6 @@ public class Community extends BaseEntity {
 		this.viewCount = viewCount;
 	}
 
-	//새로운 Community Board 정적 생성 팩토리 메서드
 	public static Community createNewCommunityBoard(
 			CommunityCategory communityCategory,
 			Member member,
