@@ -37,6 +37,7 @@ dependencies {
 
     // Querydsl
     implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
 
     // Jakarta Annotations API & Jakarta Persistence API
