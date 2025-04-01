@@ -1,5 +1,7 @@
 package ssammudan.cotree.model.review.reviewtype.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
@@ -17,4 +19,7 @@ import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
  */
 public interface TechEducationTypeRepository extends JpaRepository<TechEducationType, Long>,
 	TechEducationTypeRepositoryCustom {
+
+	Optional<TechEducationType> findByNameIgnoreCase(String name);
+
 }
