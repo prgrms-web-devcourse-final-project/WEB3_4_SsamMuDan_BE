@@ -36,8 +36,8 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql:11.5.0'
 
     // Querydsl
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
 
     // Jakarta Annotations API & Jakarta Persistence API
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
