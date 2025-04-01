@@ -24,6 +24,7 @@ import ssammudan.cotree.global.config.security.jwt.TokenBlacklistService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.SuccessCode;
+import ssammudan.cotree.model.member.member.entity.Member;
 
 @RestController
 @RequestMapping("/api/v1/member")
@@ -46,7 +47,8 @@ public class MemberController {
 	@Operation(summary = "로그인", description = "이메일과 비밀번호를 이용해 로그인을 진행합니다.")
 	public BaseResponse<Void> signIn(@Valid @RequestBody MemberSigninRequest signinRequest,
 		HttpServletResponse response) {
-		CustomUser signInMember = memberService.signIn(signinRequest);
+		Member member = memberService.signIn(signinRequest);
+		CustomUser signInMember = new CustomUser(member, null);
 		signInMember.setLogin();
 
 		accessTokenService.generateTokenToCookie(signInMember, response);

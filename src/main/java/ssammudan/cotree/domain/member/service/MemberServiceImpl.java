@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
-import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -36,7 +35,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public CustomUser signIn(MemberSigninRequest request) {
+	public Member signIn(MemberSigninRequest request) {
 		Member member = memberRepository.findByEmail(request.email())
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -44,6 +43,6 @@ public class MemberServiceImpl implements MemberService {
 			throw new GlobalException(ErrorCode.INVALID_PASSWORD);
 		}
 
-		return new CustomUser(member, null);
+		return member;
 	}
 }
