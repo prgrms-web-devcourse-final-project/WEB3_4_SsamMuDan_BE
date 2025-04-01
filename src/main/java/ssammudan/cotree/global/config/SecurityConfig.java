@@ -23,8 +23,9 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(POST, "/api/v1/community/board").authenticated()
-				.anyRequest().permitAll()
+			.requestMatchers(GET, "/actuator/health").permitAll()
+			.requestMatchers(POST, "/api/v1/community/board").authenticated()
+			.anyRequest().permitAll()
 		);
 
 		http.csrf(AbstractHttpConfigurer::disable);
