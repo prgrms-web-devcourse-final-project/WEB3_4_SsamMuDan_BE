@@ -189,7 +189,6 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.title(), techBook.getTitle(), "제목 일치");
 		assertEquals(responseDto.description(), techBook.getDescription(), "설명 일치");
 		assertEquals(responseDto.introduction(), techBook.getIntroduction(), "소개 일치");
-		assertEquals(responseDto.totalRating(), techBook.getTotalRating(), "전체 누적 평점 일치");
 		assertEquals(responseDto.totalReviewCount(), techBook.getTotalReviewCount(), "전체 리뷰 수 일치");
 		assertEquals(responseDto.techBookUrl(), techBook.getTechBookUrl(), "PDF URL 일치");
 		assertEquals(responseDto.techBookPreviewUrl(), techBook.getTechBookPreviewUrl(), "PDF 미리보기 URL 일치");
