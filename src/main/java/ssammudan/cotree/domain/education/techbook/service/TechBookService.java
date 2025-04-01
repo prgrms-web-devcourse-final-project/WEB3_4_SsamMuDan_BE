@@ -1,5 +1,8 @@
 package ssammudan.cotree.domain.education.techbook.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import ssammudan.cotree.domain.education.techbook.dto.TechBookRequest;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 
@@ -13,11 +16,14 @@ import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 28.    loadingKKamo21       Initial creation
+ * 25. 4. 1.     loadingKKamo21       findAllTechBooks() 추가
  */
 public interface TechBookService {
 
 	Long createTechBook(TechBookRequest.Create requestDto);
 
 	TechBookResponse.Detail findTechBookById(Long id);
+
+	Page<TechBookResponse.ListInfo> findAllTechBooks(String keyword, Pageable pageable);
 
 }

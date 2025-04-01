@@ -1,8 +1,3 @@
-INSERT INTO oauth_provider (name)
-VALUES ('KAKAO'),
-       ('NAVER'),
-       ('GOOGLE');
-
 INSERT INTO tech_stack (name, image_url)
 VALUES ('Java', 'https://worldvectorlogo.com/download/java.svg'),
        ('Kotlin', 'https://worldvectorlogo.com/download/kotlin-1.svg'),

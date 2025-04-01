@@ -1,10 +1,11 @@
 package ssammudan.cotree.model.education.supporter;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
+import jakarta.persistence.EntityManager;
 import ssammudan.cotree.global.annotation.RepositoryTest;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
@@ -22,6 +23,7 @@ import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntr
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 31.    loadingKKamo21       Initial creation
+ * 25. 4. 1.     loadingKKamo21       TestEntityManager -> EntityManager 변경, @BeforeEach 메서드 추가
  */
 @ActiveProfiles("test")
 @RepositoryTest
@@ -33,13 +35,24 @@ public abstract class DataJpaTestSupporter {
 		.build();
 
 	@Autowired
-	protected TestEntityManager entityManager;
+	protected EntityManager entityManager;
 
 	@Autowired
 	protected TechBookRepository techBookRepository;
 
 	@Autowired
 	protected EducationLevelRepository educationLevelRepository;
+
+	@BeforeEach
+	protected void setup() {
+		entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();    //H2 DB 외래키 제약 해제
+
+		entityManager.createNativeQuery("TRUNCATE TABLE member RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE education_level RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE tech_book RESTART IDENTITY").executeUpdate();
+
+		entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();    //H2 DB 외래키 제약 설정
+	}
 
 	@AfterEach
 	protected void clearEntityContext() {
