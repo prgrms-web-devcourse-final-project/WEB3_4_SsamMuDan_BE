@@ -1,27 +1,18 @@
-variable "aws_region" {
-  description = "AWS Region"
+variable "region" {
+  description = "region"
   default     = "ap-northeast-2"
 }
 
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
-
-variable "vpc_cidr" {
-  description = "VPC CIDR Block"
-  default     = "10.0.0.0/16"
+variable "prefix" {
+  description = "Prefix for all resources"
+  default     = "Team15"
+}
+variable "app_1_domain" {
+  description = "app-1-domain"
+  default     = "api.cotree.site"
 }
 
-variable "public_subnet_cidr" {
-  description = "Public Subnet CIDR"
-  default     = "10.0.1.0/24"
-}
-
-variable "private_subnet_cidr" {
-  description = "Private Subnet CIDR"
-  default     = "10.0.2.0/24"
-}
-
-variable "instance_type" {
-  description = "EC2 Instance Type"
-  default     = "t3.small"
+variable "team_tag" {
+  description = "team tag"
+  default     = "devcos4-team15"
 }
