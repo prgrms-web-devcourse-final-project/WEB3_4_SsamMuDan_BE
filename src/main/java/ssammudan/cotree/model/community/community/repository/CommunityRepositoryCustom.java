@@ -1,28 +1,26 @@
-package ssammudan.cotree.domain.community.service;
+package ssammudan.cotree.model.community.community.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import ssammudan.cotree.domain.community.dto.CommunityRequest;
 import ssammudan.cotree.domain.community.dto.CommunityResponse;
 import ssammudan.cotree.domain.community.type.SearchBoardCategory;
 import ssammudan.cotree.domain.community.type.SearchBoardSort;
-import ssammudan.cotree.global.response.PageResponse;
 
 /**
- * PackageName : ssammudan.cotree.domain.community.service
- * FileName    : CommunityService
+ * PackageName : ssammudan.cotree.model.community.community.repository
+ * FileName    : CommunityRepositoryCustom
  * Author      : Baekgwa
- * Date        : 2025-03-28
- * Description : Community domain service layer interface
+ * Date        : 2025-04-01
+ * Description : 
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 2025-03-28     Baekgwa               Initial creation
+ * 2025-04-01     Baekgwa               Initial creation
  */
-public interface CommunityService {
-	void createNewBoard(final CommunityRequest.CreateBoard createBoard, final String memberId);
+public interface CommunityRepositoryCustom {
 
-	PageResponse<CommunityResponse.BoardListDetail> getBoardList(
+	Page<CommunityResponse.BoardListDetail> findBoardList(
 			final Pageable pageable,
 			final SearchBoardSort sort,
 			final SearchBoardCategory category,

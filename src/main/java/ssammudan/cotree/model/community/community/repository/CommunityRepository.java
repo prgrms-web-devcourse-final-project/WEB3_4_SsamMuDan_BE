@@ -15,5 +15,5 @@ import ssammudan.cotree.model.community.community.entity.Community;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
  */
-public interface CommunityRepository extends JpaRepository<Community, Long> {
+public interface CommunityRepository extends JpaRepository<Community, Long>, CommunityRepositoryCustom {
 }

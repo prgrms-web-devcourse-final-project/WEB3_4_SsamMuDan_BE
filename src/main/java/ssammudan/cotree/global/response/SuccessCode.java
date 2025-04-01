@@ -15,6 +15,7 @@ public enum SuccessCode {
 
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 완료했습니다."),
+	TECH_BOOK_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechBook 목록 조회를 완료했습니다."),
 
 	//Payment
 
@@ -26,6 +27,7 @@ public enum SuccessCode {
 
 	//Community
 	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
+	COMMUNITY_BOARD_SEARCH_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 조회 성공"),
 
 	//S3 Upload
 	S3_FILE_UPLOAD_SUCCESS(HttpStatus.CREATED, "201", "파일 업로드 성공."),
