@@ -99,8 +99,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private String getAccessToken(HttpServletRequest request) {
-		String authorization = request.getHeader("Authorization");
-		return authorization == null || !authorization.startsWith("Bearer ") ? null :
-			authorization.substring("Bearer ".length());
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if (cookie.getName().equals("access_token")) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
 	}
 }

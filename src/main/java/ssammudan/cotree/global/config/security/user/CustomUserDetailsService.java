@@ -48,7 +48,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public CustomUser loadUserByAccessToken(String accessToken) {
 		try {
 			Claims claimsFromToken = accessTokenService.getClaimsFromToken(accessToken);
-			String id = claimsFromToken.getId();
+			String id = claimsFromToken.get("mid", String.class);
 			Member member = memberRepository.findById(id)
 				.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 			return new CustomUser(member, null);
