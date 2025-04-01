@@ -77,7 +77,7 @@ public abstract class SpringBootTestSupporter {
 	 */
 	@Autowired
 	protected CommunityService communityService;
-	@Autowired
+  @Autowired
 	protected TechBookService techBookService;
 
 	/**
