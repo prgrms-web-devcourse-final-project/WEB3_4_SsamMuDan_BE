@@ -44,7 +44,6 @@ public class SecurityConfig {
 			.sessionManagement(
 				session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안함 (JWT 방식)
 
-		http.csrf(AbstractHttpConfigurer::disable);
 			// ✅ 필터 설정 (JWT 인증 필터 → UsernamePasswordAuthenticationFilter)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 

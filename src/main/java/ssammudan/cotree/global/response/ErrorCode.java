@@ -11,8 +11,9 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorCode {
 
 	//Member: 0001 ~ 1000
-	DUPLICATED_MEMBER(HttpStatus.BAD_REQUEST, "0001", "이미 존재하는 회원입니다."),
-	NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
+	MEMBER_DUPLICATED(HttpStatus.BAD_REQUEST, "0001", "이미 존재하는 회원입니다."),
+	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
+	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "0003", "비밀번호가 일치하지 않습니다."),
 
 	//Education: 1001 ~ 2000
 	EDUCATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "학습 카테고리를 찾을 수 없습니다."),
