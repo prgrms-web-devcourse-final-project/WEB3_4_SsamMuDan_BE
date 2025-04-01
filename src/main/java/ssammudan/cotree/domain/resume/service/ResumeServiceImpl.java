@@ -1,10 +1,11 @@
 package ssammudan.cotree.domain.resume.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.resume.dto.BasicInfoResponse;
 import ssammudan.cotree.domain.resume.dto.CareerInfoResponse;
@@ -51,6 +52,7 @@ public class ResumeServiceImpl implements ResumeService {
 	private final CareerRepository careerRepository;
 	private final PortfolioRepository portfolioRepository;
 	private final MemberRepository memberRepository;
+	private final ResumeViewCountBuffer resumeViewCountBuffer;
 
 	//todo 추후에 insert 작업 batchUpdate() 로 교체해서 테스트 전후 차이 비교 예정
 	@Transactional
@@ -84,7 +86,7 @@ public class ResumeServiceImpl implements ResumeService {
 		return ResumeCreateResponse.from(savedResume);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public ResumeDetailResponse detail(Long id) {
 		Resume resume = resumeRepository.findById(id)
@@ -112,7 +114,15 @@ public class ResumeServiceImpl implements ResumeService {
 				PortfolioInfoResponse.of(portfolio, getTechStackInfos(portfolio)))
 			.toList();
 
+		// 조회수 저장
+		resumeViewCountBuffer.increaseViewCount(id);
+
 		return ResumeDetailResponse.create(basicInfoResponse, careerInfoResponses, portfolioInfoResponses);
+	}
+
+	@Transactional
+	public void bulkViewCount(Map<Long, Integer> viewCountData) {
+		resumeRepository.bulkUpdateViewCount(viewCountData);
 	}
 
 	private List<TechStack> getTechStackInfos(Career career) {
