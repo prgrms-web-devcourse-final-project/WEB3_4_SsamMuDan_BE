@@ -55,4 +55,29 @@ public class MemberController {
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNIN_SUCCESS);
 	}
 
+	@GetMapping("/signout")
+	@Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
+	public BaseResponse<Void> signOut(HttpServletRequest request, HttpServletResponse response) {
+		String refreshToken = getRefreshToken(request);
+		long remainingTime = refreshTokenService.getClaimsFromToken(refreshToken)
+			.getExpiration().getTime() - new Date().getTime();
+
+		tokenBlacklistService.addToBlacklist(refreshToken, remainingTime);
+
+		response.addHeader("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
+		response.addHeader("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
+		return BaseResponse.success(SuccessCode.MEMBER_SIGNOUT_SUCCESS);
+	}
+
+	private String getRefreshToken(HttpServletRequest request) {
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if (cookie.getName().equals("refresh_token")) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
 }
