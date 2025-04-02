@@ -19,7 +19,9 @@ public enum ErrorCode {
 	EDUCATION_LEVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "1002", "학습 난이도를 찾을 수 없습니다."),
 	TECH_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "1003", "TechBook을 찾을 수 없습니다."),
 	TECH_TUBE_NOT_FOUND(HttpStatus.NOT_FOUND, "1004", "TechTube을 찾을 수 없습니다."),
-	TECH_EDUCATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "1005", "TechEducation 리뷰를 찾을 수 없습니다."),
+	TECH_EDUCATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "1005", "TechEducation 카테고리를 찾을 수 없습니다."),
+	TECH_EDUCATION_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "1006", "TechEducation 리뷰를 찾을 수 없습니다."),
+	TECH_EDUCATION_REVIEW_DUPLICATED(HttpStatus.BAD_REQUEST, "1007", "작성된 리뷰가 존재합니다."),
 
 	//Payment: 2001 ~ 3000
 
