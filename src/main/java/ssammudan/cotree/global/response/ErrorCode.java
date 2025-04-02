@@ -39,14 +39,16 @@ public enum ErrorCode {
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
 
-	//${}: 7001 ~ 8000
+	//Like: 7001 ~ 8000
+	LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "7001", "좋아요 정보를 찾을 수 없습니다."),
+	LIKE_DUPLICATED(HttpStatus.BAD_REQUEST, "7002", "이미 좋아요한 컨텐츠입니다."),
 
 	//${}: 8001 ~ 9000
 
 	//Common: 9001 ~ 9999
 	NOT_FOUND_URL(HttpStatus.NOT_FOUND, "9001", "요청하신 URL 을 찾을 수 없습니다."),
 	NOT_SUPPORTED_METHOD(HttpStatus.METHOD_NOT_ALLOWED, "9002", "요청 메서드를 찾을 수 없습니다."),
-	VALIDATION_FAIL_ERROR(HttpStatus.BAD_REQUEST, "9003", ""),
+	VALIDATION_FAIL_ERROR(HttpStatus.BAD_REQUEST, "9003", "올바르지 않은 입력값입니다."),
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "9004", "올바르지 않은 입력값입니다."),
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "9005", "올바르지 않은 HTTP 메서드입니다."),
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "9006", "값을 찾지 못했습니다."),
