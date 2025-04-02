@@ -32,7 +32,8 @@ public enum SuccessCode {
 	//S3 Upload
 	S3_FILE_UPLOAD_SUCCESS(HttpStatus.CREATED, "201", "파일 업로드 성공."),
 
-	//${}: 7001 ~ 8000
+	//Comment:
+	COMMENT_CREATE_SUCCESS(HttpStatus.CREATED, "201", "댓글 작성 성공"),
 
 	//${}: 8001 ~ 9000
 
