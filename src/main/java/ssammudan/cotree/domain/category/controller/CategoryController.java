@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.category.dto.PositionResponse;
 import ssammudan.cotree.domain.category.dto.TechStackResponse;
 import ssammudan.cotree.domain.category.service.CategoryService;
 import ssammudan.cotree.global.response.BaseResponse;
@@ -36,6 +37,12 @@ public class CategoryController {
 	@GetMapping("/skill")
 	@Operation(summary = "기술 스택 전체 조회", description = "기술 스택 전체를 조회합니다.")
 	public BaseResponse<List<TechStackResponse>> findSkills() {
-		return BaseResponse.success(SuccessCode.TECH_STACK_FIND_SUCCESS, categoryService.findAll());
+		return BaseResponse.success(SuccessCode.TECH_STACK_FIND_SUCCESS, categoryService.findSkills());
+	}
+
+	@GetMapping("/position")
+	@Operation(summary = "개발 직무 전체 조회", description = "개발 직무 전체를 조회합니다.")
+	public BaseResponse<List<PositionResponse>> findPositions() {
+		return BaseResponse.success(SuccessCode.POSITION_FIND_SUCCESS, categoryService.findPositions());
 	}
 }
