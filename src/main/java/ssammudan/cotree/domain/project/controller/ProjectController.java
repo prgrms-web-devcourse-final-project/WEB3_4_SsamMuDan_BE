@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,8 @@ public class ProjectController {
 	private final ProjectServiceImpl projectServiceImpl;
 
 	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	@Operation(summary = "프로젝트 생성")
+	@Operation(summary = "프로젝트 생성", description = "새로운 프로젝트를 생성합니다.")
+	@ApiResponse(responseCode = "201", description = "프로젝트 생성 성공")
 	public BaseResponse<ProjectCreateResponse> createProject(
 		@RequestPart("request") @Valid ProjectCreateRequest request,
 		@RequestPart(value = "projectImageUrl", required = false) MultipartFile projectImage) {
