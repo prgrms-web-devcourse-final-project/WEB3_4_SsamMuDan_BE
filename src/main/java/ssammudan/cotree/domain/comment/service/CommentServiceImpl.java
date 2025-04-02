@@ -53,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
 
 	private Member findCommentAuthor(String memberId) {
 		return memberRepository.findById(memberId)
-				.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+				.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
 	private Comment findParentComment(Long parentCommentId) {
