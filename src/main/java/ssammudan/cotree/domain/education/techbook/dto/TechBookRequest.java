@@ -19,7 +19,7 @@ import ssammudan.cotree.model.education.level.type.EducationLevelType;
  * 25. 3. 28.    loadingKKamo21       Initial creation
  */
 @Schema(description = "TechBook 요청 DTO")
-class TechBookRequest {
+public class TechBookRequest {
 
 	@Schema(description = "TechBook 생성 요청 DTO")
 	public record Create(
