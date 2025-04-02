@@ -77,7 +77,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		// 허용할 오리진 설정
 		configuration.setAllowedOrigins(
-			List.of("http://localhost:3000")); // 프론트 엔드
+			List.of(frontendConfig.getFrontendUrl())); // 프론트 엔드
 		// 허용할 HTTP 메서드 설정
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 프론트 엔드 허용 메서드
 		// 자격 증명 허용 설정
