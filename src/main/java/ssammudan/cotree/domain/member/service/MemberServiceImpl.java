@@ -37,10 +37,10 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public Member signIn(MemberSigninRequest request) {
 		Member member = memberRepository.findByEmail(request.email())
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_UNAUTHORIZED));
 
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-			throw new GlobalException(ErrorCode.INVALID_PASSWORD);
+			throw new GlobalException(ErrorCode.MEMBER_UNAUTHORIZED);
 		}
 
 		return member;
