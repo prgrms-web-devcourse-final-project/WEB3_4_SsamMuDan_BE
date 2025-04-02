@@ -23,6 +23,7 @@ public enum SuccessCode {
 
 	//Recruitment
 	RESUME_CREATE_SUCCESS(HttpStatus.CREATED, "201", "이력서 작성을 성공하였습니다."),
+	RESUME_DETAIL_SUCCESS(HttpStatus.OK, "200", "이력서 상세 조회를 성공하였습니다."),
 
 	//Project
 
