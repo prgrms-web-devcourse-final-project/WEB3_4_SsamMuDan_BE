@@ -51,6 +51,7 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	private EducationLevel createEducationLevel() {
 		return fixtureMonkey.giveMeBuilder(EducationLevel.class)
 			.instantiate(Instantiator.factoryMethod("create"))
+			.set("name", Arbitraries.of("입문", "초급", "중급"))
 			.sample();
 	}
 
