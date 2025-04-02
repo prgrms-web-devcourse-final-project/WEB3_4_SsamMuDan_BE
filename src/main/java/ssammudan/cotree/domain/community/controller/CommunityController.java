@@ -5,6 +5,7 @@ import java.security.Principal;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,5 +74,17 @@ public class CommunityController {
 				communityService.getBoardList(pageable, sort, category, keyword, memberId);
 
 		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_SEARCH_SUCCESS, boardList);
+	}
+
+	@GetMapping("/board/{boardId}")
+	@Operation(summary = "커뮤니티 글 상세 조회")
+	@SecurityRequirement(name = "bearerAuth")
+	public BaseResponse<CommunityResponse.BoardDetail> getBoardDetail(
+			@PathVariable(value = "boardId") Long boardId,
+			Principal principal
+	) {
+		String memberId = (principal != null) ? principal.getName() : null;
+		CommunityResponse.BoardDetail boardDetail = communityService.getBoardDetail(boardId, memberId);
+		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_DETAIL_SEARCH_SUCCESS, boardDetail);
 	}
 }
