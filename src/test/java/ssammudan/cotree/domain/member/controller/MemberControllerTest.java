@@ -24,6 +24,7 @@ import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
 import ssammudan.cotree.global.config.security.jwt.TokenBlacklistService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
+import ssammudan.cotree.infra.frontend.FrontendConfig;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
@@ -40,7 +41,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  * 25. 3. 28.     hc               Initial creation
  */
 @WebMvcTest(MemberController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, FrontendConfig.class})
 class MemberControllerTest {
 
 	@Autowired
@@ -66,6 +67,9 @@ class MemberControllerTest {
 
 	@MockitoBean
 	private CustomAccessDeniedHandler accessDeniedHandler;
+
+	@Autowired
+	private FrontendConfig frontendConfig;
 
 	@Autowired
 	private ObjectMapper objectMapper;

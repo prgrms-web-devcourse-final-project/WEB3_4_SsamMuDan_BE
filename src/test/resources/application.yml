@@ -5,7 +5,8 @@ spring:
     import:
       - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_db.yml
       - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_auth.yml
+      - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_server.yml
   profiles:
     group:
-      test: [ "test_auth", "test_db" ]
+      test: [ "test_auth", "test_db", "test_server" ]
     active: test
