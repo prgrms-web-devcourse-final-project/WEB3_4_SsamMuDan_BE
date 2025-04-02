@@ -1,4 +1,4 @@
-package ssammudan.cotree.global.config;
+package ssammudan.cotree.infra.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
