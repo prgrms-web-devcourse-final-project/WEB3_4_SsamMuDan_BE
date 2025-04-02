@@ -13,3 +13,4 @@ spring:
       dev: [ "dev_auth", "dev_db", "dev_server" ,"dev_docs" ]
       prod: [ "prod_auth", "prod_db", "prod_server", "prod_docs" ]
     active: dev
+
