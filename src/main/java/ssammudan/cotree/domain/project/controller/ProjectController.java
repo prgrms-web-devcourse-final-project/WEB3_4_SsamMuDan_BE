@@ -41,7 +41,7 @@ public class ProjectController {
 	@ApiResponse(responseCode = "201", description = "프로젝트 생성 성공")
 	public BaseResponse<ProjectCreateResponse> createProject(
 		@RequestPart("request") @Valid ProjectCreateRequest request,
-		@RequestPart(value = "projectImageUrl", required = false) MultipartFile projectImage) {
+		@RequestPart(value = "projectImage", required = false) MultipartFile projectImage) {
 		//todo: 현재 회원 정보 하드 코딩 -> 로그인한 member 넘기게 수정 예정
 		ProjectCreateResponse response = projectServiceImpl.create(request, projectImage, "1");
 
