@@ -50,7 +50,7 @@ public class CommunityController {
 			@Valid @RequestBody CommunityRequest.CreateBoard createBoard,
 			@AuthenticationPrincipal CustomUser customUser
 	) {
-		String memberId = customUser.getName();
+		String memberId = customUser.getId();
 
 		communityService.createNewBoard(createBoard, memberId);
 		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_CREATE_SUCCESS);
