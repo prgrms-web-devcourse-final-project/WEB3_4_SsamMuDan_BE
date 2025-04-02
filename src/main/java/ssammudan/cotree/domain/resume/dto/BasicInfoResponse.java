@@ -33,7 +33,7 @@ public record BasicInfoResponse(
 		List<TechStackInfo> techStackInfos) {
 		return BasicInfoResponse.builder()
 			.name(basicInfoQueryDto.getName())
-			.imageUrl(builder().imageUrl)
+			.imageUrl(basicInfoQueryDto.getImageUrl())
 			.positionNames(positionNames)
 			.techStackInfos(techStackInfos)
 			.years(basicInfoQueryDto.getYears())
