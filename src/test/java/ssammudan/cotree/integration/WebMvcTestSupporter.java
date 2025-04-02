@@ -1,6 +1,7 @@
 package ssammudan.cotree.integration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -10,8 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ssammudan.cotree.domain.education.techbook.controller.TechBookController;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
-import ssammudan.cotree.global.config.SecurityConfig;
 import ssammudan.cotree.global.config.TestWebConfig;
+import ssammudan.cotree.global.config.security.exception.CustomAccessDeniedHandler;
+import ssammudan.cotree.global.config.security.exception.CustomAuthenticationEntryPoint;
+import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
+import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
+import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
@@ -32,7 +37,8 @@ import com.navercorp.fixturemonkey.mockito.plugin.MockitoPlugin;
  * 25. 3. 31.    loadingKKamo21       Initial creation
  */
 @WebMvcTest({TechBookController.class})
-@Import({SecurityConfig.class, TestWebConfig.class})
+@Import({TestWebConfig.class})
+@AutoConfigureMockMvc(addFilters = false)  // Security 비활성화
 public abstract class WebMvcTestSupporter {
 
 	protected final FixtureMonkey entityFixtureMonkey = FixtureMonkey.builder()
@@ -56,4 +62,18 @@ public abstract class WebMvcTestSupporter {
 	@MockitoBean
 	protected TechBookService techBookService;
 
+	@MockitoBean
+	private AccessTokenService accessTokenService;
+
+	@MockitoBean
+	private RefreshTokenService refreshTokenService;
+
+	@MockitoBean
+	private CustomUserDetailsService userDetailsService;
+
+	@MockitoBean
+	private CustomAccessDeniedHandler accessDeniedHandler;
+
+	@MockitoBean
+	private CustomAuthenticationEntryPoint authenticationEntryPoint;
 }
