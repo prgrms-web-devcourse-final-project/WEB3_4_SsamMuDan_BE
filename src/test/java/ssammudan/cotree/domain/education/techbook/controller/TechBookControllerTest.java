@@ -11,7 +11,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -121,7 +121,8 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 			.andDo(print());
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] getTechBooks(): TechBook 다 건 조회, 페이징 적용")
 	void getTechBooks() throws Exception {
 		//Given

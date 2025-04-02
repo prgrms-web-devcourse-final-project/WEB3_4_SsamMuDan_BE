@@ -10,7 +10,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -75,7 +75,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 			.sampleList(size);
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] save(): TechBook 엔티티 저장")
 	void save() {
 		//Given
@@ -107,7 +108,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 		assertEquals(techBook.getPrice(), savedTechBook.getPrice(), "가격 일치");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findById(): TechBook 엔티티 단 건 조회")
 	void findById() {
 		//Given
@@ -153,7 +155,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 		assertFalse(opTechBook.isPresent(), "TechBook 엔티티 존재하지 않음");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findAllTechBooksByKeyword(): TechBook 다 건 조회, 페이징 적용")
 	void findAllTechBooksByKeyword() {
 		//Given

@@ -28,6 +28,7 @@ public enum SuccessCode {
 	//Community
 	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
 	COMMUNITY_BOARD_SEARCH_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 조회 성공"),
+	COMMUNITY_BOARD_DETAIL_SEARCH_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 상세 조회 성공"),
 
 	//S3 Upload
 	S3_FILE_UPLOAD_SUCCESS(HttpStatus.CREATED, "201", "파일 업로드 성공."),
@@ -37,7 +38,8 @@ public enum SuccessCode {
 	//${}: 8001 ~ 9000
 
 	//Common: 9001 ~ 9999
-	;
+	TECH_STACK_FIND_SUCCESS(HttpStatus.OK, "200", "기술 스택 조회 성공"),
+	POSITION_FIND_SUCCESS(HttpStatus.OK, "200", "개발 직무 조회 성공");
 
 	private final HttpStatus status;
 	private final String code;
