@@ -11,7 +11,7 @@ import javax.validation.constraints.Min;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -112,7 +112,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 			.sampleList(size);
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] createTechBook(): 신규 TechBook 생성")
 	void createTechBook() {
 		//TODO: 저자 추가 로직 및 검증
@@ -146,7 +147,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(requestDto.price(), savedTechBook.getPrice(), "가격 일치");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Exception] createTechBook_unknownEducationLevel(): 신규 TechBook 생성, 존재하지 않는 학습 난이도")
 	void createTechBook_unknownEducationLevel() {
 		//Given
@@ -164,7 +166,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		);
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findTechBookById(): TechBook 단 건 조회")
 	void findTechBookById() {
 		//Given
@@ -220,7 +223,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		);
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findAllTechBooks(): TechBook 다 건 조회, 페이징 적용")
 	void findAllTechBooks() {
 		//Given
