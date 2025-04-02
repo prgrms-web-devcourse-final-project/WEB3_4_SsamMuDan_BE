@@ -53,7 +53,7 @@ public class TechBookServiceImpl implements TechBookService {
 			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
 
 		//입력된 학습 난이도 확인
-		EducationLevel educationLevel = educationLevelRepository.findByNameIgnoreCase(requestDto.educationLevel())
+		EducationLevel educationLevel = educationLevelRepository.findById(requestDto.educationLevel().getId())
 			.orElseThrow(() -> new GlobalException(ErrorCode.EDUCATION_LEVEL_NOT_FOUND));
 
 		//TODO: 썸네일 생성 및 PDF 파일 저장 등 로직 확인 필요
