@@ -1,6 +1,7 @@
 package ssammudan.cotree.domain.resume.dto.query;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 /**
@@ -16,6 +17,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
+@Builder
 public class TechStackInfo {
 	String name;
 	String imageUrl;

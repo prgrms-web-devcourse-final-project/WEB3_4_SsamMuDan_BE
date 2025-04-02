@@ -37,7 +37,7 @@ public enum SuccessCode {
 	//${}: 8001 ~ 9000
 
 	//Common: 9001 ~ 9999
-	;
+	TECH_STACK_FIND_SUCCESS(HttpStatus.OK, "200", "기술 스택 조회 성공");
 
 	private final HttpStatus status;
 	private final String code;
