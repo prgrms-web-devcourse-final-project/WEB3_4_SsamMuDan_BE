@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.review.review.service;
+package ssammudan.cotree.domain.review.service;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

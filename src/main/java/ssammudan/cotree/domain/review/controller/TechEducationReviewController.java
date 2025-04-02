@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.review.review.controller;
+package ssammudan.cotree.domain.review.controller;
 
 import java.util.UUID;
 
@@ -17,9 +17,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.review.review.dto.TechEducationReviewRequest;
-import ssammudan.cotree.domain.review.review.dto.TechEducationReviewResponse;
-import ssammudan.cotree.domain.review.review.service.TechEducationReviewService;
+import ssammudan.cotree.domain.review.dto.TechEducationReviewRequest;
+import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
+import ssammudan.cotree.domain.review.service.TechEducationReviewService;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;

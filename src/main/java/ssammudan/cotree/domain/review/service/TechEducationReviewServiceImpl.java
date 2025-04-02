@@ -1,12 +1,12 @@
-package ssammudan.cotree.domain.review.review.service;
+package ssammudan.cotree.domain.review.service;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.review.review.dto.TechEducationReviewRequest;
-import ssammudan.cotree.domain.review.review.dto.TechEducationReviewResponse;
+import ssammudan.cotree.domain.review.dto.TechEducationReviewRequest;
+import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;

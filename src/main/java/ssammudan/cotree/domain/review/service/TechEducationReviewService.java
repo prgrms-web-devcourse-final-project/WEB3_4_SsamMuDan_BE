@@ -1,9 +1,9 @@
-package ssammudan.cotree.domain.review.review.service;
+package ssammudan.cotree.domain.review.service;
 
 import org.springframework.data.domain.Pageable;
 
-import ssammudan.cotree.domain.review.review.dto.TechEducationReviewRequest;
-import ssammudan.cotree.domain.review.review.dto.TechEducationReviewResponse;
+import ssammudan.cotree.domain.review.dto.TechEducationReviewRequest;
+import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.global.response.PageResponse;
 
 /**

@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.review.review.dto;
+package ssammudan.cotree.domain.review.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
