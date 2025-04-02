@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -114,9 +115,11 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	@RepeatedTest(10)
 	@DisplayName("[Success] createTechBook(): 신규 TechBook 생성")
 	void createTechBook() {
-		//TODO: 저자 추가 로직 및 검증
 		//Given
 		setup();
+
+		Member writer = createMember();
+		em.persist(writer);
 
 		EducationLevel educationLevel = createEducationLevel();
 		em.persist(educationLevel);
@@ -126,7 +129,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 			.sample();
 
 		//When
-		Long id = techBookService.createTechBook(requestDto);
+		Long id = techBookService.createTechBook(writer.getId(), requestDto);
 		clearEntityContext();
 
 		//Then
@@ -149,17 +152,45 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	@DisplayName("[Exception] createTechBook_unknownEducationLevel(): 신규 TechBook 생성, 존재하지 않는 학습 난이도")
 	void createTechBook_unknownEducationLevel() {
 		//Given
+		setup();
+
+		Member writer = createMember();
+		em.persist(writer);
+
 		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.Create.class);
 
 		//When
 
 		//Then
 		GlobalException globalException = assertThrows(GlobalException.class,
-			() -> techBookService.createTechBook(requestDto), "GlobalException 발생");
+			() -> techBookService.createTechBook(writer.getId(), requestDto), "GlobalException 발생");
 
 		assertAll(
 			() -> assertNotNull(globalException, "예외 존재"),
 			() -> assertEquals(globalException.getErrorCode(), ErrorCode.EDUCATION_LEVEL_NOT_FOUND, "에러 코드 일치")
+		);
+	}
+
+	@RepeatedTest(10)
+	@DisplayName("[Exception] createTechBook_unknownWriter(): 신규 TechBook 생성, 존재하지 않는 회원")
+	void createTechBook_unknownWriter() {
+		//Given
+		setup();
+
+		EducationLevel educationLevel = createEducationLevel();
+		em.persist(educationLevel);
+
+		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.Create.class);
+
+		//When
+
+		//Then
+		GlobalException globalException = assertThrows(GlobalException.class,
+			() -> techBookService.createTechBook(UUID.randomUUID().toString(), requestDto), "GlobalException 발생");
+
+		assertAll(
+			() -> assertNotNull(globalException, "예외 존재"),
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.NOT_FOUND_MEMBER, "에러 코드 일치")
 		);
 	}
 
