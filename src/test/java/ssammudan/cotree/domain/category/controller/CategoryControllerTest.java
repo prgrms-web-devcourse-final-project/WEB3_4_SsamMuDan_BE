@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.category.CategoryTestHelper;
-import ssammudan.cotree.domain.category.service.CategoryService;
 import ssammudan.cotree.infra.s3.S3Uploader;
 
 /**
@@ -33,7 +32,7 @@ import ssammudan.cotree.infra.s3.S3Uploader;
  * 2025. 4. 2.     kwak               Initial creation
  */
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 @Profile("test")
 class CategoryControllerTest {
