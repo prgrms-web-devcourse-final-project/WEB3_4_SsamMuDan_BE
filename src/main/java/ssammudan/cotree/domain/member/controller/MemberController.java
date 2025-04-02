@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.member.controller;
 
 import java.util.Date;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,8 +52,17 @@ public class MemberController {
 		CustomUser signInMember = new CustomUser(member, null);
 		signInMember.setLogin();
 
-		accessTokenService.generateTokenToCookie(signInMember, response);
-		refreshTokenService.generateTokenToCookie(signInMember, response);
+		// accessTokenService.generateTokenToCookie(signInMember, response);
+		// refreshTokenService.generateTokenToCookie(signInMember, response);
+
+		String accessToken = accessTokenService.generateToken(signInMember);
+		long accessTokenExpirationSeconds = accessTokenService.getExpirationSeconds(); //accessTokenExpiration.getTime() - new Date().getTime();
+
+		String refreshToken = refreshTokenService.generateToken(signInMember);
+		long refreshTokenExpirationSeconds = refreshTokenService.getExpirationSeconds();//refreshTokenExpiration.getTime() - new Date().getTime();
+
+		setValueToCookie("access_token", accessToken, accessTokenExpirationSeconds, response);
+		setValueToCookie("refresh_token", refreshToken, refreshTokenExpirationSeconds, response);
 
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNIN_SUCCESS);
 	}
@@ -60,7 +70,7 @@ public class MemberController {
 	@GetMapping("/signout")
 	@Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
 	public BaseResponse<Void> signOut(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = getRefreshToken(request);
+		String refreshToken = getValueInCookie("refresh_token", request);
 		long remainingTime = refreshTokenService.getClaimsFromToken(refreshToken)
 			.getExpiration().getTime() - new Date().getTime();
 
@@ -71,15 +81,26 @@ public class MemberController {
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNOUT_SUCCESS);
 	}
 
-	private String getRefreshToken(HttpServletRequest request) {
+	private String getValueInCookie(String value, HttpServletRequest request) {
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
-				if (cookie.getName().equals("refresh_token")) {
+				if (cookie.getName().equals(value)) {
 					return cookie.getValue();
 				}
 			}
 		}
 		return null;
+	}
+
+	private void setValueToCookie(String name, String value, long maxAge, HttpServletResponse response) {
+		ResponseCookie cookie = ResponseCookie.from(name, value)
+			.path("/")
+			.httpOnly(true) // XSS 방지
+			.secure(true) // SameSite=None;은 Secure=true;가 필수(정책)
+			.sameSite("None") // 모든 도메인의 요청에서 쿠키 전송 (Lax는 GET 요청에 대해서만 쿠키 전송, Strict는 동일 출처에서만)
+			.maxAge(maxAge)
+			.build();
+		response.addHeader("Set-Cookie", cookie.toString());
 	}
 
 }

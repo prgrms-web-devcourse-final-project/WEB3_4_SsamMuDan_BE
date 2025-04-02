@@ -14,6 +14,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 
 /**
@@ -43,6 +44,7 @@ public class AccessTokenService {
 		this.expirationSeconds *= 1000; // ms -> s(초)
 	}
 
+	@Getter
 	@Value("${custom.jwt.accessToken.expirationSeconds}")
 	private long expirationSeconds;
 
@@ -79,6 +81,7 @@ public class AccessTokenService {
 			.getPayload();
 	}
 
+	// Test에 적합하지 않음
 	public void generateTokenToCookie(CustomUser customUser, HttpServletResponse response) throws JwtException {
 		String accessToken = generateToken(customUser);
 
