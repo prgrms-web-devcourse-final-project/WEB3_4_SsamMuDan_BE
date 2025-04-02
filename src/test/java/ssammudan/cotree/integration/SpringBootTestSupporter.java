@@ -13,8 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.community.service.CommunityService;
-import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
+import ssammudan.cotree.domain.review.review.service.TechEducationReviewService;
+import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.integration.factory.CommunityDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
@@ -77,8 +78,10 @@ public abstract class SpringBootTestSupporter {
 	 */
 	@Autowired
 	protected CommunityService communityService;
-  @Autowired
+	@Autowired
 	protected TechBookService techBookService;
+	@Autowired
+	protected TechEducationReviewService techEducationReviewService;
 
 	/**
 	 * MockBean
