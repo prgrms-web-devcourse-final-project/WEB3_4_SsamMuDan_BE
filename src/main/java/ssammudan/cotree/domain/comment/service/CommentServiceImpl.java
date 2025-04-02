@@ -13,6 +13,8 @@ import ssammudan.cotree.model.community.community.entity.Community;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
+import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
+import ssammudan.cotree.model.recruitment.resume.resume.repository.ResumeRepository;
 
 /**
  * PackageName : ssammudan.cotree.domain.comment.service
@@ -32,39 +34,60 @@ public class CommentServiceImpl implements CommentService {
 	private final CommentRepository commentRepository;
 	private final MemberRepository memberRepository;
 	private final CommunityRepository communityRepository;
+	private final ResumeRepository resumeRepository;
 
 	@Transactional
 	@Override
 	public void postNewComment(final CommentRequest.PostComment postComment, final String memberId) {
+		// 댓글 작성자 조회
+		Member commentAuthor = findCommentAuthor(memberId);
 
-		Member commentAuthor = memberRepository.findById(memberId)
+		// 부모 댓글 조회
+		Comment parentComment = findParentComment(postComment.getCommentId());
+
+		// 카테고리별 댓글 생성 및 저장
+		Comment newComment = createCommentByCategory(postComment, commentAuthor, parentComment);
+
+		commentRepository.save(newComment);
+	}
+
+	private Member findCommentAuthor(String memberId) {
+		return memberRepository.findById(memberId)
 				.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+	}
 
-		switch (postComment.getCategory()) {
-			case COMMUNITY -> {
-				//커뮤니티 글 조회
-				Community targetCommunity = communityRepository.findById(postComment.getWhereId())
-						.orElseThrow(() -> new GlobalException(ErrorCode.POST_COMMENT_FAIL_COMMUNITY_NOTFOUND));
-
-				//대댓글 이라면, 댓글 정보 조회
-				Comment parrentCommunity = null;
-				if (postComment.getCommentId() != null) {
-					parrentCommunity = commentRepository.findById(postComment.getCommentId())
-							.orElseThrow(
-									() -> new GlobalException(ErrorCode.POST_COMMENT_FAIL_PARENT_COMMENT_NOTFOUND));
-				}
-
-				//신규 댓글 저장
-				commentRepository.save(
-						Comment.createNewCommunityComment(
-								commentAuthor,
-								targetCommunity,
-								parrentCommunity,
-								postComment.getContent()));
-			}
-			// case RESUME -> {
-			//
-			// }
+	private Comment findParentComment(Long parentCommentId) {
+		if (parentCommentId == null) {
+			return null;
 		}
+
+		return commentRepository.findById(parentCommentId)
+				.orElseThrow(() -> new GlobalException(ErrorCode.POST_COMMENT_FAIL_PARENT_COMMENT_NOTFOUND));
+	}
+
+	private Comment createCommentByCategory(CommentRequest.PostComment postComment, Member commentAuthor,
+			Comment parentComment) {
+		return switch (postComment.getCategory()) {
+			case COMMUNITY -> createCommunityComment(postComment, commentAuthor, parentComment);
+			case RESUME -> createResumeComment(postComment, commentAuthor, parentComment);
+			default -> throw new GlobalException(ErrorCode.POST_COMMENT_FAIL_INVALID_CATEGORY);
+		};
+	}
+
+	private Comment createCommunityComment(CommentRequest.PostComment postComment, Member commentAuthor,
+			Comment parentComment) {
+		Community targetCommunity = communityRepository.findById(postComment.getWhereId())
+				.orElseThrow(() -> new GlobalException(ErrorCode.POST_COMMENT_FAIL_COMMUNITY_NOTFOUND));
+
+		return Comment.createNewCommunityComment(commentAuthor, targetCommunity, parentComment,
+				postComment.getContent());
+	}
+
+	private Comment createResumeComment(CommentRequest.PostComment postComment, Member commentAuthor,
+			Comment parentComment) {
+		Resume targetResume = resumeRepository.findById(postComment.getWhereId())
+				.orElseThrow(() -> new GlobalException(ErrorCode.POST_COMMENT_FAIL_RESUME_NOTFOUND));
+
+		return Comment.createNewResumeComment(commentAuthor, targetResume, parentComment, postComment.getContent());
 	}
 }
