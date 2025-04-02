@@ -19,10 +19,10 @@ spring:
     baseline-version: 1
     locations: classpath:db/migration, classpath:db/seed/dev
   redis:
-    host: localhost
-    port: 6379
-    password: 1234
-    database: 0
+    host: ${RDBMS_HOST}
+    port: ${RDBMS_PORT}
+    password: ${RDBMS_PASSWORD}
+    database: ${REDIS_DATABASE}
 
 decorator:
   datasource:
