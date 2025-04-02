@@ -29,6 +29,7 @@ import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.integration.SpringBootTestSupporter;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
+import ssammudan.cotree.model.education.level.type.EducationLevelType;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.member.member.entity.Member;
 
@@ -89,7 +90,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	private EducationLevel createEducationLevel() {
 		return entityFixtureMonkey.giveMeBuilder(EducationLevel.class)
 			.instantiate(Instantiator.factoryMethod("create"))
-			.set("name", Arbitraries.of("입문", "초급", "중급"))
+			.set("name", "입문")
 			.sample();
 	}
 
@@ -127,7 +128,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		em.persist(educationLevel);
 
 		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(TechBookRequest.Create.class)
-			.set("educationLevel", educationLevel.getName())
+			.set("educationLevel", EducationLevelType.BEGINNER)
 			.sample();
 
 		//When
@@ -138,7 +139,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		TechBook savedTechBook = techBookRepository.findById(id).get();
 
 		assertNotNull(savedTechBook, "TechBook 엔티티 존재");
-		assertEquals(requestDto.educationLevel(), savedTechBook.getEducationLevel().getName(), "학습 난이도 일치");
+		assertEquals(requestDto.educationLevel().getId(), savedTechBook.getEducationLevel().getId(), "학습 난이도 일치");
 		assertEquals(requestDto.title(), savedTechBook.getTitle(), "제목 일치");
 		assertEquals(requestDto.description(), savedTechBook.getDescription(), "설명 일치");
 		assertEquals(requestDto.introduction(), savedTechBook.getIntroduction(), "소개 일치");
