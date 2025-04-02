@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.domain.comment.dto.CommentRequest;
 import ssammudan.cotree.domain.comment.service.CommentService;
 import ssammudan.cotree.global.response.BaseResponse;
@@ -29,7 +28,6 @@ import ssammudan.cotree.global.response.SuccessCode;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-04-02     Baekgwa               Initial creation
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/comment")
 @RequiredArgsConstructor
