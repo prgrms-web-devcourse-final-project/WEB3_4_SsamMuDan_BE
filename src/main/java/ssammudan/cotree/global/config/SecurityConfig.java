@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.global.config.security.exception.CustomAccessDeniedHandler;
 import ssammudan.cotree.global.config.security.exception.CustomAuthenticationEntryPoint;
 import ssammudan.cotree.global.config.security.filter.JwtAuthenticationFilter;
+import ssammudan.cotree.infra.frontend.FrontendConfig;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +29,7 @@ public class SecurityConfig {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 	private final CustomAccessDeniedHandler accessDeniedHandler;
+	private final FrontendConfig frontendConfig;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
