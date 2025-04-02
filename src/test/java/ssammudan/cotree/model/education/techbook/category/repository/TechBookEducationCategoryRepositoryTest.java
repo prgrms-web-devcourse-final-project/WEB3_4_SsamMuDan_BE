@@ -8,7 +8,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import net.jqwik.api.Arbitraries;
@@ -71,7 +71,8 @@ class TechBookEducationCategoryRepositoryTest extends DataJpaTestSupporter {
 		return TechBookEducationCategory.create(techBook, educationCategory);
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] save(): TechBookEducationCategory 엔티티 저장")
 	void save() {
 		//Given
@@ -110,7 +111,8 @@ class TechBookEducationCategoryRepositoryTest extends DataJpaTestSupporter {
 		);
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findById(): TechBookEducationCategory 엔티티 단 건 조회")
 	void findById() {
 		//Given

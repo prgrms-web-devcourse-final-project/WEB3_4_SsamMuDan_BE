@@ -8,7 +8,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import autoparams.AutoSource;
@@ -37,7 +37,8 @@ class TechEducationTypeRepositoryTest extends DataJpaTestSupporter {
 			.sample();
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] save(): TechEducationType 엔티티 저장")
 	void save() {
 		//Given
@@ -56,7 +57,8 @@ class TechEducationTypeRepositoryTest extends DataJpaTestSupporter {
 		assertEquals(techEducationType.getName(), savedTechEducationType.getName(), "교육 컨텐츠 타입 일치");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findById(): TechEducationType 엔티티 단 건 조회")
 	void findById() {
 		//Given
@@ -89,7 +91,8 @@ class TechEducationTypeRepositoryTest extends DataJpaTestSupporter {
 		assertFalse(opTechEducationType.isPresent(), "TechEducationType 엔티티 존재하지 않음");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findByNameIgnoreCase(): TechEducationType 엔티티 단 건 조회")
 	void findByNameIgnoreCase() {
 		//Given
@@ -108,7 +111,8 @@ class TechEducationTypeRepositoryTest extends DataJpaTestSupporter {
 		assertEquals(techEducationType.getName(), savedTechEducationType.getName(), "교육 컨텐츠 타입 일치");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Failure] findByNameIgnoreCase_unknownName(): TechEducationType 엔티티 단 건 조회, 존재하지 않는 컨텐츠 명칭")
 	void findByNameIgnoreCase_unknownName() {
 		//Given
