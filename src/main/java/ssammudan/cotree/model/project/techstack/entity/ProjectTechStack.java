@@ -9,7 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.project.project.entity.Project;
 
@@ -23,10 +27,14 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
+ * 2025-04--2     sangxxjin             add builder
  */
 @Entity
 @Getter
 @Table(name = "project_techStack")
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProjectTechStack {
 
 	@Id
@@ -41,4 +49,11 @@ public class ProjectTechStack {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tech_stack_id", nullable = false)
 	private TechStack techStack;
+
+	public static ProjectTechStack create(Project project, TechStack techStack) {
+		return ProjectTechStack.builder()
+			.project(project)
+			.techStack(techStack)
+			.build();
+	}
 }

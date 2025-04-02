@@ -11,7 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.member.member.entity.Member;
 
@@ -25,10 +30,14 @@ import ssammudan.cotree.model.member.member.entity.Member;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
+ * 2025-04--2     sangxxjin             add builder
  */
 @Entity
 @Getter
 @Table(name = "project")
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Project extends BaseEntity {
 
 	@Id
@@ -56,7 +65,8 @@ public class Project extends BaseEntity {
 	private String partnerType;
 
 	@Column(name = "is_open", nullable = false)
-	private Boolean isOpen;
+	@Builder.Default
+	private Boolean isOpen = true;
 
 	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
@@ -65,5 +75,19 @@ public class Project extends BaseEntity {
 	private LocalDate endDate;
 
 	@Column(name = "view_count", nullable = false)
-	private Integer viewCount;
+	@Builder.Default
+	private Integer viewCount = 0;
+
+	public static Project create(Member member, ProjectCreateRequest request, String savedImageUrl) {
+		return Project.builder()
+			.member(member)
+			.title(request.title())
+			.description(request.description())
+			.contact(request.contact())
+			.projectImageUrl(savedImageUrl)
+			.partnerType(request.partnerType())
+			.startDate(request.startDate())
+			.endDate(request.endDate())
+			.build();
+	}
 }
