@@ -83,6 +83,7 @@ public class TechBookServiceImpl implements TechBookService {
 	public TechBookResponse.Detail findTechBookById(final Long id) {
 		TechBook techBook = techBookRepository.findById(id)
 			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
+		techBook.increseViewCount();
 		return TechBookResponse.Detail.from(techBook);
 	}
 
