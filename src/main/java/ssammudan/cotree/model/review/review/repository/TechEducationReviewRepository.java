@@ -1,5 +1,9 @@
 package ssammudan.cotree.model.review.review.repository;
 
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
@@ -17,4 +21,13 @@ import ssammudan.cotree.model.review.review.entity.TechEducationReview;
  */
 public interface TechEducationReviewRepository
 	extends JpaRepository<TechEducationReview, Long>, TechEducationReviewRepositoryCustom {
+
+	Optional<TechEducationReview> findByReviewer_IdAndTechEducationType_IdAndItemId(
+		String reviewerId, Long techEducationTypeId, Long itemId
+	);
+
+	Page<TechEducationReview> findAllByTechEducationType_IdAndItemId(
+		Long techEducationTypeId, Long itemId, Pageable pageable
+	);
+
 }
