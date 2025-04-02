@@ -1,13 +1,11 @@
-package ssammudan.cotree.domain.category.service;
+package ssammudan.cotree.domain.category.dto;
 
-import java.util.List;
-
-import ssammudan.cotree.domain.category.dto.PositionResponse;
-import ssammudan.cotree.domain.category.dto.TechStackResponse;
+import lombok.AccessLevel;
+import lombok.Builder;
 
 /**
- * PackageName : ssammudan.cotree.domain.category.service
- * FileName    : CategoryService
+ * PackageName : ssammudan.cotree.domain.category.dto
+ * FileName    : PositionResponse
  * Author      : kwak
  * Date        : 2025. 4. 2.
  * Description : 
@@ -16,9 +14,15 @@ import ssammudan.cotree.domain.category.dto.TechStackResponse;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     kwak               Initial creation
  */
-public interface CategoryService {
-
-	List<TechStackResponse> findSkills();
-
-	List<PositionResponse> findPositions();
+@Builder(access = AccessLevel.PRIVATE)
+public record PositionResponse(
+	Long id,
+	String name
+) {
+	public static PositionResponse of(Long id, String name) {
+		return PositionResponse.builder()
+			.id(id)
+			.name(name)
+			.build();
+	}
 }
