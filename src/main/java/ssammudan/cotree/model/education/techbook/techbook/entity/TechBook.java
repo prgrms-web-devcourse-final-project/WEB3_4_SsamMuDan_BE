@@ -242,4 +242,16 @@ public class TechBook extends BaseEntity {
 		return this;
 	}
 
+	/**
+	 * TechBook 누적 리뷰 점수 추가
+	 *
+	 * @param rating - 리뷰 점수
+	 * @return this
+	 */
+	public TechBook addReviewRating(final Integer rating) {
+		this.totalRating += rating;
+		this.totalReviewCount += 1;
+		return this;
+	}
+
 }
