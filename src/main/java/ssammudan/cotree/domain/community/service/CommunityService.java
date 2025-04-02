@@ -28,4 +28,6 @@ public interface CommunityService {
 			final SearchBoardCategory category,
 			final String keyword,
 			final String memberId);
+
+	CommunityResponse.BoardDetail getBoardDetail(final Long boardId, final String memberId);
 }
