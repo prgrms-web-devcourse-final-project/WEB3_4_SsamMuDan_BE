@@ -24,6 +24,7 @@ public enum SuccessCode {
 	RESUME_DETAIL_SUCCESS(HttpStatus.OK, "200", "이력서 상세 조회를 성공하였습니다."),
 
 	//Project
+	PROJECT_CREATE_SUCCESS(HttpStatus.CREATED, "201", "프로젝트 생성 성공"),
 
 	//Community
 	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
