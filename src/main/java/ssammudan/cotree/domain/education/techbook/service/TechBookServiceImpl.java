@@ -1,6 +1,5 @@
 package ssammudan.cotree.domain.education.techbook.service;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,7 @@ import ssammudan.cotree.domain.education.techbook.dto.TechBookRequest;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
@@ -93,11 +93,13 @@ public class TechBookServiceImpl implements TechBookService {
 	 *
 	 * @param keyword  - 검색어
 	 * @param pageable - 페이징 객체
-	 * @return Page TechBookResponse ListInfo DTO
+	 * @return PageResponse TechBookResponse ListInfo DTO
 	 */
 	@Override
-	public Page<TechBookResponse.ListInfo> findAllTechBooks(final String keyword, final Pageable pageable) {
-		return techBookRepository.findAllTechBooksByKeyword(keyword, pageable).map(TechBookResponse.ListInfo::from);
+	public PageResponse<TechBookResponse.ListInfo> findAllTechBooks(final String keyword, final Pageable pageable) {
+		return PageResponse.of(
+			techBookRepository.findAllTechBooksByKeyword(keyword, pageable).map(TechBookResponse.ListInfo::from)
+		);
 	}
 
 }

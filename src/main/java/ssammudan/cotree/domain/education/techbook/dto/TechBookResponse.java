@@ -25,7 +25,7 @@ public class TechBookResponse {
 		//TODO: 구매 상태 정보 필요(비회원: 비구매, 회원: 구매 vs 비구매)
 		//TODO: 좋아요 숫자 포함
 		@Schema(description = "TechBook ID", example = "1")
-		long id,                      //TechBook PK
+		long id,                      //TechBook ID
 		@Schema(description = "TechBook 저자", example = "홍길동")
 		String writer,                //TechBook 저자
 		@Schema(description = "TechBook 교육 난이도", example = "입문")
@@ -36,6 +36,8 @@ public class TechBookResponse {
 		String description,           //TechBook 설명
 		@Schema(description = "TechBook 소개", example = "스프링 부트에 대한 수 많은 활용법을 담았습니다. ...")
 		String introduction,          //TechBook 소개
+		@Schema(description = "TechBook 평균 평점", example = "4.5")
+		double avgRating,             //TechBook 평균 평점
 		@Schema(description = "TechBook 전체 리뷰 수", example = "30")
 		int totalReviewCount,         //TechBook 전체 리뷰 수
 		@Schema(description = "TechBook PDF URL", example = "https://cotree.ssammudan.com/techbook/SpringBoot.pdf")
@@ -61,6 +63,7 @@ public class TechBookResponse {
 				techBook.getTitle(),
 				techBook.getDescription(),
 				techBook.getIntroduction(),
+				(double)techBook.getTotalRating() / techBook.getTotalReviewCount(),
 				techBook.getTotalReviewCount(),
 				techBook.getTechBookUrl(),
 				techBook.getTechBookPreviewUrl(),
