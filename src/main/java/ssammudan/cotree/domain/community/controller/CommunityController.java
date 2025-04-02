@@ -77,7 +77,7 @@ public class CommunityController {
 	}
 
 	@GetMapping("/board/{boardId}")
-	@Operation(summary = "커뮤니티 글 목록 조회")
+	@Operation(summary = "커뮤니티 글 상세 조회")
 	@SecurityRequirement(name = "bearerAuth")
 	public BaseResponse<CommunityResponse.BoardDetail> getBoardDetail(
 			@PathVariable(value = "boardId") Long boardId,
