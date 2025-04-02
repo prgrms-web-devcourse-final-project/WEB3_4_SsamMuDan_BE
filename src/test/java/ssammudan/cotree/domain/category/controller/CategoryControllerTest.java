@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -41,9 +42,6 @@ class CategoryControllerTest {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private CategoryService categoryService;
-
-	@Autowired
 	CategoryTestHelper categoryTestHelper;
 
 	@MockitoBean
@@ -57,6 +55,7 @@ class CategoryControllerTest {
 	}
 
 	@Test
+	@DisplayName("기술 스택 전체 조회 성공")
 	void findSkills() throws Exception {
 
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/category/skill")
@@ -67,5 +66,18 @@ class CategoryControllerTest {
 			.andExpect(jsonPath("$.data[0].imageUrl").value("https://worldvectorlogo.com/download/java.svg"))
 			.andExpect(jsonPath("$.data[0].name").value("Java"))
 			.andExpect(jsonPath("$.data.size()").value(14));
+	}
+
+	@Test
+	@DisplayName("개발 직무 전체 조회 성공")
+	void findPositions() throws Exception {
+
+		ResultActions resultActions = mockMvc.perform(get("/api/v1/category/position")
+			.accept(MediaType.APPLICATION_JSON));
+
+		resultActions
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data[0].name").value("프론트엔드"))
+			.andExpect(jsonPath("$.data.size()").value(3));
 	}
 }
