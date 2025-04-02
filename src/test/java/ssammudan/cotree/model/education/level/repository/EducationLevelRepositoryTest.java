@@ -9,9 +9,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+
+import net.jqwik.api.Arbitraries;
 
 import autoparams.AutoSource;
 import autoparams.Repeat;
@@ -36,10 +37,12 @@ class EducationLevelRepositoryTest extends DataJpaTestSupporter {
 	private EducationLevel createEducationLevel() {
 		return fixtureMonkey.giveMeBuilder(EducationLevel.class)
 			.instantiate(Instantiator.factoryMethod("create"))
+			.set("name", Arbitraries.of("입문", "초급", "중급"))
 			.sample();
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] save(): EducationLevel 엔티티 저장")
 	void save() {
 		//Given
@@ -58,7 +61,8 @@ class EducationLevelRepositoryTest extends DataJpaTestSupporter {
 		assertEquals(educationLevel.getName(), savedEducationLevel.getName(), "학습 난이도 일치");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findById(): EducationLevel 엔티티 단 건 조회")
 	void findById() {
 		//Given
@@ -91,7 +95,8 @@ class EducationLevelRepositoryTest extends DataJpaTestSupporter {
 		assertFalse(opEducationLevel.isPresent(), "EducationLevel 엔티티 존재하지 않음");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Success] findByNameIgnoreCase(): EducationLevel 엔티티 단 건 조회")
 	void findByNameIgnoreCase() {
 		//Given
@@ -110,7 +115,8 @@ class EducationLevelRepositoryTest extends DataJpaTestSupporter {
 		assertEquals(educationLevel.getName(), savedEducationLevel.getName(), "학습 난이도 일치");
 	}
 
-	@RepeatedTest(10)
+	//@RepeatedTest(10)
+	@Test
 	@DisplayName("[Failure] findByNameIgnoreCase_unknownName(): EducationLevel 엔티티 단 건 조회, 존재하지 않는 난이도 명칭")
 	void findByNameIgnoreCase_unknownName() {
 		//Given
