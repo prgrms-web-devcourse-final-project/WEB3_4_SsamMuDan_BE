@@ -65,9 +65,12 @@ public abstract class DataJpaTestSupporter {
 
 		entityManager.createNativeQuery("TRUNCATE TABLE member RESTART IDENTITY").executeUpdate();
 		entityManager.createNativeQuery("TRUNCATE TABLE education_level RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE education_category RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE tech_tube RESTART IDENTITY").executeUpdate();
 		entityManager.createNativeQuery("TRUNCATE TABLE tech_book RESTART IDENTITY").executeUpdate();
 		entityManager.createNativeQuery("TRUNCATE TABLE techEducation_type RESTART IDENTITY").executeUpdate();
 		entityManager.createNativeQuery("TRUNCATE TABLE techEducation_review RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE techTube_educationCategory RESTART IDENTITY").executeUpdate();
 		entityManager.createNativeQuery("TRUNCATE TABLE techBook_educationCategory RESTART IDENTITY").executeUpdate();
 
 		entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();    //H2 DB 외래키 제약 설정
