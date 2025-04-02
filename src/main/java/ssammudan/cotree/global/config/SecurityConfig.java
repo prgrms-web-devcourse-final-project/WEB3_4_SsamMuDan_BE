@@ -83,7 +83,7 @@ public class SecurityConfig {
 						// 해당 없음. 모두 인증 필요
 
 						// Resume Domain
-						.requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
+						// .requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
 
 						// Project Domain
 						// 해당 없음. 모두 인증 필요

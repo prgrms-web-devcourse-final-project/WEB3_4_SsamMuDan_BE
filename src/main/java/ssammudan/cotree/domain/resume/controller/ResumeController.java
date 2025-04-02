@@ -1,11 +1,11 @@
 package ssammudan.cotree.domain.resume.controller;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +16,6 @@ import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
 import ssammudan.cotree.domain.resume.service.ResumeService;
-import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.SuccessCode;
 
@@ -43,10 +42,10 @@ public class ResumeController {
 	@PostMapping
 	public BaseResponse<ResumeCreateResponse> register(
 			@Valid @RequestBody ResumeCreateRequest request,
-			@AuthenticationPrincipal CustomUser customUser
+			@RequestParam("id") String dummyMemberId
 	) {
-		String memberId = customUser.getId();
-		ResumeCreateResponse response = resumeService.register(request, memberId);
+		// todo 추후 수정
+		ResumeCreateResponse response = resumeService.register(request, dummyMemberId);
 		return BaseResponse.success(SuccessCode.RESUME_CREATE_SUCCESS, response);
 	}
 
