@@ -13,6 +13,8 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
+import net.jqwik.api.Arbitraries;
+
 import autoparams.AutoSource;
 import autoparams.Repeat;
 import ssammudan.cotree.integration.DataJpaTestSupporter;
@@ -36,6 +38,7 @@ class EducationLevelRepositoryTest extends DataJpaTestSupporter {
 	private EducationLevel createEducationLevel() {
 		return fixtureMonkey.giveMeBuilder(EducationLevel.class)
 			.instantiate(Instantiator.factoryMethod("create"))
+			.set("name", Arbitraries.of("입문", "초급", "중급"))
 			.sample();
 	}
 

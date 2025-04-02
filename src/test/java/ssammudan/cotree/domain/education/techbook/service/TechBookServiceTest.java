@@ -89,6 +89,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	private EducationLevel createEducationLevel() {
 		return entityFixtureMonkey.giveMeBuilder(EducationLevel.class)
 			.instantiate(Instantiator.factoryMethod("create"))
+			.set("name", Arbitraries.of("입문", "초급", "중급"))
 			.sample();
 	}
 

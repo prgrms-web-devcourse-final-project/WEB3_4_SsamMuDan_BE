@@ -24,6 +24,7 @@ public enum ErrorCode {
 	//Payment: 2001 ~ 3000
 
 	//Recruitment: 3001 ~ 4000
+	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다"),
 
 	//Project: 4001 ~ 5000
 
