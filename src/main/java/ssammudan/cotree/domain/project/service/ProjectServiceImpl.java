@@ -63,7 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
 		List<DevelopmentPosition> devPositions = getDevelopmentPositions(request);
 
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
 		Project project = Project.create(member, request, savedImageUrl);
 
