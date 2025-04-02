@@ -1,8 +1,8 @@
 package ssammudan.cotree.domain.comment.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class CommentRequest {
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class PostComment {
-		@NotBlank(message = "댓글 내용은 필수 입니다.")
+		@Size(min = 1, max = 1000, message = "내용은 1자 이상 1000자 이하로 입력해주세요.")
 		private String content;
 
 		@NotNull(message = "댓글 카테고리는 필수 입니다.")
