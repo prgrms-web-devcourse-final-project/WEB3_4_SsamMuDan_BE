@@ -18,6 +18,11 @@ spring:
     baseline-on-migrate: true
     baseline-version: 1
     locations: classpath:db/migration, classpath:db/seed/prod
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    database: ${REDIS_DATABASE}
 
 decorator:
   datasource:
