@@ -50,7 +50,7 @@ public class TechBookServiceImpl implements TechBookService {
 	public Long createTechBook(final String memberId, final TechBookRequest.Create requestDto) {
 		//TechBook 작성자 확인
 		Member writer = memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
 		//입력된 학습 난이도 확인
 		EducationLevel educationLevel = educationLevelRepository.findById(requestDto.educationLevel().getId())
