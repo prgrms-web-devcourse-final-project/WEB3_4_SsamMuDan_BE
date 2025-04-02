@@ -65,7 +65,8 @@ public class Project extends BaseEntity {
 	private String partnerType;
 
 	@Column(name = "is_open", nullable = false)
-	private Boolean isOpen;
+	@Builder.Default
+	private Boolean isOpen = true;
 
 	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
@@ -74,7 +75,8 @@ public class Project extends BaseEntity {
 	private LocalDate endDate;
 
 	@Column(name = "view_count", nullable = false)
-	private Integer viewCount;
+	@Builder.Default
+	private Integer viewCount = 0;
 
 	public static Project create(Member member, ProjectCreateRequest request, String savedImageUrl) {
 		return Project.builder()
@@ -84,10 +86,8 @@ public class Project extends BaseEntity {
 			.contact(request.contact())
 			.projectImageUrl(savedImageUrl)
 			.partnerType(request.partnerType())
-			.isOpen(true)
 			.startDate(request.startDate())
 			.endDate(request.endDate())
-			.viewCount(0)
 			.build();
 	}
 }
