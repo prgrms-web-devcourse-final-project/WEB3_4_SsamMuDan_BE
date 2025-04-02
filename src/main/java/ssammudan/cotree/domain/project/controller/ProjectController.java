@@ -30,7 +30,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * 2025. 4. 2.     sangxxjin               Initial creation
  */
 @RestController
-@RequestMapping("/api/v1/project")
+@RequestMapping("/api/v1/project/team")
 @RequiredArgsConstructor
 @Tag(name = "Proejct Controller", description = "프로젝트 생성 API")
 public class ProjectController {
