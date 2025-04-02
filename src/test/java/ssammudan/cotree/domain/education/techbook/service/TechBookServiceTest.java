@@ -232,7 +232,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
 		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
-		assertEquals(responseDto.viewCount(), techBook.getViewCount(), "조회 수 일치");
+		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
 		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
 	}
 
