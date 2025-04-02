@@ -46,7 +46,7 @@ import ssammudan.cotree.infra.s3.S3Uploader;
 @SpringBootTest
 @Profile("test")
 @Transactional
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class ResumeControllerTest {
 
 	@Autowired
