@@ -13,7 +13,6 @@ import javax.validation.constraints.Min;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +29,7 @@ import autoparams.Repeat;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
 import ssammudan.cotree.integration.WebMvcTestSupporter;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
@@ -126,19 +126,18 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 	void getTechBooks() throws Exception {
 		//Given
 		List<TechBookResponse.ListInfo> content = createTechBookResponseListInfo(50);
-		Page<TechBookResponse.ListInfo> resopnseDto = new PageImpl<>(
+		PageResponse<TechBookResponse.ListInfo> resopnseDto = PageResponse.of(new PageImpl<>(
 			content,
 			PageRequest.of(0, 16, Sort.Direction.DESC, "createdAt"),
 			content.size()
-		);
+		));
 
 		when(techBookService.findAllTechBooks(anyString(), any(Pageable.class))).thenReturn(resopnseDto);
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("page", "0");
 		params.add("size", "16");
-		params.add("sort", "createdAt");
-		params.add("direction", "DESC");
+		params.add("sort", "createdAt,DESC");
 		params.add("keyword", dtoFixtureMonkey.giveMeOne(String.class));
 
 		//When
