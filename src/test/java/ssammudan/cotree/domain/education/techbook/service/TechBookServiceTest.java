@@ -195,7 +195,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 
 		assertAll(
 			() -> assertNotNull(globalException, "예외 존재"),
-			() -> assertEquals(globalException.getErrorCode(), ErrorCode.NOT_FOUND_MEMBER, "에러 코드 일치")
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.MEMBER_NOT_FOUND, "에러 코드 일치")
 		);
 	}
 
