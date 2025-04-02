@@ -9,7 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.community.community.entity.Community;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
@@ -31,6 +35,9 @@ import ssammudan.cotree.model.project.project.entity.Project;
 @Entity
 @Getter
 @Table(name = "likes")
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Like extends BaseEntity {
 
 	@Id
@@ -43,18 +50,35 @@ public class Like extends BaseEntity {
 	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "tech_tube_id", nullable = false)
+	@JoinColumn(name = "tech_tube_id", updatable = false)
 	private TechTube techTube;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "tech_book_id", nullable = false)
+	@JoinColumn(name = "tech_book_id", updatable = false)
 	private TechBook techBook;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "project_id", nullable = false)
+	@JoinColumn(name = "project_id", updatable = false)
 	private Project project;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "community_id")
+	@JoinColumn(name = "community_id", updatable = false)
 	private Community community;
+
+	public static Like create(final Member member, final TechTube techTube) {
+		return Like.builder().member(member).techTube(techTube).build();
+	}
+
+	public static Like create(final Member member, final TechBook techBook) {
+		return Like.builder().member(member).techBook(techBook).build();
+	}
+
+	public static Like create(final Member member, final Project project) {
+		return Like.builder().member(member).project(project).build();
+	}
+
+	public static Like create(final Member member, final Community community) {
+		return Like.builder().member(member).community(community).build();
+	}
+
 }
