@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public enum S3Directory {
 	USER_PROFILE("user/profile/", false),
 	COMMUNITY_BOARD("community/board/", true),
-	PROJECT("project/", false);
+	PROJECT("project/team", false);
 
 	private final String path;
 	private final boolean isMultiFile;
