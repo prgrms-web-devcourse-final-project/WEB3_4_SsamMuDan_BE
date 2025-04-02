@@ -1,25 +1,29 @@
 package ssammudan.cotree.domain.member.controller;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
+import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.service.MemberService;
-import ssammudan.cotree.global.response.BaseResponse;
-import ssammudan.cotree.global.response.SuccessCode;
+import ssammudan.cotree.global.config.SecurityConfig;
+import ssammudan.cotree.global.config.security.exception.CustomAccessDeniedHandler;
+import ssammudan.cotree.global.config.security.exception.CustomAuthenticationEntryPoint;
+import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
+import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
+import ssammudan.cotree.global.config.security.jwt.TokenBlacklistService;
+import ssammudan.cotree.global.config.security.user.CustomUser;
+import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
@@ -29,69 +33,89 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  * FileName    : MemberControllerTest
  * Author      : hc
  * Date        : 25. 3. 28.
- * Description : 
+ * Description :
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 28.     hc               Initial creation
  */
 @WebMvcTest(MemberController.class)
+@Import(SecurityConfig.class)
 class MemberControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
-	@Autowired
-	private ObjectMapper objectMapper;
-
 	@MockitoBean
 	private MemberService memberService;
 
-	@Test
-	@WithMockUser
-	void signUp() throws Exception {
+	@MockitoBean
+	private AccessTokenService accessTokenService;
 
+	@MockitoBean
+	private RefreshTokenService refreshTokenService;
+
+	@MockitoBean
+	private TokenBlacklistService tokenBlacklistService;
+
+	@MockitoBean
+	private CustomUserDetailsService userDetailsService;
+
+	@MockitoBean
+	private CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+	@MockitoBean
+	private CustomAccessDeniedHandler accessDeniedHandler;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	@Test
+	@DisplayName("로그인 테스트, 토큰 발급 확인")
+	public void signIn() throws Exception {
+		// given (로그인 요청 DTO 및 반환될 Member 객체 정의)
+		MemberSigninRequest signinRequest = new MemberSigninRequest("test123@naver.com", "password");
 		Member mockMember = new Member(
 			"randomUUID()",
 			"test123@naver.com",
 			"이름",
 			"닉네임",
-			"비밀 번호",
+			"비밀번호",
 			"01012345678",
 			null,
 			MemberRole.USER,
 			MemberStatus.ACTIVE
 		);
 
-		Mockito.when(memberService.signUp(Mockito.any(MemberSignupRequest.class)))
-			.thenReturn(mockMember);
+		given(memberService.signIn(any(MemberSigninRequest.class)))
+			.willReturn(mockMember);  // 가짜 Member 반환
 
-		MemberSignupRequest memberSignupRequest = new MemberSignupRequest(
-			"test123@naver.com",
-			"password",
-			"이름",
-			"닉네임",
-			"01012345678"
-		);
+		given(accessTokenService.generateToken(any(CustomUser.class)))
+			.willReturn("jwt_accessToken");
 
-		String requestJson = objectMapper.writeValueAsString(memberSignupRequest);
+		given(refreshTokenService.generateToken(any(CustomUser.class)))
+			.willReturn("jwt_refreshToken");
 
-		// POST 요청을 보내고, 결과 검증
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/member/signup")
+		given(accessTokenService.getExpirationSeconds())
+			.willReturn(1000L);
+
+		given(refreshTokenService.getExpirationSeconds())
+			.willReturn(1000L);
+
+		String requestJson = objectMapper.writeValueAsString(signinRequest); // JSON 변환
+
+		// when & then (로그인 요청 테스트)
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/member/signin")
 				.contentType("application/json")
-				.content(requestJson)  // JSON 형식으로 변환된 Request 객체 전달
-				.with(csrf()))
-			.andExpect(
-				MockMvcResultMatchers.status().isOk())// Todo: Mock에는 AOP 적용 안됨  //.isCreated())// HTTP Status 201
-			.andReturn();
-
-		// 반환된 결과에서 BaseResponse 객체 추출
-		String responseContent = result.getResponse().getContentAsString();
-		BaseResponse<SuccessCode> response = objectMapper.readValue(responseContent, BaseResponse.class);
-
-		// BaseResponse 객체에서 Data 객체 추출
-		Assertions.assertThat(response.getIsSuccess()).isTrue();
-		Assertions.assertThat(response.getCode()).isEqualTo("201");
-		Assertions.assertThat(response.getMessage()).isEqualTo("회원가입을 완료했습니다.");
+				.content(requestJson))
+			.andExpect(status().isOk())
+			.andExpect(cookie().exists("access_token"))
+			.andExpect(cookie().httpOnly("access_token", true))
+			.andExpect(cookie().secure("access_token", true))
+			.andExpect(cookie().value("access_token", "jwt_accessToken"))
+			.andExpect(cookie().exists("refresh_token"))
+			.andExpect(cookie().httpOnly("refresh_token", true))
+			.andExpect(cookie().secure("refresh_token", true))
+			.andExpect(cookie().value("refresh_token", "jwt_refreshToken"));
 	}
 }
