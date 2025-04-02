@@ -16,8 +16,6 @@ import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
-import ssammudan.cotree.model.member.member.type.MemberRole;
-import ssammudan.cotree.model.member.member.type.MemberStatus;
 
 /**
  * PackageName : ssammudan.cotree.domain.education.service
@@ -43,17 +41,15 @@ public class TechBookServiceImpl implements TechBookService {
 	/**
 	 * TechBook 신규 생성
 	 *
+	 * @param memberId   - Member PK
 	 * @param requestDto - TechBookRequest Create DTO
 	 * @return PK
 	 */
 	@Transactional
 	@Override
-	public Long createTechBook(final TechBookRequest.Create requestDto) {
-		//TODO: TechBook 저자(Member 엔티티) 추가 로직 필요
-		Member writer = memberRepository.save(
-			new Member(null, "test@mail.com", "test", "test", "pass1234", "010-1234-5678",
-				"profile_image_url", MemberRole.USER, MemberStatus.ACTIVE)
-		);
+	public Long createTechBook(final String memberId, final TechBookRequest.Create requestDto) {
+		Member writer = memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
 
 		EducationLevel educationLevel = educationLevelRepository.findByNameIgnoreCase(requestDto.educationLevel())
 			.orElseThrow(() -> new GlobalException(ErrorCode.EDUCATION_LEVEL_NOT_FOUND));

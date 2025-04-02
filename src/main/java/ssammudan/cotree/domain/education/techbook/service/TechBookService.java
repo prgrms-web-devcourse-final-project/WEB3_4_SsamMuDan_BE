@@ -20,7 +20,7 @@ import ssammudan.cotree.global.response.PageResponse;
  */
 public interface TechBookService {
 
-	Long createTechBook(TechBookRequest.Create requestDto);
+	Long createTechBook(String memberId, TechBookRequest.Create requestDto);
 
 	TechBookResponse.Detail findTechBookById(Long id);
 
