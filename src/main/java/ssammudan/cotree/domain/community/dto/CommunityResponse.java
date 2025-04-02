@@ -22,4 +22,8 @@ public class CommunityResponse {
 								  Long commentCount, Long likeCount, Integer viewCount, String imageUrl, Boolean isLike,
 								  Boolean isNew) {
 	}
+
+	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
+							  Integer viewCount, Boolean isLike) {
+	}
 }
