@@ -70,7 +70,7 @@ public class SecurityConfig {
 						.requestMatchers(GET, "/api/v1/category/**").permitAll()
 
 						// Comment Domain
-						// 해당 없음. 모두 인증 필요
+						.requestMatchers(GET, "/api/v1/comment/**").permitAll()
 
 						// Community Domain
 						.requestMatchers(GET, "/api/v1/community/board").permitAll()

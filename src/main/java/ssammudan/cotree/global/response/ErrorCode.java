@@ -40,6 +40,7 @@ public enum ErrorCode {
 	POST_COMMENT_FAIL_RESUME_NOTFOUND(HttpStatus.BAD_REQUEST, "7002", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
 	POST_COMMENT_FAIL_PARENT_COMMENT_NOTFOUND(HttpStatus.BAD_REQUEST, "7003", "대댓글 작성 실패. 잘못된 댓글 ID 입니다."),
 	POST_COMMENT_FAIL_INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "7004", "댓글 작성 실패. 잘못된 카테고리 입니다."),
+	COMMENT_GET_FAIL_INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "7005", "댓글 조회 실패. 잘못된 카테고리 입니다."),
 
 	//${}: 8001 ~ 9000
 
