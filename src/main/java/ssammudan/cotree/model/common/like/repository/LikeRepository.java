@@ -14,6 +14,10 @@ import ssammudan.cotree.model.common.like.entity.Like;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
+ * 2025-04-02    sangxxjin             get HotProject
  */
 public interface LikeRepository extends JpaRepository<Like, Long> {
+	long countByProjectId(Long id);
+
+	boolean existsByProjectIdAndMemberId(Long projectId, String memberId);
 }
