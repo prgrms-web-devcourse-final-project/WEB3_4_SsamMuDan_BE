@@ -34,6 +34,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     sangxxjin               Initial creation
+ * 2025-04-02    sangxxjin             get HotProject
  */
 @RestController
 @RequestMapping("/api/v1/project/team")

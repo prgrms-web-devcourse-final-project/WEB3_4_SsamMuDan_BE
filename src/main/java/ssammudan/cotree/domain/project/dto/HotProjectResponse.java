@@ -13,7 +13,7 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * FileName    : HotProjectResponse
  * Author      : sangxxjin
  * Date        : 2025. 4. 3.
- * Description : 
+ * Description : 핫한 프로젝트 조회 응답값
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------

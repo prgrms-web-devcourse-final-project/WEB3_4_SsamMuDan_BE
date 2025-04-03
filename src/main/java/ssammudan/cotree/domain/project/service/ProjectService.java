@@ -17,7 +17,8 @@ import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 2025. 4. 2.     sangxxjin               Initial creation
+ * 2025-04-02.   sangxxjin             Initial creation
+ * 2025-04-02    sangxxjin             get HotProject
  */
 
 public interface ProjectService {
