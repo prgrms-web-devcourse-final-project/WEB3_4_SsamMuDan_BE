@@ -9,7 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.project.project.entity.Project;
 
@@ -23,10 +27,14 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
+ * 2025-04--2     sangxxjin             add builder
  */
 @Entity
 @Getter
 @Table(name = "project_devPosition")
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProjectDevPosition {
 
 	@Id
@@ -44,4 +52,12 @@ public class ProjectDevPosition {
 
 	@Column(name = "amount", nullable = false)
 	private Integer amount;
+
+	public static ProjectDevPosition create(Project project, DevelopmentPosition developmentPosition, Integer amount) {
+		return ProjectDevPosition.builder()
+			.project(project)
+			.developmentPosition(developmentPosition)
+			.amount(amount)
+			.build();
+	}
 }
