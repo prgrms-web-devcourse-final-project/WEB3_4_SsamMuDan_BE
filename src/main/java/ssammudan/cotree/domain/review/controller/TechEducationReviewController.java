@@ -1,10 +1,10 @@
 package ssammudan.cotree.domain.review.controller;
 
-import java.util.UUID;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewRequest;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.domain.review.service.TechEducationReviewService;
+import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
@@ -48,10 +49,10 @@ public class TechEducationReviewController {
 	@Operation(summary = "TechEducation(TechTube or TechBook) 리뷰 생성", description = "TechEducationType(TECH_TUBE, TECH_BOOK)과 ID(TechTube PK or TechBook PK), 평점과 수강평으로 리뷰를 작성")
 	@ApiResponse(responseCode = "201", description = "생성 성공")
 	public BaseResponse<Void> createTechEducationReview(
-		@RequestBody @Valid TechEducationReviewRequest.Create requestDto
+		@RequestBody @Valid TechEducationReviewRequest.Create requestDto,
+		@AuthenticationPrincipal UserDetails userDetails
 	) {
-		//TODO: 시큐리티 인증 객체를 활용한 작성자 정보(Member ID) 추가 필요
-		Long id = techEducationReviewService.createTechEducationReview(UUID.randomUUID().toString(), requestDto);
+		Long id = techEducationReviewService.createTechEducationReview(((CustomUser)userDetails).getId(), requestDto);
 		return BaseResponse.success(SuccessCode.TECH_EDUCATION_REVIEW_CREATE_SUCCESS);
 	}
 

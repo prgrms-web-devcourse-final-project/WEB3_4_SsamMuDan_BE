@@ -1,7 +1,7 @@
 package ssammudan.cotree.domain.common.controller;
 
-import java.util.UUID;
-
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.common.dto.LikeRequest;
 import ssammudan.cotree.domain.common.like.LikeService;
+import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.SuccessCode;
 
@@ -42,10 +43,9 @@ public class LikeController {
 	@ApiResponse(responseCode = "200", description = "좋아요 추가 성공")
 	@SecurityRequirement(name = "bearerAuth")
 	public BaseResponse<Void> createLike(
-		@RequestBody @Valid LikeRequest.Create requestDto/*, @AuthenticationPrincipal UserDetails userDetails*/
+		@RequestBody @Valid LikeRequest.Create requestDto, @AuthenticationPrincipal UserDetails userDetails
 	) {
-		//String memberId = ((CustomUser)userDetails).getId();
-		String memberId = UUID.randomUUID().toString();    //TODO: 시큐리티 인증 객체 활용 방법 고민 필요
+		String memberId = ((CustomUser)userDetails).getId();
 		Long id = likeService.createLike(memberId, requestDto);
 		return BaseResponse.success(SuccessCode.LIKE_ADD_SUCCESS);
 	}
