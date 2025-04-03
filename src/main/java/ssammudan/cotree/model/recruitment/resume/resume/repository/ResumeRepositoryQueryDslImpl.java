@@ -36,7 +36,7 @@ import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
  * 2025. 4. 2.     kwak               Initial creation
  */
 @RequiredArgsConstructor
-public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDSL {
+public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 
 	private final JPAQueryFactory jpaQueryFactory;
 

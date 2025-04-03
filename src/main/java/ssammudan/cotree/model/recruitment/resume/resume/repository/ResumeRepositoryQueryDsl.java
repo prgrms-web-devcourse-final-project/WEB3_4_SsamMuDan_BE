@@ -19,7 +19,7 @@ import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     kwak               Initial creation
  */
-public interface ResumeRepositoryQueryDSL {
+public interface ResumeRepositoryQueryDsl {
 
 	Page<ResumeResponse> getResumeList(Pageable pageable, List<Long> positionIds, List<Long> skillIds,
 		Integer startYear, Integer endYear, SearchResumeSort sort);
