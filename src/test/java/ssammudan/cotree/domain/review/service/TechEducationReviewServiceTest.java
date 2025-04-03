@@ -298,7 +298,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		em.persist(creator);
 		List<Member> reviewers = createMembers(50);
 		reviewers.forEach(reviewer -> {
-			sleep(1);
+			sleep(100);
 			em.persist(reviewer);
 		});
 		EducationLevel educationLevel = createEducationLevel();
@@ -309,7 +309,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		em.persist(techTube);
 		List<TechEducationReview> reviews = createTechEducationReviews(reviewers, techEducationType, techTube.getId());
 		reviews.forEach(review -> {
-			sleep(1);
+			sleep(100);
 			em.persist(review);
 		});
 		clearEntityContext();
