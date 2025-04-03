@@ -3,6 +3,7 @@ package ssammudan.cotree.model.review.reviewtype.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -10,6 +11,8 @@ import javax.validation.constraints.Min;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+
+import net.jqwik.api.Arbitraries;
 
 import autoparams.AutoSource;
 import autoparams.Repeat;
@@ -34,7 +37,12 @@ class TechEducationTypeRepositoryTest extends DataJpaTestSupporter {
 	private TechEducationType createTechEducationType() {
 		return fixtureMonkey.giveMeBuilder(TechEducationType.class)
 			.instantiate(Instantiator.factoryMethod("create"))
-			.sample();
+			.set("name", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+				.sample();
 	}
 
 	//@RepeatedTest(10)

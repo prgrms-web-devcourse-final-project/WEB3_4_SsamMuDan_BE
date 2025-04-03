@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -47,11 +48,32 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	private Member createMember() {
 		return fixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
-			.set("email", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("username", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("nickname", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("password", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("phoneNumber", Arbitraries.strings().numeric()).maxSize("email", 255)
+			.set("email", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("username", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("nickname", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("password", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("phoneNumber",
+				Arbitraries.strings()
+					.withCharRange('a', 'z')
+					.ofMinLength(1)
+					.ofMaxLength(219)
+					.map(s -> s + UUID.randomUUID()))
 			.set("role", MemberRole.USER)
 			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();

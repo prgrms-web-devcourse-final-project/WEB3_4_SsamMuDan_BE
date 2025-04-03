@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -11,6 +12,8 @@ import javax.validation.constraints.Min;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+
+import net.jqwik.api.Arbitraries;
 
 import autoparams.AutoSource;
 import autoparams.Repeat;
@@ -35,7 +38,12 @@ class EducationCategoryRepositoryTest extends DataJpaTestSupporter {
 	private EducationCategory createEducationCategory() {
 		return fixtureMonkey.giveMeBuilder(EducationCategory.class)
 			.instantiate(Instantiator.factoryMethod("create"))
-			.sample();
+			.set("name", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+				.sample();
 	}
 
 	//@RepeatedTest(10)

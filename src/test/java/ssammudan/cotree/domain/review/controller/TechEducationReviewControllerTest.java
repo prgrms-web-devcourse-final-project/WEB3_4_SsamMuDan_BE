@@ -29,6 +29,7 @@ import autoparams.AutoSource;
 import autoparams.Repeat;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewRequest;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
+import ssammudan.cotree.global.annotation.CustomWithMockUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
@@ -70,6 +71,7 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 
 	//@RepeatedTest(10)
 	@Test
+	@CustomWithMockUser
 	@DisplayName("[Success] createTechEducationReview(): 교육 컨텐츠 리뷰 작성")
 	void createTechEducationReview() throws Exception {
 		//Given

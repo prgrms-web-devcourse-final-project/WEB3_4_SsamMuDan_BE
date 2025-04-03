@@ -31,6 +31,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
+import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
 import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -86,11 +87,31 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 	private Member createMember() {
 		return entityFixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
-			.set("email", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("username", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("nickname", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("password", Arbitraries.strings().alpha()).maxSize("email", 255)
-			.set("phoneNumber", Arbitraries.strings().numeric()).maxSize("email", 255)
+			.set("email", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("username", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("nickname", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("password", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("phoneNumber", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
 			.set("role", MemberRole.USER)
 			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
@@ -99,6 +120,33 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 	private List<Member> createMembers(final int size) {
 		return entityFixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
+			.set("email", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("username", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("nickname", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("password", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("phoneNumber", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("role", MemberRole.USER)
+			.set("memberStatus", MemberStatus.ACTIVE)
 			.sampleList(size);
 	}
 
@@ -109,9 +157,9 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 			.sample();
 	}
 
-	private ssammudan.cotree.model.review.reviewtype.entity.TechEducationType createTechEducationType() {
+	private TechEducationType createTechEducationType() {
 		return entityFixtureMonkey.giveMeBuilder(
-				ssammudan.cotree.model.review.reviewtype.entity.TechEducationType.class)
+				TechEducationType.class)
 			.instantiate(Instantiator.factoryMethod("create"))
 			.set("name", "TechTube")
 			.sample();
@@ -138,8 +186,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 	}
 
 	private TechEducationReview createTechEducationReview(
-		final Member member, final ssammudan.cotree.model.review.reviewtype.entity.TechEducationType techEducationType,
-		final Long itemId
+		final Member member, final TechEducationType techEducationType, final Long itemId
 	) {
 		return entityFixtureMonkey.giveMeBuilder(TechEducationReview.class)
 			.instantiate(Instantiator.factoryMethod("create"))
@@ -152,7 +199,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 	private List<TechEducationReview> createTechEducationReviews(
 		final List<Member> members,
-		final ssammudan.cotree.model.review.reviewtype.entity.TechEducationType techEducationType, final Long itemId
+		final TechEducationType techEducationType, final Long itemId
 	) {
 		List<TechEducationReview> reviews = new ArrayList<>();
 		members.forEach(member -> reviews.add(
@@ -191,7 +238,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		Member reviewer = createMember();
 		em.persist(reviewer);
-		ssammudan.cotree.model.review.reviewtype.entity.TechEducationType techEducationType = createTechEducationType();
+		TechEducationType techEducationType = createTechEducationType();
 		em.persist(techEducationType);
 		clearEntityContext();
 
@@ -199,6 +246,11 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 				TechEducationReviewRequest.Create.class
 			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
+			.set("content", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
 			.set("itemId", techTube.getId())
 			.sample();
 
@@ -229,7 +281,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		setup();
 
 		String unknownMemberId = UUID.randomUUID().toString();
-		ssammudan.cotree.model.review.reviewtype.entity.TechEducationType techEducationType = createTechEducationType();
+		TechEducationType techEducationType = createTechEducationType();
 		em.persist(techEducationType);
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
@@ -263,7 +315,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		Member member = createMember();
 		em.persist(member);
-		ssammudan.cotree.model.review.reviewtype.entity.TechEducationType techEducationType = createTechEducationType();
+		TechEducationType techEducationType = createTechEducationType();
 		em.persist(techEducationType);
 		TechEducationReview techEducationReview = createTechEducationReview(member, techEducationType, itemId);
 		em.persist(techEducationReview);
@@ -303,7 +355,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		});
 		EducationLevel educationLevel = createEducationLevel();
 		em.persist(educationLevel);
-		ssammudan.cotree.model.review.reviewtype.entity.TechEducationType techEducationType = createTechEducationType();
+		TechEducationType techEducationType = createTechEducationType();
 		em.persist(techEducationType);
 		TechTube techTube = createTechTube(creator, educationLevel);
 		em.persist(techTube);
