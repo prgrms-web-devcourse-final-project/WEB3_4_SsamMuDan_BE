@@ -86,11 +86,11 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 	private Member createMember() {
 		return entityFixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
-			.setNotNull("email")
-			.setNotNull("username")
-			.setNotNull("nickname")
-			.setNotNull("password")
-			.setNotNull("phoneNumber")
+			.set("email", Arbitraries.strings().alpha())
+			.set("username", Arbitraries.strings().alpha())
+			.set("nickname", Arbitraries.strings().alpha())
+			.set("password", Arbitraries.strings().alpha())
+			.set("phoneNumber", Arbitraries.strings().alpha())
 			.set("role", MemberRole.USER)
 			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
@@ -298,7 +298,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		em.persist(creator);
 		List<Member> reviewers = createMembers(50);
 		reviewers.forEach(reviewer -> {
-			sleep(100);
+			sleep(1);
 			em.persist(reviewer);
 		});
 		EducationLevel educationLevel = createEducationLevel();
@@ -309,7 +309,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		em.persist(techTube);
 		List<TechEducationReview> reviews = createTechEducationReviews(reviewers, techEducationType, techTube.getId());
 		reviews.forEach(review -> {
-			sleep(100);
+			sleep(1);
 			em.persist(review);
 		});
 		clearEntityContext();

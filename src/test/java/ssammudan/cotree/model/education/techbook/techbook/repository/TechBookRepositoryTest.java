@@ -47,11 +47,11 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	private Member createMember() {
 		return fixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
-			.setNotNull("email")
-			.setNotNull("username")
-			.setNotNull("nickname")
-			.setNotNull("password")
-			.setNotNull("phoneNumber")
+			.set("email", Arbitraries.strings().alpha())
+			.set("username", Arbitraries.strings().alpha())
+			.set("nickname", Arbitraries.strings().alpha())
+			.set("password", Arbitraries.strings().alpha())
+			.set("phoneNumber", Arbitraries.strings().alpha())
 			.set("role", MemberRole.USER)
 			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
