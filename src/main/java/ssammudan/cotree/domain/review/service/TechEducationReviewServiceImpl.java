@@ -18,7 +18,6 @@ import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
 import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 /**
  * PackageName : ssammudan.cotree.domain.review.review.service
@@ -58,11 +57,14 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 
 		//TODO: 작성자의 구매 이력에 해당 교육 컨텐츠 유효성 확인 필요
 
-		Long reviewTypeId = getTechEducationReviewTypeId(requestDto.techEducationType()); //TechTube = 1 or TechBook = 2
+		Long reviewTypeId = ssammudan.cotree.model.review.reviewtype.type.TechEducationType.getTechEducationTypeId(
+			requestDto.techEducationType()
+		); //TechTube = 1 or TechBook = 2
 
 		//입력된 리뷰의 카테고리 확인(TechBook or TechTube)
-		TechEducationType techEducationType = techEducationTypeRepository.findById(reviewTypeId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_EDUCATION_TYPE_NOT_FOUND));
+		TechEducationType techEducationType = techEducationTypeRepository.findById(
+			reviewTypeId
+		).orElseThrow(() -> new GlobalException(ErrorCode.TECH_EDUCATION_TYPE_NOT_FOUND));
 
 		//동일한 회원이 동일한 리뷰 대상 항목(TechBook or TechTube)에 대해 작성한 리뷰가 있는지 확인
 		if (techEducationReviewRepository.findByReviewer_IdAndTechEducationType_IdAndItemId(
@@ -105,21 +107,9 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 		final TechEducationReviewRequest.Read requestDto, final Pageable pageable
 	) {
 		return PageResponse.of(techEducationReviewRepository.findAllByTechEducationType_IdAndItemId(
-			getTechEducationReviewTypeId(requestDto.techEducationType()), requestDto.itemId(), pageable
+			ssammudan.cotree.model.review.reviewtype.type.TechEducationType.getTechEducationTypeId(
+				requestDto.techEducationType()), requestDto.itemId(), pageable
 		).map(TechEducationReviewResponse.Detail::from));
-	}
-
-	/**
-	 * TechEducationReviewType ID 찾기
-	 *
-	 * @param techEducationReviewType - TechEducationReviewType Enum
-	 * @return ID
-	 */
-	private Long getTechEducationReviewTypeId(final TechEducationReviewType techEducationReviewType) {
-		if (techEducationReviewType == null) {
-			throw new GlobalException(ErrorCode.INVALID_INPUT_VALUE);
-		}
-		return techEducationReviewType.getId();
 	}
 
 }
