@@ -121,6 +121,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional(readOnly = true)
 	public List<HotProjectResponse> getHotProjectsForProject() {
+		//todo: 캐싱 작업
 		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
 			.map(this::toHotProjectResponse)
 			.toList();
