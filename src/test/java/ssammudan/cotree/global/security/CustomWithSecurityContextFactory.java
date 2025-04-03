@@ -41,7 +41,12 @@ public class CustomWithSecurityContextFactory implements WithSecurityContextFact
 				.memberStatus(annotation.status())
 				.build(),
 			new KakaoResponse(
-				Map.of("sub", UUID.randomUUID().toString(), "email", annotation.email(), "name", annotation.username())
+				Map.of("id", UUID.randomUUID().toString(),
+					"kakao_account", Map.of("email", annotation.email()),
+					"profile", Map.of(
+						"nickname", annotation.username(),
+						"profile_image_url", UUID.randomUUID().toString())
+				)
 			)
 		);
 
