@@ -71,7 +71,7 @@ public class ResumeServiceImpl implements ResumeService {
 			.findByIds(request.basicInfo().developPositionIds());
 
 		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_MEMBER));
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
 		Resume resume = Resume.create(request, member, basicTechStacks, developmentPositions);
 		Resume savedResume = resumeRepository.save(resume);

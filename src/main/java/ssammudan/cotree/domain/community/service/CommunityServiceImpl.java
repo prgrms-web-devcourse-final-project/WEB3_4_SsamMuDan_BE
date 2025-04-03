@@ -73,4 +73,18 @@ public class CommunityServiceImpl implements CommunityService {
 		//todo : findBoardList 의 내용 중, Content 들, 글자수 제한 및 이미지 제거 필요.
 		return PageResponse.of(findBoardList);
 	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public CommunityResponse.BoardDetail getBoardDetail(final Long boardId, final String memberId) {
+		// 게시글 정보 조회
+		CommunityResponse.BoardDetail findData = communityRepository.findBoard(boardId, memberId).orElseThrow(
+				() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND));
+
+		// 게시글 조회수 count 업데이트
+		// todo : 게시글 조회수 update 처리
+		// 벌크성 쿼리, redis 까지 붙일지는 고민 중.
+
+		return findData;
+	}
 }

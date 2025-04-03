@@ -48,8 +48,8 @@ public class ResumeController {
 	@SecurityRequirement(name = "bearerAuth")
 	@PostMapping
 	public BaseResponse<ResumeCreateResponse> register(
-		@Valid @RequestBody ResumeCreateRequest request,
-		@RequestParam("id") String dummyMemberId
+			@Valid @RequestBody ResumeCreateRequest request,
+			@RequestParam("id") String dummyMemberId
 	) {
 		// todo 추후 수정
 		ResumeCreateResponse response = resumeService.register(request, dummyMemberId);
@@ -59,7 +59,7 @@ public class ResumeController {
 	@Operation(summary = "이력서 상세 조회", description = "이력서 상세를 조회합니다.")
 	@GetMapping("/{id}")
 	public BaseResponse<ResumeDetailResponse> detail(
-		@PathVariable(name = "id") Long id
+			@PathVariable(name = "id") Long id
 	) {
 		return BaseResponse.success(SuccessCode.RESUME_DETAIL_SUCCESS, resumeService.detail(id));
 	}

@@ -11,8 +11,9 @@ import lombok.RequiredArgsConstructor;
 public enum ErrorCode {
 
 	//Member: 0001 ~ 1000
-	DUPLICATED_MEMBER(HttpStatus.BAD_REQUEST, "0001", "이미 존재하는 회원입니다."),
-	NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
+	MEMBER_DUPLICATED(HttpStatus.BAD_REQUEST, "0001", "이미 존재하는 회원입니다."),
+	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
+	MEMBER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "0003", "인증정보가 일치하지 않습니다."),
 
 	//Education: 1001 ~ 2000
 	EDUCATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "학습 카테고리를 찾을 수 없습니다."),
@@ -29,11 +30,16 @@ public enum ErrorCode {
 	//Community: 5001 ~ 6000
 	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
 	COMMUNITY_MEMBER_NOTFOUND(HttpStatus.BAD_REQUEST, "5002", "존재하지 않은 회원입니다."),
+	COMMUNITY_BOARD_NOTFOUND(HttpStatus.BAD_REQUEST, "5003", "존재하지 않은 글입니다."),
 
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
 
-	//${}: 7001 ~ 8000
+	//Comment: 7001 ~ 8000
+	POST_COMMENT_FAIL_COMMUNITY_NOTFOUND(HttpStatus.BAD_REQUEST, "7001", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
+	POST_COMMENT_FAIL_RESUME_NOTFOUND(HttpStatus.BAD_REQUEST, "7002", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
+	POST_COMMENT_FAIL_PARENT_COMMENT_NOTFOUND(HttpStatus.BAD_REQUEST, "7003", "대댓글 작성 실패. 잘못된 댓글 ID 입니다."),
+	POST_COMMENT_FAIL_INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "7004", "댓글 작성 실패. 잘못된 카테고리 입니다."),
 
 	//${}: 8001 ~ 9000
 

@@ -1,6 +1,11 @@
 package ssammudan.cotree.model.member.member.entity;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +28,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
 @Entity
 @Getter
 @Table(name = "member")
-@Builder(access = AccessLevel.PROTECTED)
+@Builder
 @AllArgsConstructor // (access = AccessLevel.PUBLIC) // Test를 위해 public으로 변경
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
@@ -61,4 +66,8 @@ public class Member extends BaseEntity {
 	@Column(name = "member_status", nullable = false)
 	@Builder.Default
 	private MemberStatus memberStatus = MemberStatus.ACTIVE;
+
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority(role.getRole()));
+	}
 }
