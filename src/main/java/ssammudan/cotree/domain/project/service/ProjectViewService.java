@@ -22,11 +22,11 @@ public class ProjectViewService {
 
 	private final RedisTemplate<String, String> redisTemplate;
 	private static final String VIEW_COUNT_KEY_PREFIX = "project:viewCount:";
+	private static final String VIEW_COUNT_QUEUE = "project:viewCountQueue";
 
 	public void incrementViewCount(Long projectId) {
 		String key = VIEW_COUNT_KEY_PREFIX + projectId;
 		redisTemplate.opsForValue().increment(key);
-
-		redisTemplate.opsForList().leftPush("project:viewCountQueue", projectId.toString());
+		redisTemplate.opsForSet().add(VIEW_COUNT_QUEUE, projectId.toString());
 	}
 }
