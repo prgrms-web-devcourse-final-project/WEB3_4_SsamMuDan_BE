@@ -116,7 +116,6 @@ public class ProjectServiceImpl implements ProjectService {
 			.map(this::toHotProjectResponse)
 			.toList();
 	}
-
 	// 모집분야명, 인원수 조회
 	private List<Map<String, Integer>> getDevPositionsInfo(Long projectId) {
 		return projectDevPositionRepository.findByProjectId(projectId).stream()
@@ -161,6 +160,7 @@ public class ProjectServiceImpl implements ProjectService {
 			.mapToInt(ProjectDevPosition::getAmount)
 			.sum();
 	}
+
 
 	private List<TechStack> getTechStackNames(ProjectCreateRequest request) {
 		return techStackRepository.findByIds(request.techStackIds());
