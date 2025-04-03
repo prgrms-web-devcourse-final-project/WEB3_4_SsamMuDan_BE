@@ -47,6 +47,7 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     sangxxjin          create project 구현
  * 2025. 4. 2.     sangxxjin          get project 구현
+ * 2025. 4. 3.     sangxxjin          get hot project 구현, 상세 조회 시 조회수 증가 구현
  */
 @Service
 @RequiredArgsConstructor
@@ -60,6 +61,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private final S3Uploader s3Uploader;
 	private final LikeRepository likeRepository;
 	private final ProjectMembershipRepository projectMembershipRepository;
+	private final ProjectViewService projectViewService;
 
 	@Override
 	@Transactional
@@ -98,6 +100,8 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+
+		projectViewService.incrementViewCount(projectId);
 
 		Member creator = project.getMember();
 
