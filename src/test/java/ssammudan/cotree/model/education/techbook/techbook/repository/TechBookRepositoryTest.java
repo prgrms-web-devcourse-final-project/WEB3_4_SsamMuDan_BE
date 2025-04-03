@@ -25,6 +25,8 @@ import ssammudan.cotree.integration.DataJpaTestSupporter;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.member.member.type.MemberStatus;
 
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 
@@ -45,6 +47,13 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	private Member createMember() {
 		return fixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
+			.setNotNull("email")
+			.setNotNull("username")
+			.setNotNull("nickname")
+			.setNotNull("password")
+			.setNotNull("phoneNumber")
+			.set("role", MemberRole.USER)
+			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
 	}
 
@@ -171,7 +180,7 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 		clearEntityContext();
 
 		String keyword = fixtureMonkey.giveMeOne(String.class);
-		Pageable pageable = PageRequest.of(0, 16, Sort.Direction.DESC, "createdAd");
+		Pageable pageable = PageRequest.of(0, 16, Sort.Direction.DESC, "createdAt");
 
 		//When
 		List<TechBook> findAllTechBooks = techBookRepository.findAllTechBooksByKeyword(keyword, pageable).getContent();

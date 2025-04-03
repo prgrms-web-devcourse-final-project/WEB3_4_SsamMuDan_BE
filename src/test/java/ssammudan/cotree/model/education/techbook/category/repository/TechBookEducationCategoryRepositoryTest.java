@@ -21,6 +21,8 @@ import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.techbook.category.entity.TechBookEducationCategory;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.member.member.type.MemberStatus;
 
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 
@@ -40,6 +42,13 @@ class TechBookEducationCategoryRepositoryTest extends DataJpaTestSupporter {
 	private Member createMember() {
 		return fixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
+			.setNotNull("email")
+			.setNotNull("username")
+			.setNotNull("nickname")
+			.setNotNull("password")
+			.setNotNull("phoneNumber")
+			.set("role", MemberRole.USER)
+			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
 	}
 

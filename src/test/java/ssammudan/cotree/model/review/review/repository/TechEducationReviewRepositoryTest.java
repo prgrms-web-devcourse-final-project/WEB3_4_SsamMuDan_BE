@@ -17,6 +17,8 @@ import autoparams.AutoSource;
 import autoparams.Repeat;
 import ssammudan.cotree.integration.DataJpaTestSupporter;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.member.member.type.MemberStatus;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
 
@@ -38,6 +40,13 @@ class TechEducationReviewRepositoryTest extends DataJpaTestSupporter {
 	private Member createMember() {
 		return fixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
+			.setNotNull("email")
+			.setNotNull("username")
+			.setNotNull("nickname")
+			.setNotNull("password")
+			.setNotNull("phoneNumber")
+			.set("role", MemberRole.USER)
+			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
 	}
 
