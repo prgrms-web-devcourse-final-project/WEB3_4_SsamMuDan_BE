@@ -10,6 +10,8 @@ import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
+import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
@@ -37,6 +39,8 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	private final TechEducationReviewRepository techEducationReviewRepository;
 	private final MemberRepository memberRepository;
 	private final TechEducationTypeRepository techEducationTypeRepository;
+	private final TechTubeRepository techTubeRepository;
+	private final TechBookRepository techBookRepository;
 
 	/**
 	 * TechEducationReview 신규 생성
@@ -75,6 +79,17 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 			requestDto.content(),
 			requestDto.itemId()
 		);
+
+		//리뷰 대상 컨텐츠 리뷰 누적 점수 추가
+		switch (requestDto.techEducationType()) {
+			case TECH_TUBE -> techTubeRepository.findById(requestDto.itemId())
+				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND))
+				.addReviewRating(requestDto.rating());
+			case TECH_BOOK -> techBookRepository.findById(requestDto.itemId())
+				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND))
+				.addReviewRating(requestDto.rating());
+			default -> throw new GlobalException(ErrorCode.INVALID_INPUT_VALUE);
+		}
 
 		return techEducationReviewRepository.save(techEducationReview).getId();
 	}
