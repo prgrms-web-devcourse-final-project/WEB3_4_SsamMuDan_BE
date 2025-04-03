@@ -242,6 +242,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
 		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
+		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
 		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
 	}
 
@@ -306,9 +307,11 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 
 			assertEquals(filteredTechBookDto.id(), findTechBookDto.id(), "PK 일치");
 			assertEquals(filteredTechBookDto.writer(), findTechBookDto.writer(), "저자 일치");
+			assertEquals(filteredTechBookDto.title(), findTechBookDto.title(), "제목 일치");
 			assertEquals(filteredTechBookDto.price(), findTechBookDto.price(), "가격 일치");
 			assertEquals(filteredTechBookDto.techBookThumbnailUrl(), findTechBookDto.techBookThumbnailUrl(),
 				"썸네일 URL 일치");
+			assertEquals(filteredTechBookDto.likeCount(), findTechBookDto.likeCount(), "좋아요 수 일치");
 			assertEquals(filteredTechBookDto.createdAt(), findTechBookDto.createdAt(), "등록 일자 일치");
 		}
 	}
