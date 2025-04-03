@@ -6,8 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.service.MemberService;
-import ssammudan.cotree.global.config.SecurityConfig;
 import ssammudan.cotree.global.config.security.exception.CustomAccessDeniedHandler;
 import ssammudan.cotree.global.config.security.exception.CustomAuthenticationEntryPoint;
 import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
@@ -24,7 +23,6 @@ import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
 import ssammudan.cotree.global.config.security.jwt.TokenBlacklistService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
-import ssammudan.cotree.infra.frontend.FrontendConfig;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
@@ -41,7 +39,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  * 25. 3. 28.     hc               Initial creation
  */
 @WebMvcTest(MemberController.class)
-@Import({SecurityConfig.class, FrontendConfig.class})
+@AutoConfigureMockMvc(addFilters = false)
 class MemberControllerTest {
 
 	@Autowired
@@ -67,9 +65,6 @@ class MemberControllerTest {
 
 	@MockitoBean
 	private CustomAccessDeniedHandler accessDeniedHandler;
-
-	@Autowired
-	private FrontendConfig frontendConfig;
 
 	@Autowired
 	private ObjectMapper objectMapper;
