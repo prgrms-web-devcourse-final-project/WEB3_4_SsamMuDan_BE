@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.project.controller;
 
 import java.util.List;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -78,7 +79,7 @@ public class ProjectController {
 	@Operation(summary = "메인페이지 HOT 프로젝트 조회", description = "메인 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public List<HotProjectResponse> getHotProjectsForMain(
-		@PageableDefault(page = 0, size = 4, sort = {"viewCount",
+		@ParameterObject @PageableDefault(page = 0, size = 4, sort = {"viewCount",
 			"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		return projectServiceImpl.getHotProjectsForMain(pageable);
