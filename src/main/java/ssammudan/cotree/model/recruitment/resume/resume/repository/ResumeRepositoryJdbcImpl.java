@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
  * 2025. 4. 1.     kwak               Initial creation
  */
 @RequiredArgsConstructor
-public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
+public class ResumeRepositoryJdbcImpl implements ResumeRepositoryJdbc {
 
 	private final JdbcTemplate jdbcTemplate;
 	private static final String UPDATE_VIEW_COUNT_SQL = "UPDATE resume SET view_count = view_count + ? WHERE id = ?";
@@ -60,4 +60,6 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
 			);
 		}
 	}
+
+
 }
