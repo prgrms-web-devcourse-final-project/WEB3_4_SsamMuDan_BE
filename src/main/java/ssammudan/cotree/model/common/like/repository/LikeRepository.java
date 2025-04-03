@@ -18,4 +18,6 @@ import ssammudan.cotree.model.common.like.entity.Like;
  */
 public interface LikeRepository extends JpaRepository<Like, Long> {
 	long countByProjectId(Long id);
+
+	boolean existsByProjectIdAndMemberId(Long projectId, String memberId);
 }

@@ -2,6 +2,8 @@ package ssammudan.cotree.domain.project.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -15,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.service.ProjectServiceImpl;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
@@ -51,5 +54,19 @@ public class ProjectController {
 
 		return BaseResponse.success(SuccessCode.PROJECT_CREATE_SUCCESS, response);
 	}
+
+	@GetMapping("/{projectId}")
+	@Operation(summary = "프로젝트 상세 조회", description = "특정 프로젝트의 상세 정보를 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public BaseResponse<ProjectInfoResponse> getProjectInfo(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = (customUser != null) ? customUser.getId() : null;
+		ProjectInfoResponse response = projectServiceImpl.getProjectInfo(projectId, memberId);
+
+		return BaseResponse.success(SuccessCode.PROJECT_FETCH_SUCCESS, response);
+	}
+
 }
 

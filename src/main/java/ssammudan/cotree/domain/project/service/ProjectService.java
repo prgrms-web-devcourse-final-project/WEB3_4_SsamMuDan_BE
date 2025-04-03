@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ssammudan.cotree.domain.project.dto.HotProjectResponse;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 
 /**
  * PackageName : ssammudan.cotree.domain.project.service
@@ -25,4 +26,6 @@ public interface ProjectService {
 	ProjectCreateResponse create(ProjectCreateRequest request, MultipartFile file, String memberId);
 
 	List<HotProjectResponse> getHotProjects();
+
+	ProjectInfoResponse getProjectInfo(Long projectId, String memberId);
 }
