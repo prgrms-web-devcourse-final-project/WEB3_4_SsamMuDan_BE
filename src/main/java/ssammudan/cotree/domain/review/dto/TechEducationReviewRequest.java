@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationType;
+import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 /**
  * PackageName : ssammudan.cotree.domain.review.review.dto
@@ -26,7 +26,7 @@ public class TechEducationReviewRequest {
 	public record Create(
 		@NotNull
 		@Schema(description = "TechEducation 타입: TECH_BOOK, TECH_TUBE", example = "TECH_BOOK")
-		TechEducationType techEducationType,
+		TechEducationReviewType techEducationType,
 		@NotNull @Min(1) @Max(5)
 		@Schema(description = "TechEducation 리뷰 평점", example = "5")
 		Integer rating,
@@ -43,7 +43,7 @@ public class TechEducationReviewRequest {
 	public record Read(
 		@NotNull
 		@Schema(description = "TechEducation 타입: TECH_BOOK, TECH_TUBE", example = "TECH_BOOK")
-		TechEducationType techEducationType,
+		TechEducationReviewType techEducationType,
 		@NotNull @Min(1)
 		@Schema(description = "TechEducation 리뷰 대상 ID: TechBook ID, TechTube ID", example = "1")
 		Long itemId

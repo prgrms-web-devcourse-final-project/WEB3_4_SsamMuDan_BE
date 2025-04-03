@@ -46,7 +46,7 @@ public class TechEducationReviewController {
 
 	@PostMapping
 	@Operation(summary = "TechEducation(TechTube or TechBook) 리뷰 생성", description = "TechEducationType(TECH_TUBE, TECH_BOOK)과 ID(TechTube PK or TechBook PK), 평점과 수강평으로 리뷰를 작성")
-	@ApiResponse(responseCode = "200", description = "생성 성공")
+	@ApiResponse(responseCode = "201", description = "생성 성공")
 	public BaseResponse<Void> createTechEducationReview(
 		@RequestBody @Valid TechEducationReviewRequest.Create requestDto
 	) {
@@ -58,7 +58,7 @@ public class TechEducationReviewController {
 	@GetMapping
 	@Operation(summary = "TechEduction(TechTube or TechBook) 리뷰 목록 조회", description = "TechEductionType(TECH_TUBE, TECH_BOOK)과 ID(TechTube PK or TechBook PK)를 사용해서 리뷰 목록 조회")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<PageResponse<TechEducationReviewResponse.Detail>> getTechBookReviews(
+	public BaseResponse<PageResponse<TechEducationReviewResponse.Detail>> getTechEducationReviews(
 		@RequestParam final TechEducationReviewType reviewType,
 		@RequestParam final Long itemId,
 		@PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable

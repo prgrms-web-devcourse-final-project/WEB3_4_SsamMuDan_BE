@@ -31,7 +31,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationType;
+import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
@@ -197,7 +197,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
-			).set("techEducationType", TechEducationType.TECH_TUBE)
+			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", techTube.getId())
 			.sample();
@@ -234,7 +234,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
-			).set("techEducationType", TechEducationType.TECH_TUBE)
+			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", Arbitraries.longs().greaterOrEqual(1))
 			.sample();
@@ -270,7 +270,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
-			).set("techEducationType", TechEducationType.TECH_TUBE)
+			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", itemId)
 			.sample();
@@ -317,7 +317,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		TechEducationReviewRequest.Read requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Read.class
 			)
-			.set("techEducationType", TechEducationType.TECH_TUBE)
+			.set("techEducationType", TechEducationReviewType.TECH_TUBE)
 			.set("itemId", techTube.getId())
 			.sample();
 

@@ -145,7 +145,9 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/education/techbook").params(params));
 
 		//Then
-		BaseResponse<Object> baseResponse = BaseResponse.success(SuccessCode.TECH_BOOK_LIST_FIND_SUCCESS, resopnseDto);
+		BaseResponse<PageResponse<TechBookResponse.ListInfo>> baseResponse = BaseResponse.success(
+			SuccessCode.TECH_BOOK_LIST_FIND_SUCCESS, resopnseDto
+		);
 		String responseBody = objectMapper.writeValueAsString(baseResponse);
 
 		resultActions.andExpect(handler().handlerType(TechBookController.class))

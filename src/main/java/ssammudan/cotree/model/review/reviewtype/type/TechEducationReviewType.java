@@ -19,21 +19,21 @@ import ssammudan.cotree.global.response.ErrorCode;
  */
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public enum TechEducationType {
+public enum TechEducationReviewType {
 
 	TECH_TUBE(1), TECH_BOOK(2);
 
 	private final long id;
 
-	public static Long getTechEducationTypeId(final TechEducationType techEducationType) {
+	public static Long getTechEducationTypeId(final TechEducationReviewType techEducationType) {
 		if (techEducationType == null) {
 			throw new GlobalException(ErrorCode.INVALID_INPUT_VALUE);
 		}
 		return techEducationType.getId();
 	}
 
-	public static TechEducationType getTechEducationType(final long id) {
-		for (TechEducationType techEducationType : TechEducationType.values()) {
+	public static TechEducationReviewType getTechEducationType(final long id) {
+		for (TechEducationReviewType techEducationType : TechEducationReviewType.values()) {
 			if (techEducationType.getId() == id) {
 				return techEducationType;
 			}

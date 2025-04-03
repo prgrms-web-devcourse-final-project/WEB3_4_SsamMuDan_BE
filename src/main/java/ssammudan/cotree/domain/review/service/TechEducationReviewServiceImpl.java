@@ -18,6 +18,7 @@ import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
 import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
+import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 /**
  * PackageName : ssammudan.cotree.domain.review.review.service
@@ -57,7 +58,7 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 
 		//TODO: 작성자의 구매 이력에 해당 교육 컨텐츠 유효성 확인 필요
 
-		Long reviewTypeId = ssammudan.cotree.model.review.reviewtype.type.TechEducationType.getTechEducationTypeId(
+		Long reviewTypeId = TechEducationReviewType.getTechEducationTypeId(
 			requestDto.techEducationType()
 		); //TechTube = 1 or TechBook = 2
 
@@ -107,7 +108,7 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 		final TechEducationReviewRequest.Read requestDto, final Pageable pageable
 	) {
 		return PageResponse.of(techEducationReviewRepository.findAllByTechEducationType_IdAndItemId(
-			ssammudan.cotree.model.review.reviewtype.type.TechEducationType.getTechEducationTypeId(
+			TechEducationReviewType.getTechEducationTypeId(
 				requestDto.techEducationType()), requestDto.itemId(), pageable
 		).map(TechEducationReviewResponse.Detail::from));
 	}

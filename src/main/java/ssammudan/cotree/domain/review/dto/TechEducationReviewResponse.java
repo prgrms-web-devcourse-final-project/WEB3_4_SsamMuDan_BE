@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationType;
+import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 /**
  * PackageName : ssammudan.cotree.domain.review.review.dto
@@ -25,7 +25,7 @@ public class TechEducationReviewResponse {
 		@Schema(description = "TechEducation 리뷰 ID", example = "1")
 		long id,                    //TechEducationReview ID
 		@Schema(description = "TechEducation 타입: TECH_TUBE, TECH_BOOK", example = "TECH_TUBE")
-		TechEducationType techEducationType,    //TechEducationType: TECH_BOOK, TECH_TUBE
+		TechEducationReviewType techEducationType,    //TechEducationType: TECH_BOOK, TECH_TUBE
 		@Schema(description = "TechEducationItem ID: TechBook ID, TechTube ID", example = "1")
 		long itemId,    //Item ID: TechBook ID, TechTube ID
 		@Schema(description = "TechEducation 리뷰 작성자", example = "홍길동")
@@ -40,7 +40,7 @@ public class TechEducationReviewResponse {
 		public static Detail from(final TechEducationReview techEducationReview) {
 			return new Detail(
 				techEducationReview.getId(),
-				TechEducationType.getTechEducationType(techEducationReview.getTechEducationType().getId()),
+				TechEducationReviewType.getTechEducationType(techEducationReview.getTechEducationType().getId()),
 				techEducationReview.getItemId(),
 				techEducationReview.getReviewer().getNickname(),
 				techEducationReview.getRating(),
