@@ -53,10 +53,8 @@ public class LikeServiceImpl implements LikeService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
-		//좋아요 타입에 따른 분기, Like 엔티티 생성
-		Like like = createDesignedLike(member, requestDto);
-
-		return likeRepository.save(like).getId();
+		//좋아요 타입에 따른 분기, Like 엔티티 생성/저장
+		return likeRepository.save(createDesignedLike(member, requestDto)).getId();
 	}
 
 	/**
