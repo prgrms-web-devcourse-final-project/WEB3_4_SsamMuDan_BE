@@ -1,6 +1,7 @@
 package ssammudan.cotree.domain.project.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.project.dto.HotProjectResponse;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.infra.s3.S3Directory;
@@ -25,6 +27,8 @@ import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionRepository;
+import ssammudan.cotree.model.project.membership.repository.ProjectMembershipRepository;
+import ssammudan.cotree.model.project.membership.type.ProjectMembershipStatus;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
 import ssammudan.cotree.model.project.techstack.entity.ProjectTechStack;
@@ -52,6 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectDevPositionRepository projectDevPositionRepository;
 	private final S3Uploader s3Uploader;
 	private final LikeRepository likeRepository;
+	private final ProjectMembershipRepository projectMembershipRepository;
 
 	@Override
 	@Transactional
@@ -62,7 +67,7 @@ public class ProjectServiceImpl implements ProjectService {
 			.map(img -> s3Uploader.upload(memberId, img, S3Directory.PROJECT).getSaveUrl())
 			.orElse(null);
 
-		List<TechStack> techStacks = getTechStacks(request);
+		List<TechStack> techStacks = getTechStackNames(request);
 		List<DevelopmentPosition> devPositions = getDevelopmentPositions(request);
 
 		Member member = memberRepository.findById(memberId)
@@ -87,12 +92,49 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
+	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+
+		Member creator = project.getMember();
+
+		return ProjectInfoResponse.of(
+			project,
+			creator,
+			getLikeCount(projectId),
+			getDevPositionsInfo(projectId),
+			getTechStackNames(projectId),
+			isLikedByMember(projectId, memberId),
+			isMemberParticipant(projectId, memberId),
+			isProjectOwner(project, memberId)
+		);
+	}
+
+	@Transactional(readOnly = true)
 	public List<HotProjectResponse> getHotProjects() {
 		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
 			.map(this::toHotProjectResponse)
 			.toList();
 	}
 
+	// 모집분야명, 인원수 조회
+	private List<Map<String, Integer>> getDevPositionsInfo(Long projectId) {
+		return projectDevPositionRepository.findByProjectId(projectId).stream()
+			.map(projectDevPosition -> Map.of(
+				projectDevPosition.getDevelopmentPosition().getName(),
+				projectDevPosition.getAmount()
+			))
+			.toList();
+	}
+
+	// 기술 스택 이름 조회
+	private List<String> getTechStackNames(Long projectId) {
+		return projectTechStackRepository.findByProjectId(projectId).stream()
+			.map(projectTechStack -> projectTechStack.getTechStack().getName())
+			.toList();
+	}
+
+	// Hot프로젝트 데이터가공
 	private HotProjectResponse toHotProjectResponse(Project project) {
 		List<String> techStackImageUrls = getTechStackImageUrls(project.getId());
 		long likeCount = likeRepository.countByProjectId(project.getId());
@@ -120,11 +162,34 @@ public class ProjectServiceImpl implements ProjectService {
 			.sum();
 	}
 
-	private List<TechStack> getTechStacks(ProjectCreateRequest request) {
+	private List<TechStack> getTechStackNames(ProjectCreateRequest request) {
 		return techStackRepository.findByIds(request.techStackIds());
 	}
 
 	private List<DevelopmentPosition> getDevelopmentPositions(ProjectCreateRequest request) {
 		return developmentPositionRepository.findByIds(request.recruitmentPositions().keySet());
+	}
+
+	// 좋아요 개수
+	private long getLikeCount(Long projectId) {
+		return likeRepository.countByProjectId(projectId);
+	}
+
+	// 좋아요 누른 멤버 확인
+	private boolean isLikedByMember(Long projectId, String memberId) {
+		return memberId != null && likeRepository.existsByProjectIdAndMemberId(projectId, memberId);
+	}
+
+	// 이미 참가한 프로젝트 여부 확인
+	private boolean isMemberParticipant(Long projectId, String memberId) {
+		return memberId != null &&
+			projectMembershipRepository.existsByProjectIdAndMemberIdAndProjectMembershipStatus(
+				projectId, memberId, ProjectMembershipStatus.JOINED
+			);
+	}
+
+	// 프로젝트 작성자 여부 확인
+	private boolean isProjectOwner(Project project, String memberId) {
+		return project.getMember().getId().equals(memberId);
 	}
 }
