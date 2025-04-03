@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.project.dto.HotProjectResponse;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.global.error.GlobalException;
@@ -17,6 +18,7 @@ import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
+import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.common.techstack.repository.TechStackRepository;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -49,6 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectRepository projectRepository;
 	private final ProjectDevPositionRepository projectDevPositionRepository;
 	private final S3Uploader s3Uploader;
+	private final LikeRepository likeRepository;
 
 	@Override
 	@Transactional
@@ -81,6 +84,40 @@ public class ProjectServiceImpl implements ProjectService {
 		projectDevPositionRepository.saveAll(projectDevPositions);
 
 		return ProjectCreateResponse.from(project);
+	}
+
+	@Transactional(readOnly = true)
+	public List<HotProjectResponse> getHotProjects() {
+		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
+			.map(this::toHotProjectResponse)
+			.toList();
+	}
+
+	private HotProjectResponse toHotProjectResponse(Project project) {
+		List<String> techStackImageUrls = getTechStackImageUrls(project.getId());
+		long likeCount = likeRepository.countByProjectId(project.getId());
+		Member member = memberRepository.findById(project.getMember().getId()).orElse(null);
+		int recruitmentCount = getRecruitmentCount(project.getId());
+
+		return HotProjectResponse.from(project, techStackImageUrls, likeCount, member, recruitmentCount);
+	}
+
+	// 프로젝트에 해당하는 techstack들의 이미지들 가져오는 메서드
+	private List<String> getTechStackImageUrls(Long projectId) {
+		List<Long> techStackIds = projectTechStackRepository.findByProjectId(projectId).stream()
+			.map(projectTechStack -> projectTechStack.getTechStack().getId())
+			.toList();
+
+		return techStackRepository.findAllById(techStackIds).stream()
+			.map(TechStack::getImageUrl)
+			.toList();
+	}
+
+	// 프로젝트 총 모집인원 계산 메서드
+	private int getRecruitmentCount(Long projectId) {
+		return projectDevPositionRepository.findByProjectId(projectId).stream()
+			.mapToInt(ProjectDevPosition::getAmount)
+			.sum();
 	}
 
 	private List<TechStack> getTechStacks(ProjectCreateRequest request) {
