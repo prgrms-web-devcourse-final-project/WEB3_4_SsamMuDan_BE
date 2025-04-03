@@ -6,16 +6,19 @@ import static ssammudan.cotree.model.recruitment.resume.developmentposition.enti
 import static ssammudan.cotree.model.recruitment.resume.resume.entity.QResume.*;
 import static ssammudan.cotree.model.recruitment.resume.techstack.entity.QResumeTechStack.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -46,25 +49,66 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 
 		BooleanBuilder whereCondition = getWhereCondition(positionIds, skillIds, startYear, endYear);
 
-		List<ResumeResponse> resumeResponses = jpaQueryFactory
-			.select(Projections.constructor(
-				ResumeResponse.class,
+		// 1단계: 기본 정보 조회
+		List<Tuple> resumeTuples = jpaQueryFactory
+			.select(
+				resume.id,
 				resume.profileImage,
 				resume.isOpen,
-				developmentPosition.name,
 				resume.years,
 				getStringTemplate(),
 				resume.createdAt
-			)).from(resume)
+			)
+			.from(resume)
 			.join(resume.resumeDevelopmentPositions, resumeDevelopmentPosition)
 			.join(resumeDevelopmentPosition.developmentPosition, developmentPosition)
 			.join(resume.resumeTechStacks, resumeTechStack)
 			.join(resumeTechStack.techStack, techStack)
 			.where(whereCondition)
+			.groupBy(resume.id)  // 중복 제거
 			.orderBy(getOrderSpecifier(sort))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
+
+		// 2단계: resume ID 목록 추출
+		List<Long> resumeIds = resumeTuples.stream()
+			.map(tuple -> tuple.get(resume.id))
+			.collect(Collectors.toList());
+
+		// 3단계: 각 resume ID에 대한 positions 조회
+		Map<Long, List<String>> positionsMap = jpaQueryFactory
+			.select(
+				resumeDevelopmentPosition.resume.id,
+				developmentPosition.name
+			)
+			.from(resumeDevelopmentPosition)
+			.join(resumeDevelopmentPosition.developmentPosition, developmentPosition)
+			.where(resumeDevelopmentPosition.resume.id.in(resumeIds))
+			.fetch()
+			.stream()
+			.collect(Collectors.groupingBy(
+				tuple -> tuple.get(resumeDevelopmentPosition.resume.id),
+				Collectors.mapping(
+					tuple -> tuple.get(developmentPosition.name),
+					Collectors.toList()
+				)
+			));
+
+		// 4단계: ResumeResponse 객체 생성
+		List<ResumeResponse> resumeResponses = resumeTuples.stream()
+			.map(tuple -> {
+				Long resumeId = tuple.get(resume.id);
+				return ResumeResponse.builder()
+					.profileImage(tuple.get(resume.profileImage))
+					.isOpen(tuple.get(resume.isOpen))
+					.positions(positionsMap.getOrDefault(resumeId, Collections.emptyList()))
+					.year(tuple.get(resume.years))
+					.introduction(tuple.get(getStringTemplate()))
+					.createAt(tuple.get(resume.createdAt))
+					.build();
+			})
+			.collect(Collectors.toList());
 
 		Long total = jpaQueryFactory
 			.select(resume.countDistinct())

@@ -18,11 +18,11 @@ import lombok.Builder;
  */
 @Builder
 public record ResumeResponse(
-	String imageUrl,
+	String profileImage,
 	boolean isOpen,
 	List<String> positions,
 	Integer year,
 	String introduction,
-	LocalDateTime creatAt
+	LocalDateTime createAt
 ) {
 }
