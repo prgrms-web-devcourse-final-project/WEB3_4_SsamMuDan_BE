@@ -66,11 +66,15 @@ public class Like extends BaseEntity {
 	private Community community;
 
 	public static Like create(final Member member, final TechTube techTube) {
-		return Like.builder().member(member).techTube(techTube).build();
+		Like like = Like.builder().member(member).build();
+		like.setRelationshipWithTechTube(techTube);
+		return like;
 	}
 
 	public static Like create(final Member member, final TechBook techBook) {
-		return Like.builder().member(member).techBook(techBook).build();
+		Like like = Like.builder().member(member).build();
+		like.setRelationshipWithTechBook(techBook);
+		return like;
 	}
 
 	public static Like create(final Member member, final Project project) {
@@ -79,6 +83,16 @@ public class Like extends BaseEntity {
 
 	public static Like create(final Member member, final Community community) {
 		return Like.builder().member(member).community(community).build();
+	}
+
+	private void setRelationshipWithTechTube(final TechTube techTube) {
+		this.techTube = techTube;
+		techTube.getLikes().add(this);
+	}
+
+	private void setRelationshipWithTechBook(final TechBook techBook) {
+		this.techBook = techBook;
+		techBook.getLikes().add(this);
 	}
 
 }

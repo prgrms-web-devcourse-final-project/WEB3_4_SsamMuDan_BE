@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ssammudan.cotree.global.converter.DurationToLongConverter;
 import ssammudan.cotree.global.entity.BaseEntity;
+import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.techtube.category.entity.TechTubeEducationCategory;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -108,6 +109,10 @@ public class TechTube extends BaseEntity {
 	@OneToMany(mappedBy = "techTube")
 	@Builder.Default
 	private List<TechTubeEducationCategory> techTubeEducationCategories = new ArrayList<>();
+
+	@OneToMany(mappedBy = "techTube")
+	@Builder.Default
+	private List<Like> likes = new ArrayList<>();    //TechTube 좋아요
 
 	public static TechTube create(
 		final Member writer,
