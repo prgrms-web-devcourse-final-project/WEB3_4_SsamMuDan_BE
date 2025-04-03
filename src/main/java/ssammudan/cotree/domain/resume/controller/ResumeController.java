@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.resume.controller;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
 import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
 import ssammudan.cotree.domain.resume.service.ResumeService;
+import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
@@ -49,10 +51,10 @@ public class ResumeController {
 	@PostMapping
 	public BaseResponse<ResumeCreateResponse> register(
 			@Valid @RequestBody ResumeCreateRequest request,
-			@RequestParam("id") String dummyMemberId
+			@RequestParam("id") String dummyMemberId,
+			@AuthenticationPrincipal CustomUser customUser
 	) {
-		// todo 추후 수정
-		ResumeCreateResponse response = resumeService.register(request, dummyMemberId);
+		ResumeCreateResponse response = resumeService.register(request, customUser.getId());
 		return BaseResponse.success(SuccessCode.RESUME_CREATE_SUCCESS, response);
 	}
 
@@ -76,7 +78,7 @@ public class ResumeController {
 		@RequestParam(value = "sort", defaultValue = "LATEST", required = false) SearchResumeSort sort
 
 	) {
-		return BaseResponse.success(SuccessCode.RESUME_DETAIL_SUCCESS,
+		return BaseResponse.success(SuccessCode.RESUME_LIST_SUCCESS,
 			resumeService.getResumeList(page, size, positionIds, skillIds, startYear, endYear, sort));
 	}
 }
