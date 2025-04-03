@@ -13,8 +13,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import ssammudan.cotree.global.entity.BaseEntity;
-import ssammudan.cotree.model.project.project.entity.Project;
+import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.project.membership.type.ProjectMembershipStatus;
+import ssammudan.cotree.model.project.project.entity.Project;
 
 /**
  * PackageName : ssammudan.cotree.model.project.membership.entity
@@ -26,6 +27,7 @@ import ssammudan.cotree.model.project.membership.type.ProjectMembershipStatus;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
+ * 2025-04-03     sangxxjin             빠져있던 member 컬럼 추가
  */
 @Entity
 @Getter
@@ -36,6 +38,10 @@ public class ProjectMembership extends BaseEntity {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private Member member;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_id", nullable = false)

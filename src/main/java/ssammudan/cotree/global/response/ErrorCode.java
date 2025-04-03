@@ -26,7 +26,8 @@ public enum ErrorCode {
 	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다"),
 
 	//Project: 4001 ~ 5000
-
+	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
+	
 	//Community: 5001 ~ 6000
 	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
 	COMMUNITY_MEMBER_NOTFOUND(HttpStatus.BAD_REQUEST, "5002", "존재하지 않은 회원입니다."),
