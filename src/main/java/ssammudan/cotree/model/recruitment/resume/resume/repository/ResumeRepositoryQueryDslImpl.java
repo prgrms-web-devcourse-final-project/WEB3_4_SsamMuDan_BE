@@ -49,7 +49,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 
 		BooleanBuilder whereCondition = getWhereCondition(positionIds, skillIds, startYear, endYear);
 
-		// 1단계: 기본 정보 조회
+		// 기본 정보 조회
 		List<Tuple> resumeTuples = jpaQueryFactory
 			.select(
 				resume.id,
@@ -71,12 +71,12 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.limit(pageable.getPageSize())
 			.fetch();
 
-		// 2단계: resume ID 목록 추출
+		// resume ID 목록 추출
 		List<Long> resumeIds = resumeTuples.stream()
 			.map(tuple -> tuple.get(resume.id))
 			.collect(Collectors.toList());
 
-		// 3단계: 각 resume ID에 대한 positions 조회
+		// 각 resume ID에 대한 positions 조회
 		Map<Long, List<String>> positionsMap = jpaQueryFactory
 			.select(
 				resumeDevelopmentPosition.resume.id,
@@ -95,7 +95,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 				)
 			));
 
-		// 4단계: ResumeResponse 객체 생성
+		// 최종적으로 담아 반환
 		List<ResumeResponse> resumeResponses = resumeTuples.stream()
 			.map(tuple -> {
 				Long resumeId = tuple.get(resume.id);
