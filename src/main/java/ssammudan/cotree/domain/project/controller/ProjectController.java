@@ -84,5 +84,12 @@ public class ProjectController {
 		return projectServiceImpl.getHotProjectsForMain(pageable);
 	}
 
+	@GetMapping("/hot")
+	@Operation(summary = "프로젝트 페이지 HOT 프로젝트 조회", description = "프로젝트 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public List<HotProjectResponse> getHotProjectsForProject() {
+		return projectServiceImpl.getHotProjectsForProject();
+	}
+
 }
 
