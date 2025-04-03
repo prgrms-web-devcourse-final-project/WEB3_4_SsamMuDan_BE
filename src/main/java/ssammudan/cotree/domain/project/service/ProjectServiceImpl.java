@@ -46,6 +46,7 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     sangxxjin          create project 구현
+ * 2025. 4. 2.     sangxxjin          get project 구현
  */
 @Service
 @RequiredArgsConstructor
