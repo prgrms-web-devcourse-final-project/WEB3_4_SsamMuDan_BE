@@ -16,4 +16,5 @@ import ssammudan.cotree.model.common.like.entity.Like;
  * 2025-03-29     Baekgwa               Initial creation
  */
 public interface LikeRepository extends JpaRepository<Like, Long> {
+	long countByProjectId(Long id);
 }

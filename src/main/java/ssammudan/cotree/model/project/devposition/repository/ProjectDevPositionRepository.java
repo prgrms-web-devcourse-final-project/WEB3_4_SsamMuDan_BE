@@ -1,5 +1,7 @@
 package ssammudan.cotree.model.project.devposition.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
@@ -16,4 +18,5 @@ import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
  * 2025-03-29     Baekgwa               Initial creation
  */
 public interface ProjectDevPositionRepository extends JpaRepository<ProjectDevPosition, Long> {
+	List<ProjectDevPosition> findByProjectId(Long id);
 }
