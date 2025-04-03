@@ -86,11 +86,11 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	private Member createMember() {
 		return entityFixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
-			.set("email", Arbitraries.strings().alpha())
-			.set("username", Arbitraries.strings().alpha())
-			.set("nickname", Arbitraries.strings().alpha())
-			.set("password", Arbitraries.strings().alpha())
-			.set("phoneNumber", Arbitraries.strings().alpha())
+			.set("email", Arbitraries.strings().alpha()).maxSize("email", 255)
+			.set("username", Arbitraries.strings().alpha()).maxSize("email", 255)
+			.set("nickname", Arbitraries.strings().alpha()).maxSize("email", 255)
+			.set("password", Arbitraries.strings().alpha()).maxSize("email", 255)
+			.set("phoneNumber", Arbitraries.strings().numeric()).maxSize("email", 255)
 			.set("role", MemberRole.USER)
 			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
