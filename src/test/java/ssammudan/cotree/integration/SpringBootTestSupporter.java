@@ -13,13 +13,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.community.service.CommunityService;
-import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
+import ssammudan.cotree.domain.review.service.TechEducationReviewService;
+import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.integration.factory.CommunityDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
+import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
+import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 
 /**
  * PackageName : ssammudan.cotree.integration
@@ -71,14 +74,20 @@ public abstract class SpringBootTestSupporter {
 	protected CommunityRepository communityRepository;
 	@Autowired
 	protected TechBookRepository techBookRepository;
+	@Autowired
+	protected TechTubeRepository techTubeRepository;
+	@Autowired
+	protected TechEducationReviewRepository techEducationReviewRepository;
 
 	/**
 	 * service
 	 */
 	@Autowired
 	protected CommunityService communityService;
-  @Autowired
+	@Autowired
 	protected TechBookService techBookService;
+	@Autowired
+	protected TechEducationReviewService techEducationReviewService;
 
 	/**
 	 * MockBean

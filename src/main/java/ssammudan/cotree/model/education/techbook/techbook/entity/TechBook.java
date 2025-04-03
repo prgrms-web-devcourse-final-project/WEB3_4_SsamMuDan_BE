@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ssammudan.cotree.global.entity.BaseEntity;
+import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.techbook.category.entity.TechBookEducationCategory;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -107,6 +108,10 @@ public class TechBook extends BaseEntity {
 	@OneToMany(mappedBy = "techBook")
 	@Builder.Default
 	private List<TechBookEducationCategory> techBookEducationCategories = new ArrayList<>();
+
+	@OneToMany(mappedBy = "techBook")
+	@Builder.Default
+	private List<Like> likes = new ArrayList<>();    //TechBook 좋아요
 
 	public static TechBook create(
 		final Member writer,
@@ -239,6 +244,18 @@ public class TechBook extends BaseEntity {
 	 */
 	public TechBook increseViewCount() {
 		this.viewCount += 1;
+		return this;
+	}
+
+	/**
+	 * TechBook 누적 리뷰 점수 추가
+	 *
+	 * @param rating - 리뷰 점수
+	 * @return this
+	 */
+	public TechBook addReviewRating(final Integer rating) {
+		this.totalRating += rating;
+		this.totalReviewCount += 1;
 		return this;
 	}
 
