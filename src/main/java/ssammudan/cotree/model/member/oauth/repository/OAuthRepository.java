@@ -1,6 +1,11 @@
 package ssammudan.cotree.model.member.oauth.repository;
 
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import ssammudan.cotree.model.member.oauth.entity.OAuth;
 
@@ -16,4 +21,8 @@ import ssammudan.cotree.model.member.oauth.entity.OAuth;
  * 2025-03-29     Baekgwa               Initial creation
  */
 public interface OAuthRepository extends JpaRepository<OAuth, Long> {
+	@EntityGraph(attributePaths = {"member"})
+	@Query("SELECT o FROM OAuth o WHERE o.providerId = :providerId")
+	Optional<OAuth> findByProviderId(@Param("providerId") String providerId);
+
 }
