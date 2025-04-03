@@ -10,6 +10,7 @@ import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
@@ -37,6 +38,7 @@ public class TechBookServiceImpl implements TechBookService {
 	private final TechBookRepository techBookRepository;
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
+	private final LikeRepository likeRepository;
 
 	/**
 	 * TechBook 신규 생성

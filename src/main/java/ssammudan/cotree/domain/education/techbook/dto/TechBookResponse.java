@@ -23,7 +23,6 @@ public class TechBookResponse {
 	@Schema(description = "TechBook 상세 조회 응답 DTO")
 	public record Detail(
 		//TODO: 구매 상태 정보 필요(비회원: 비구매, 회원: 구매 vs 비구매)
-		//TODO: 좋아요 숫자 포함
 		@Schema(description = "TechBook ID", example = "1")
 		long id,                      //TechBook ID
 		@Schema(description = "TechBook 저자", example = "홍길동")
@@ -52,6 +51,8 @@ public class TechBookResponse {
 		int price,                    //TechBook 가격
 		@Schema(description = "TechBook 조회 수", example = "123")
 		int viewCount,                //TechBook 조회 수
+		@Schema(description = "TechBook 좋아요 수", example = "123")
+		long likeCount,                //TechBook 좋아요 수
 		@Schema(description = "TechBook 등록 일자", example = "2025-01-01")
 		LocalDate createdAt           //TechBook 등록 일자
 	) {
@@ -71,6 +72,7 @@ public class TechBookResponse {
 				techBook.getTechBookPage(),
 				techBook.getPrice(),
 				techBook.getViewCount(),
+				techBook.getLikes().size(),
 				techBook.getCreatedAt().toLocalDate()
 			);
 		}
@@ -78,24 +80,29 @@ public class TechBookResponse {
 
 	@Schema(description = "TechBook 목록 조회 응답 DTO")
 	public record ListInfo(
-		//TODO: 좋아요 숫자 포함
 		@Schema(description = "TechBook ID", example = "1")
-		long id,
+		long id,    //TechBook ID
 		@Schema(description = "TechBook 저자", example = "홍길동")
-		String writer,
+		String writer,    //TechBook 저자
+		@Schema(description = "TechBook 제목", example = "Spring Boot")
+		String title,    //TechBook 제목
 		@Schema(description = "TechBook 가격", example = "10000")
-		int price,
+		int price,    //TechBook 가격
 		@Schema(description = "TechBook 썸네일 URL", example = "https://cotree.ssammudan.com/techbook/SpringBoot_thumbnail.png")
-		String techBookThumbnailUrl,
+		String techBookThumbnailUrl,    //TechBook 썸네일 URL
+		@Schema(description = "TechBook 좋아요 수", example = "123")
+		long likeCount,    //TechBook 좋아요 수
 		@Schema(description = "TechBook 등록 일자", example = "2025-01-01")
-		LocalDate createdAt
+		LocalDate createdAt    //TechBook 등록 일자
 	) {
 		public static ListInfo from(final TechBook techBook) {
 			return new ListInfo(
 				techBook.getId(),
 				techBook.getWriter().getNickname(),
+				techBook.getTitle(),
 				techBook.getPrice(),
 				techBook.getTechBookThumbnailUrl(),
+				techBook.getLikes().size(),
 				techBook.getCreatedAt().toLocalDate()
 			);
 		}
