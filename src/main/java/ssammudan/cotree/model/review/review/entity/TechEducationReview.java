@@ -89,16 +89,4 @@ public class TechEducationReview extends BaseEntity {
 			.build();
 	}
 
-	/**
-	 * TechEducationReview 엔티티 정보 수정
-	 *
-	 * @param newRating  - 새로운 평점
-	 * @param newContent - 새로운 수강평
-	 * @return this
-	 */
-	public TechEducationReview modify(final Integer newRating, final String newContent) {
-
-		return this;
-	}
-
 }
