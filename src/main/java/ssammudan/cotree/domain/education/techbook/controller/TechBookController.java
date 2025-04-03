@@ -1,6 +1,5 @@
 package ssammudan.cotree.domain.education.techbook.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -11,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
 import ssammudan.cotree.global.response.BaseResponse;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
 
 /**
@@ -24,7 +25,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * FileName    : TechBookController
  * Author      : loadingKKamo21
  * Date        : 25. 3. 28.
- * Description : 
+ * Description : TechBookController 컨트롤러
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -39,20 +40,22 @@ public class TechBookController {
 
 	private final TechBookService techBookService;
 
-	@Operation(summary = "TechBook 상세 조회")
 	@GetMapping("/{id}/info")
+	@Operation(summary = "TechBook 상세 조회", description = "ID를 통해 특정 TechBook을 조회")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<TechBookResponse.Detail> getTechBookById(@PathVariable @Min(1) Long id) {
 		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_READ_SUCCESS, responseDto);
 	}
 
-	@Operation(summary = "TechBook 목록 조회")
 	@GetMapping
-	public BaseResponse<Page<TechBookResponse.ListInfo>> getTechBooks(
+	@Operation(summary = "TechBook 목록 조회", description = "검색어를 사용해 TechBook 목록을 조회")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public BaseResponse<PageResponse<TechBookResponse.ListInfo>> getTechBooks(
 		@RequestParam(required = false) String keyword,
 		@PageableDefault(page = 0, size = 16, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
 	) {
-		Page<TechBookResponse.ListInfo> responseDto = techBookService.findAllTechBooks(keyword, pageable);
+		PageResponse<TechBookResponse.ListInfo> responseDto = techBookService.findAllTechBooks(keyword, pageable);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_LIST_FIND_SUCCESS, responseDto);
 	}
 

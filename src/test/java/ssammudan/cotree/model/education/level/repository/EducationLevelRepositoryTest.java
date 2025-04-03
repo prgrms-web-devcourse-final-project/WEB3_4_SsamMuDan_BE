@@ -16,8 +16,8 @@ import net.jqwik.api.Arbitraries;
 
 import autoparams.AutoSource;
 import autoparams.Repeat;
+import ssammudan.cotree.integration.DataJpaTestSupporter;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
-import ssammudan.cotree.model.education.supporter.DataJpaTestSupporter;
 
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 
