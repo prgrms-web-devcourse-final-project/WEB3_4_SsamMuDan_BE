@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.global.config.security.oauth.dto.KakaoResponse;
@@ -75,13 +74,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 		}
 		// 일치하는 회원이 있으면 oauth 저장
 		OAuth oAuthEntity = new OAuth(member.get(), oAuth2Response);
-		save(oAuthEntity);
+		oAuthRepository.save(oAuthEntity);
 		return new CustomUser(member.get(), oAuth2Response);
-	}
-
-	@Transactional
-	protected void save(OAuth oAuth) {
-		oAuthRepository.save(oAuth);
 	}
 }
 
