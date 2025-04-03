@@ -88,6 +88,7 @@ public class SecurityConfig {
 
 				// Project Domain
 				.requestMatchers(GET, "/api/v1/project/team/hot").permitAll()
+				.requestMatchers(GET, "/api/v1/project/team/{projectId}").permitAll()
 
 				// Upload Domain
 				// 해당 없음. 모두 인증 필요
