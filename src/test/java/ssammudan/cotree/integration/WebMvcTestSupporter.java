@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ssammudan.cotree.domain.education.techbook.controller.TechBookController;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
+import ssammudan.cotree.domain.review.controller.TechEducationReviewController;
+import ssammudan.cotree.domain.review.service.TechEducationReviewService;
 import ssammudan.cotree.global.config.TestWebConfig;
 import ssammudan.cotree.global.config.security.exception.CustomAccessDeniedHandler;
 import ssammudan.cotree.global.config.security.exception.CustomAuthenticationEntryPoint;
@@ -36,7 +38,7 @@ import com.navercorp.fixturemonkey.mockito.plugin.MockitoPlugin;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 31.    loadingKKamo21       Initial creation
  */
-@WebMvcTest({TechBookController.class})
+@WebMvcTest({TechBookController.class, TechEducationReviewController.class})
 @Import({TestWebConfig.class})
 @AutoConfigureMockMvc(addFilters = false)  // Security 비활성화
 public abstract class WebMvcTestSupporter {
@@ -61,6 +63,9 @@ public abstract class WebMvcTestSupporter {
 
 	@MockitoBean
 	protected TechBookService techBookService;
+
+	@MockitoBean
+	protected TechEducationReviewService techEducationReviewService;
 
 	@MockitoBean
 	private AccessTokenService accessTokenService;
