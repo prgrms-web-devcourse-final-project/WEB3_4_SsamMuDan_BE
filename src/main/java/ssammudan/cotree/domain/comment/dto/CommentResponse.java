@@ -26,7 +26,7 @@ public class CommentResponse {
 	}
 
 	@Getter
-	@Builder
+	@Builder(access = AccessLevel.PRIVATE)
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class CommentInfo {
 		private final Long id;
@@ -52,7 +52,7 @@ public class CommentResponse {
 	}
 
 	@Getter
-	@Builder
+	@Builder(access = AccessLevel.PRIVATE)
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class ChildCommentInfo {
 		private final Long id;
