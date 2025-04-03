@@ -145,6 +145,8 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			whereCondition.and(resume.years.loe(endYear));
 		}
 
+		whereCondition.and(resume.isOpen);
+
 		return whereCondition;
 	}
 
