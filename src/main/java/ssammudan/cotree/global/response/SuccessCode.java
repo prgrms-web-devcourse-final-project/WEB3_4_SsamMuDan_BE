@@ -27,6 +27,8 @@ public enum SuccessCode {
 
 	//Project
 	PROJECT_CREATE_SUCCESS(HttpStatus.CREATED, "201", "프로젝트 생성 성공"),
+	PROJECT_HOT_LIST_SEARCH_SUCCESS(HttpStatus.OK, "200", "Hot 프로젝트 조회 성공"),
+	PROJECT_FETCH_SUCCESS(HttpStatus.OK, "200", "프로젝트 상세 조회 성공"),
 
 	//Community
 	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
