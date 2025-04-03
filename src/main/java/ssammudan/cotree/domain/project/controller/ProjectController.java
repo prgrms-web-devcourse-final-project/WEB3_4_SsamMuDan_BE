@@ -1,7 +1,10 @@
 package ssammudan.cotree.domain.project.controller;
 
+import java.util.List;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -13,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.project.dto.HotProjectResponse;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.service.ProjectServiceImpl;
@@ -42,14 +46,22 @@ public class ProjectController {
 	@Operation(summary = "프로젝트 생성", description = "새로운 프로젝트를 생성합니다.")
 	@ApiResponse(responseCode = "201", description = "프로젝트 생성 성공")
 	public BaseResponse<ProjectCreateResponse> createProject(
-			@RequestPart("request") @Valid ProjectCreateRequest request,
-			@RequestPart(value = "projectImage", required = false) MultipartFile projectImage,
-			@AuthenticationPrincipal CustomUser customUser
+		@RequestPart("request") @Valid ProjectCreateRequest request,
+		@RequestPart(value = "projectImage", required = false) MultipartFile projectImage,
+		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
 		ProjectCreateResponse response = projectServiceImpl.create(request, projectImage, memberId);
 
 		return BaseResponse.success(SuccessCode.PROJECT_CREATE_SUCCESS, response);
+	}
+
+	@GetMapping("/hot")
+	@Operation(summary = "Hot 프로젝트 목록 조회", description = "Hot 프로젝트 2개 조회")
+	@ApiResponse(responseCode = "200", description = "Hot 프로젝트 조회 성공")
+	public BaseResponse<List<HotProjectResponse>> getHotProjects(
+	) {
+		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS, projectServiceImpl.getHotProjects());
 	}
 }
 
