@@ -87,7 +87,8 @@ public class SecurityConfig {
 				.requestMatchers(GET, "/api/v1/education/techbook").permitAll()
 
 				// Education / TechTube Domain
-				// 해당 없음. 모두 인증 필요
+				.requestMatchers(GET, "/api/v1/education/techtube/**").permitAll()
+				.requestMatchers(GET, "/api/v1/education/techtube").permitAll()
 
 				// Education / Review Domain
 				.requestMatchers(GET, "/api/v1/education/review/**").permitAll()

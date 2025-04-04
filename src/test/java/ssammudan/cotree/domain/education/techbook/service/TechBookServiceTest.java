@@ -29,6 +29,7 @@ import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.integration.SpringBootTestSupporter;
+import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.type.EducationLevelType;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
@@ -107,12 +108,11 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 				.ofMinLength(1)
 				.ofMaxLength(219)
 				.map(s -> s + UUID.randomUUID()))
-			.set("phoneNumber",
-				Arbitraries.strings()
-					.withCharRange('a', 'z')
-					.ofMinLength(1)
-					.ofMaxLength(219)
-					.map(s -> s + UUID.randomUUID()))
+			.set("phoneNumber", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
 			.set("role", MemberRole.USER)
 			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
@@ -143,6 +143,10 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 			.set("techBookPage", Arbitraries.integers().greaterOrEqual(0))
 			.set("price", Arbitraries.integers().greaterOrEqual(0))
 			.sampleList(size);
+	}
+
+	private Like createLike(final Member member, final TechBook techBook) {
+		return Like.create(member, techBook);
 	}
 
 	//@RepeatedTest(10)
@@ -176,8 +180,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(requestDto.introduction(), savedTechBook.getIntroduction(), "소개 일치");
 		assertEquals(requestDto.techBookUrl(), savedTechBook.getTechBookUrl(), "PDF URL 일치");
 		assertEquals(requestDto.techBookPreviewUrl(), savedTechBook.getTechBookPreviewUrl(), "PDF 미리보기 URL 일치");
-		assertEquals(requestDto.techBookThumbnailUrl(), savedTechBook.getTechBookThumbnailUrl(),
-			"썸네일 URL 일치");
+		assertEquals(requestDto.techBookThumbnailUrl(), savedTechBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
 		assertEquals(requestDto.techBookPage(), savedTechBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(requestDto.price(), savedTechBook.getPrice(), "가격 일치");
 	}
@@ -200,10 +203,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		GlobalException globalException = assertThrows(GlobalException.class,
 			() -> techBookService.createTechBook(writer.getId(), requestDto), "GlobalException 발생");
 
-		assertAll(
-			() -> assertNotNull(globalException, "예외 존재"),
-			() -> assertEquals(globalException.getErrorCode(), ErrorCode.EDUCATION_LEVEL_NOT_FOUND, "에러 코드 일치")
-		);
+		assertAll(() -> assertNotNull(globalException, "예외 존재"),
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.EDUCATION_LEVEL_NOT_FOUND, "에러 코드 일치"));
 	}
 
 	//@RepeatedTest(10)
@@ -224,10 +225,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		GlobalException globalException = assertThrows(GlobalException.class,
 			() -> techBookService.createTechBook(UUID.randomUUID().toString(), requestDto), "GlobalException 발생");
 
-		assertAll(
-			() -> assertNotNull(globalException, "예외 존재"),
-			() -> assertEquals(globalException.getErrorCode(), ErrorCode.MEMBER_NOT_FOUND, "에러 코드 일치")
-		);
+		assertAll(() -> assertNotNull(globalException, "예외 존재"),
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.MEMBER_NOT_FOUND, "에러 코드 일치"));
 	}
 
 	//@RepeatedTest(10)
@@ -265,6 +264,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
 		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
 		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
+		assertFalse(responseDto.isLike(), "좋아요 여부");
 		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
 	}
 
@@ -281,10 +281,100 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		GlobalException globalException = assertThrows(GlobalException.class,
 			() -> techBookService.findTechBookById(unknownId), "GlobalException 발생");
 
-		assertAll(
-			() -> assertNotNull(globalException, "예외 존재"),
-			() -> assertEquals(globalException.getErrorCode(), ErrorCode.TECH_BOOK_NOT_FOUND, "에러 코드 일치")
-		);
+		assertAll(() -> assertNotNull(globalException, "예외 존재"),
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.TECH_BOOK_NOT_FOUND, "에러 코드 일치"));
+	}
+
+	//@RepeatedTest(10)
+	@Test
+	@DisplayName("[Success] findTechBookById(): 좋아요한 회원 ID와 함께 TechBook 단 건 조회")
+	void findTechBookByIdAndMemberId() {
+		//Given
+		setup();
+
+		Member member = createMember();
+		em.persist(member);
+		EducationLevel educationLevel = createEducationLevel();
+		em.persist(educationLevel);
+		TechBook techBook = createTechBook(member, educationLevel);
+		em.persist(techBook);
+		Like like = createLike(member, techBook);
+		em.persist(like);
+
+		Long id = techBook.getId();
+		clearEntityContext();
+
+		//When
+		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id, member.getId());
+
+		//Then
+		assertNotNull(responseDto, "TechBook 응답 DTO 존재");
+		assertEquals(responseDto.id(), techBook.getId(), "PK 일치");
+		assertEquals(responseDto.educationLevel(), techBook.getEducationLevel().getName(), "학습 난이도 일치");
+		assertEquals(responseDto.title(), techBook.getTitle(), "제목 일치");
+		assertEquals(responseDto.description(), techBook.getDescription(), "설명 일치");
+		assertEquals(responseDto.introduction(), techBook.getIntroduction(), "소개 일치");
+		assertEquals(responseDto.totalReviewCount(), techBook.getTotalReviewCount(), "전체 리뷰 수 일치");
+		assertEquals(responseDto.techBookUrl(), techBook.getTechBookUrl(), "PDF URL 일치");
+		assertEquals(responseDto.techBookPreviewUrl(), techBook.getTechBookPreviewUrl(), "PDF 미리보기 URL 일치");
+		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
+		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
+		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
+		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
+		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
+		assertTrue(responseDto.isLike(), "좋아요 여부");
+		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
+	}
+
+	@ParameterizedTest
+	@AutoSource
+	@Repeat(10)
+	@DisplayName("[Exception] findTechBookById_unknownId(): 좋아요한 회원 ID와 함께 TechBook 단 건 조회, 존재하지 않는 ID")
+	void findTechBookByIdAndMemberId_unknownId(@Min(1) @Max(Long.MAX_VALUE) final Long unknownId) {
+		//Given
+		setup();
+
+		Member member = createMember();
+		em.persist(member);
+		clearEntityContext();
+
+		//When
+
+		//Then
+		GlobalException globalException = assertThrows(GlobalException.class,
+			() -> techBookService.findTechBookById(unknownId, member.getId()), "GlobalException 발생");
+
+		assertAll(() -> assertNotNull(globalException, "예외 존재"),
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.TECH_BOOK_NOT_FOUND, "에러 코드 일치"));
+	}
+
+	//@RepeatedTest(10)
+	@Test
+	@DisplayName("[Exception] findTechBookById_unknownId(): 좋아요한 회원 ID와 함께 TechBook 단 건 조회, 존재하지 않는 회원 ID")
+	void findTechBookByIdAndMemberId_unknownId() {
+		//Given
+		setup();
+
+		Member member = createMember();
+		em.persist(member);
+		EducationLevel educationLevel = createEducationLevel();
+		em.persist(educationLevel);
+		TechBook techBook = createTechBook(member, educationLevel);
+		em.persist(techBook);
+
+		Long id = techBook.getId();
+		clearEntityContext();
+
+		String unknownMemberId = UUID.randomUUID().toString();
+
+		//When
+
+		//Then
+		GlobalException globalException = assertThrows(GlobalException.class,
+			() -> techBookService.findTechBookById(id, unknownMemberId), "GlobalException 발생");
+
+		assertAll(() -> assertNotNull(globalException, "예외 존재"),
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.MEMBER_NOT_FOUND, "에러 코드 일치"));
 	}
 
 	//@RepeatedTest(10)
@@ -306,18 +396,15 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		PageRequest pageable = PageRequest.of(0, 16, Sort.Direction.DESC, "createdAt");
 
 		//When
-		List<TechBookResponse.ListInfo> findAllTechBookResponseDto = techBookService.findAllTechBooks(
-			keyword, pageable
-		).getContent();
+		List<TechBookResponse.ListInfo> findAllTechBookResponseDto = techBookService.findAllTechBooks(keyword, pageable)
+			.getContent();
 
 		//Then
 		List<TechBookResponse.ListInfo> filteredTechBookResponseDto = techBooks.stream()
-			.filter(techBook ->
-				!StringUtils.hasText(keyword) || (techBook.getTitle().contains(keyword)
-					|| techBook.getDescription().contains(keyword)
-					|| techBook.getIntroduction().contains(keyword))
-			)
-			.sorted(Comparator.comparing(TechBook::getCreatedAt).reversed()
+			.filter(techBook -> !StringUtils.hasText(keyword) || (techBook.getTitle().contains(keyword)
+				|| techBook.getDescription().contains(keyword) || techBook.getIntroduction().contains(keyword)))
+			.sorted(Comparator.comparing(TechBook::getCreatedAt)
+				.reversed()
 				.thenComparing(book -> book.getCreatedAt().truncatedTo(ChronoUnit.MILLIS), Comparator.reverseOrder()))
 			.limit(pageable.getPageSize())
 			.map(TechBookResponse.ListInfo::from)
