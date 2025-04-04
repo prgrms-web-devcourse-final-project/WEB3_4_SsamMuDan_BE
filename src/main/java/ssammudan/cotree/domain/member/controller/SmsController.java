@@ -9,9 +9,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.member.dto.signup.SmsAuthenticationRequest;
-import ssammudan.cotree.domain.member.dto.signup.SmsVerifyRequest;
-import ssammudan.cotree.domain.member.service.SmsService;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
+import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.SuccessCode;
 
@@ -36,14 +36,14 @@ public class SmsController {
 
 	@PostMapping
 	@Operation(summary = "회원가입 전화번호 인증 코드 전송", description = "입력하신 전화번호로 인증 코드를 전송합니다")
-	public BaseResponse<Void> sendSignupCode(@Valid @RequestBody SmsAuthenticationRequest request) {
+	public BaseResponse<Void> sendSignupCode(@Valid @RequestBody MemberSignupSmsRequest request) {
 		smsService.sendSignupMsg(request);
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_SEND_SUCCESS);
 	}
 
 	@PostMapping("/verify")
 	@Operation(summary = "회원가입 전화번호 인증 확인", description = "인증번호를 확인합니다.")
-	public BaseResponse<Void> verifySignupCode(@Valid @RequestBody SmsVerifyRequest request) {
+	public BaseResponse<Void> verifySignupCode(@Valid @RequestBody MemberSignupSmsVerifyRequest request) {
 		smsService.verifySignupCode(request);
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_VERIFY_SUCCESS);
 	}

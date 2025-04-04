@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.member.service;
+package ssammudan.cotree.domain.phone.service;
 
 import java.time.Duration;
 
@@ -11,8 +11,8 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
-import ssammudan.cotree.domain.member.dto.signup.SmsAuthenticationRequest;
-import ssammudan.cotree.domain.member.dto.signup.SmsVerifyRequest;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 
@@ -21,7 +21,7 @@ import ssammudan.cotree.global.response.ErrorCode;
  * FileName    : SmsService
  * Author      : kwak
  * Date        : 2025. 4. 4.
- * Description : 
+ * Description : 휴대폰 인증 코드와 관련된 작업 담당
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ public class SmsService {
 		this.redisTemplate = redisTemplate;
 	}
 
-	public void sendSignupMsg(SmsAuthenticationRequest request) {
+	public void sendSignupMsg(MemberSignupSmsRequest request) {
 
 		// 기존의 인증 코드가 남아있을 경우 삭제
 		if (redisTemplate.opsForValue().get(request.receiverNumber()) != null) {
@@ -73,7 +73,7 @@ public class SmsService {
 			.set(request.receiverNumber(), String.valueOf(randomCode), Duration.ofMinutes(CODE_EXPIRATION));
 	}
 
-	public void verifySignupCode(SmsVerifyRequest request) {
+	public void verifySignupCode(MemberSignupSmsVerifyRequest request) {
 		String code = redisTemplate.opsForValue().get(request.receiverNumber());
 
 		if (code == null || !code.equals(request.code())) {
