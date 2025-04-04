@@ -98,6 +98,7 @@ public class SecurityConfig {
 
 				// Project Domain
 				.requestMatchers(GET, "/api/v1/project/team/hot").permitAll()
+				.requestMatchers(GET, "/api/v1/project/team/hot/main").permitAll()
 				.requestMatchers(GET, "/api/v1/project/team/{projectId}").permitAll()
 
 				// Upload Domain
