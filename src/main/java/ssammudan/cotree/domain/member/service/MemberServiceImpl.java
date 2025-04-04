@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.global.error.GlobalException;
@@ -44,5 +45,11 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		return member;
+	}
+	@Override
+	public MemberInfoResponse getMemberInfo(String id) {
+		Member member = memberRepository.findById(id)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		return new MemberInfoResponse(member);
 	}
 }
