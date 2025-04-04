@@ -3,8 +3,10 @@ package ssammudan.cotree.domain.member.controller;
 import java.util.Date;
 
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.domain.member.service.MemberService;
@@ -37,6 +41,28 @@ public class MemberController {
 	private final RefreshTokenService refreshTokenService;
 	private final TokenBlacklistService tokenBlacklistService;
 
+	@GetMapping
+	@Operation(summary = "회원 조회", description = "로그인한 회원의 정보를 제공합니다.")
+	public BaseResponse<MemberInfoResponse> getMyInfo(
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(customUser.getId());
+		return BaseResponse.success(SuccessCode.MEMBER_INFO_REQUEST_SUCCESS, memberInfoResponse);
+	}
+
+	@PutMapping
+	@Operation(summary = "회원정보 변경", description = "회원정보를 변경합니다. (전체변경)")
+	public BaseResponse<Void> putMyInfo(
+		@Valid @RequestBody MemberInfoRequest request,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		Member member = memberService.findById(memberId);
+		memberService.updateMember(member, request);
+
+		return BaseResponse.success(SuccessCode.MEMBER_INFO_UPDATE_SUCCESS);
+	}
+
 	@PostMapping("/signup")
 	@Operation(summary = "회원가입", description = "사용자 정보를 통해 회원가입을 진행합니다.")
 	public BaseResponse<Void> signUp(@Valid @RequestBody MemberSignupRequest request) {
@@ -51,10 +77,7 @@ public class MemberController {
 		Member member = memberService.signIn(signinRequest);
 		CustomUser signInMember = new CustomUser(member, null);
 		signInMember.setLogin();
-
-		// accessTokenService.generateTokenToCookie(signInMember, response);
-		// refreshTokenService.generateTokenToCookie(signInMember, response);
-
+		
 		String accessToken = accessTokenService.generateToken(signInMember);
 		long accessTokenExpirationSeconds = accessTokenService.getExpirationSeconds(); //accessTokenExpiration.getTime() - new Date().getTime();
 

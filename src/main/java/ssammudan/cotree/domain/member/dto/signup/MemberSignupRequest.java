@@ -29,7 +29,7 @@ public record MemberSignupRequest(
 
 	@NotNull(message = "이름을 입력해주세요.") // todo : 이름 길이 제한
 	@Schema(description = "사용자 이름", examples = "홍길동")
-	String name,
+	String username,
 
 	@NotNull(message = "닉네임을 입력해주세요.") // todo : 닉네임 길이 제한
 	@Schema(description = "사용자 닉네임", examples = "MrHong")
