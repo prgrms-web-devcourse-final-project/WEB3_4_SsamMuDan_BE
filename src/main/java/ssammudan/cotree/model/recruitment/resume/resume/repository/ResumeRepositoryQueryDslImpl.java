@@ -9,6 +9,7 @@ import static ssammudan.cotree.model.recruitment.resume.techstack.entity.QResume
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -26,6 +27,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
 import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
+import ssammudan.cotree.global.error.GlobalException;
+import ssammudan.cotree.global.response.ErrorCode;
 
 /**
  * PackageName : ssammudan.cotree.model.recruitment.resume.resume.repository
@@ -88,7 +91,8 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.fetch()
 			.stream()
 			.collect(Collectors.groupingBy(
-				tuple -> tuple.get(resumeDevelopmentPosition.resume.id),
+				tuple -> Optional.ofNullable(tuple.get(resumeDevelopmentPosition.resume.id))
+					.orElseThrow(() -> new GlobalException(ErrorCode.NOR_FOUND_RESUME_ID)),
 				Collectors.mapping(
 					tuple -> tuple.get(developmentPosition.name),
 					Collectors.toList()
@@ -99,14 +103,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 		List<ResumeResponse> resumeResponses = resumeTuples.stream()
 			.map(tuple -> {
 				Long resumeId = tuple.get(resume.id);
-				return ResumeResponse.builder()
-					.profileImage(tuple.get(resume.profileImage))
-					.isOpen(tuple.get(resume.isOpen))
-					.positions(positionsMap.getOrDefault(resumeId, Collections.emptyList()))
-					.year(tuple.get(resume.years))
-					.introduction(tuple.get(getStringTemplate()))
-					.createAt(tuple.get(resume.createdAt))
-					.build();
+				return toResumeResponse(tuple, positionsMap, resumeId);
 			})
 			.collect(Collectors.toList());
 
@@ -119,6 +116,18 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.fetchOne();
 
 		return new PageImpl<>(resumeResponses, pageable, total != null ? total : 0);
+	}
+
+	// 결합도가 너무 강해 일단 여기 빼놓음
+	private ResumeResponse toResumeResponse(Tuple tuple, Map<Long, List<String>> positionsMap, Long resumeId) {
+		return ResumeResponse.builder()
+			.profileImage(tuple.get(resume.profileImage))
+			.isOpen(Boolean.TRUE.equals(tuple.get(resume.isOpen)))
+			.positions(positionsMap.getOrDefault(resumeId, Collections.emptyList()))
+			.year(tuple.get(resume.years))
+			.introduction(tuple.get(getStringTemplate()))
+			.createAt(tuple.get(resume.createdAt))
+			.build();
 	}
 
 	private StringTemplate getStringTemplate() {
