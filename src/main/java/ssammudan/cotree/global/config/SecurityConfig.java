@@ -76,7 +76,7 @@ public class SecurityConfig {
 				.requestMatchers(GET, "/api/v1/category/**").permitAll()
 
 				// Comment Domain
-				// 해당 없음. 모두 인증 필요
+				.requestMatchers(GET, "/api/v1/comment/**").permitAll()
 
 				// Community Domain
 				.requestMatchers(GET, "/api/v1/community/board").permitAll()
@@ -89,25 +89,32 @@ public class SecurityConfig {
 				// Education / TechTube Domain
 				// 해당 없음. 모두 인증 필요
 
+				// Education / Review Domain
+				.requestMatchers(GET, "/api/v1/education/review/**").permitAll()
+				.requestMatchers(GET, "/api/v1/education/review").permitAll()
+
 				// Resume Domain
-				// .requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
+				.requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
 
 				// Project Domain
-				// 해당 없음. 모두 인증 필요
 				.requestMatchers(GET, "/api/v1/project/team/hot").permitAll()
+				.requestMatchers(GET, "/api/v1/project/team/hot/main").permitAll()
 				.requestMatchers(GET, "/api/v1/project/team/{projectId}").permitAll()
 
 				// Upload Domain
 				// 해당 없음. 모두 인증 필요
 
+				// Like Domain
+				// 해당 없음. 모두 인증 필요
+
 				.anyRequest().authenticated()) // 그 외 요청은 인증 필요
+
 			// ✅ OAuth2 로그인 설정
 			.oauth2Login(oauth2 -> oauth2
 				.userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
 					.userService(oAuth2UserService)) // 사용자 정보 서비스 설정
 				.successHandler(oAuth2SuccessHandler) // OAuth2 로그인 성공 핸들러
-				.failureHandler(oAuth2FailureHandler) // OAuth2 로그인 실패 핸들러
-			)
+				.failureHandler(oAuth2FailureHandler)) // OAuth2 로그인 실패 핸들러
 
 			// ✅ 기본 인증 방식 비활성화 (JWT 사용)
 			.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
@@ -142,4 +149,5 @@ public class SecurityConfig {
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
+
 }

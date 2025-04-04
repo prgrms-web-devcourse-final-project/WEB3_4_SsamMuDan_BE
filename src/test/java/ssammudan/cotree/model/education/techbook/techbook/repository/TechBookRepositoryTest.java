@@ -2,9 +2,11 @@ package ssammudan.cotree.model.education.techbook.techbook.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -21,10 +23,12 @@ import net.jqwik.api.Arbitraries;
 
 import autoparams.AutoSource;
 import autoparams.Repeat;
+import ssammudan.cotree.integration.DataJpaTestSupporter;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
-import ssammudan.cotree.model.education.supporter.DataJpaTestSupporter;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.member.member.type.MemberStatus;
 
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 
@@ -45,6 +49,34 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 	private Member createMember() {
 		return fixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
+			.set("email", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("username", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("nickname", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("password", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("phoneNumber",
+				Arbitraries.strings()
+					.withCharRange('a', 'z')
+					.ofMinLength(1)
+					.ofMaxLength(219)
+					.map(s -> s + UUID.randomUUID()))
+			.set("role", MemberRole.USER)
+			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
 	}
 
@@ -73,6 +105,14 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 			.set("techBookPage", Arbitraries.integers().greaterOrEqual(0))
 			.set("price", Arbitraries.integers().greaterOrEqual(0))
 			.sampleList(size);
+	}
+
+	private void sleep(final long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	//@RepeatedTest(10)
@@ -167,11 +207,14 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 		EducationLevel educationLevel = createEducationLevel();
 		entityManager.persist(educationLevel);
 		List<TechBook> techBooks = createTechBooks(member, educationLevel, 50);
-		techBooks.forEach(techBook -> entityManager.persist(techBook));
+		techBooks.forEach(techBook -> {
+			sleep(1);
+			entityManager.persist(techBook);
+		});
 		clearEntityContext();
 
 		String keyword = fixtureMonkey.giveMeOne(String.class);
-		Pageable pageable = PageRequest.of(0, 16, Sort.Direction.DESC, "createdAd");
+		Pageable pageable = PageRequest.of(0, 16, Sort.Direction.DESC, "createdAt");
 
 		//When
 		List<TechBook> findAllTechBooks = techBookRepository.findAllTechBooksByKeyword(keyword, pageable).getContent();
@@ -183,7 +226,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 					|| techBook.getDescription().contains(keyword)
 					|| techBook.getIntroduction().contains(keyword))
 			)
-			.sorted(Comparator.comparing(TechBook::getCreatedAt).reversed())
+			.sorted(Comparator.comparing(TechBook::getCreatedAt).reversed()
+				.thenComparing(book -> book.getCreatedAt().truncatedTo(ChronoUnit.MILLIS), Comparator.reverseOrder()))
 			.limit(pageable.getPageSize())
 			.toList();
 

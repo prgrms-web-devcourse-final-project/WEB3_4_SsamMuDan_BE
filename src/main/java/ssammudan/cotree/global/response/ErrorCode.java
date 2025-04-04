@@ -19,11 +19,16 @@ public enum ErrorCode {
 	EDUCATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "학습 카테고리를 찾을 수 없습니다."),
 	EDUCATION_LEVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "1002", "학습 난이도를 찾을 수 없습니다."),
 	TECH_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "1003", "TechBook을 찾을 수 없습니다."),
+	TECH_TUBE_NOT_FOUND(HttpStatus.NOT_FOUND, "1004", "TechTube을 찾을 수 없습니다."),
+	TECH_EDUCATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "1005", "TechEducation 카테고리를 찾을 수 없습니다."),
+	TECH_EDUCATION_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "1006", "TechEducation 리뷰를 찾을 수 없습니다."),
+	TECH_EDUCATION_REVIEW_DUPLICATED(HttpStatus.BAD_REQUEST, "1007", "작성된 리뷰가 존재합니다."),
 
 	//Payment: 2001 ~ 3000
 
 	//Recruitment: 3001 ~ 4000
 	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다"),
+	NOR_FOUND_RESUME_ID(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서 ID 를 가져올 수 없습니다."),
 
 	//Project: 4001 ~ 5000
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
@@ -41,8 +46,11 @@ public enum ErrorCode {
 	POST_COMMENT_FAIL_RESUME_NOTFOUND(HttpStatus.BAD_REQUEST, "7002", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
 	POST_COMMENT_FAIL_PARENT_COMMENT_NOTFOUND(HttpStatus.BAD_REQUEST, "7003", "대댓글 작성 실패. 잘못된 댓글 ID 입니다."),
 	POST_COMMENT_FAIL_INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "7004", "댓글 작성 실패. 잘못된 카테고리 입니다."),
+	COMMENT_GET_FAIL_INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "7005", "댓글 조회 실패. 잘못된 카테고리 입니다."),
 
-	//${}: 8001 ~ 9000
+	//Like: 8001 ~ 9000
+	LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "8001", "좋아요 정보를 찾을 수 없습니다."),
+	LIKE_DUPLICATED(HttpStatus.BAD_REQUEST, "8002", "이미 좋아요한 컨텐츠입니다."),
 
 	//Common: 9001 ~ 9999
 	NOT_FOUND_URL(HttpStatus.NOT_FOUND, "9001", "요청하신 URL 을 찾을 수 없습니다."),
