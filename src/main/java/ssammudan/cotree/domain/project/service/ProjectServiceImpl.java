@@ -115,13 +115,14 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
+	public PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
 		Page<Project> projects = projectRepository.findByIsOpenTrue(pageable);
-		List<ProjectListResponse> hotPojectListRespons = projects.stream()
+		List<ProjectListResponse> hotPojectList = projects.stream()
 			.map(this::toProjectResponse)
 			.toList();
 
-		return new PageImpl<>(hotPojectListRespons, pageable, projects.getTotalElements());
+		Page<ProjectListResponse> hotProjectPage = new PageImpl<>(hotPojectList, pageable, projects.getTotalElements());
+		return PageResponse.of(hotProjectPage);
 	}
 
 	@Transactional(readOnly = true)

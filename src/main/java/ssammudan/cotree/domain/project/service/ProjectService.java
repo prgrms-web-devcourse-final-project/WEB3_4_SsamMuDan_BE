@@ -1,6 +1,5 @@
 package ssammudan.cotree.domain.project.service;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,6 +7,7 @@ import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.dto.ProjectListResponse;
+import ssammudan.cotree.global.response.PageResponse;
 
 /**
  * PackageName : ssammudan.cotree.domain.project.service
@@ -25,7 +25,7 @@ import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 public interface ProjectService {
 	ProjectCreateResponse create(ProjectCreateRequest request, MultipartFile file, String memberId);
 
-	Page<ProjectListResponse> getHotProjectsForMain(Pageable pageable);
+	PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable);
 
 	ProjectInfoResponse getProjectInfo(Long projectId, String memberId);
 }
