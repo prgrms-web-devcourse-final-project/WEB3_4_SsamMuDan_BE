@@ -138,7 +138,7 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("page", "0");
 		params.add("size", "16");
-		params.add("sort", "createdAt,DESC");
+		params.add("sort", "LATEST");
 		params.add("keyword", dtoFixtureMonkey.giveMeOne(String.class));
 
 		//When
