@@ -3,7 +3,6 @@ package ssammudan.cotree.domain.project.controller;
 import java.util.List;
 
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -109,9 +108,8 @@ public class ProjectController {
 		@RequestParam(value = "jobPosition", required = false) List<Long> devPositionIds
 	) {
 		Pageable pageable = PageRequest.of(page, size);
-		Page<ProjectListResponse> hotProjects = projectServiceImpl.getProjects(pageable, techStackIds, devPositionIds,
-			sort);
-		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS, PageResponse.of(hotProjects));
+		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS,
+			projectServiceImpl.getProjects(pageable, techStackIds, devPositionIds, sort));
 	}
 
 }

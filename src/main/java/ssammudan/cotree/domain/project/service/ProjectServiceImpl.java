@@ -135,14 +135,16 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds, List<Long> devPositionIds,
+	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
+		List<Long> devPositionIds,
 		String sort) {
 		Page<Project> projects = projectRepository.findByFilters(pageable, techStackIds, devPositionIds, sort);
-		List<ProjectListResponse> projectListResponse = projects.getContent().stream()
+		List<ProjectListResponse> content = projects.getContent().stream()
 			.map(this::toProjectResponse)
 			.toList();
 
-		return new PageImpl<>(projectListResponse, pageable, projects.getTotalElements());
+		Page<ProjectListResponse> page = new PageImpl<>(content, pageable, projects.getTotalElements());
+		return PageResponse.of(page);
 	}
 
 	// 모집분야명, 인원수 조회
@@ -162,7 +164,7 @@ public class ProjectServiceImpl implements ProjectService {
 			.toList();
 	}
 
-	// Hot프로젝트 데이터가공
+	// 프로젝트 데이터가공
 	private ProjectListResponse toProjectResponse(Project project) {
 		List<String> techStackImageUrls = getTechStackImageUrls(project.getId());
 		long likeCount = likeRepository.countByProjectId(project.getId());
