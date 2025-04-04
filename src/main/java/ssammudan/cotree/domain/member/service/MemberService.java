@@ -1,5 +1,6 @@
 package ssammudan.cotree.domain.member.service;
 
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
@@ -9,6 +10,10 @@ public interface MemberService {
 	Member signUp(MemberSignupRequest member);
 
 	Member signIn(MemberSigninRequest request);
+
+	Member updateMember(Member memberId, MemberInfoRequest request);
+
+	Member findById(String memberId);
 
 	MemberInfoResponse getMemberInfo(String id);
 }

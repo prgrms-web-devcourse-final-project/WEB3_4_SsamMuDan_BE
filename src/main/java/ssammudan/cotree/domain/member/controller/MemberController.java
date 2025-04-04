@@ -6,6 +6,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
@@ -46,6 +48,19 @@ public class MemberController {
 	) {
 		MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(customUser.getId());
 		return BaseResponse.success(SuccessCode.MEMBER_INFO_REQUEST_SUCCESS, memberInfoResponse);
+	}
+
+	@PutMapping
+	@Operation(summary = "회원정보 변경", description = "회원정보를 변경합니다. (전체변경)")
+	public BaseResponse<Void> putMyInfo(
+		@Valid @RequestBody MemberInfoRequest request,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		Member member = memberService.findById(memberId);
+		memberService.updateMember(member, request);
+
+		return BaseResponse.success(SuccessCode.MEMBER_INFO_UPDATE_SUCCESS);
 	}
 
 	@PostMapping("/signup")
