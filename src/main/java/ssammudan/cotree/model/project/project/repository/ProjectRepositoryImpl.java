@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -59,37 +60,32 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.join(project.projectTechStacks, projectTechStack)
 			.join(project.projectDevPositions, projectDevPosition)
 			.leftJoin(project.likes, like)
-			.where(project.isOpen.isTrue());
+			.where(isOpenFilter(project)
+				.and(techStackFilter(techStackIds, projectTechStack))
+				.and(devPositionFilter(devPositionIds, projectDevPosition)))
+			.groupBy(project.id);
 
-		applyTechStackFilter(query, techStackIds, projectTechStack);
-		applyDevPositionFilter(query, devPositionIds, projectDevPosition);
-		applySort(query, sort, project, like);
+		if ("like".equals(sort)) {
+			query.orderBy(like.id.count().desc());
+		} else {
+			query.orderBy(project.createdAt.desc());
+		}
 
 		return query;
 	}
 
-	private void applyTechStackFilter(JPAQuery<Project> query, List<Long> techStackIds,
-		QProjectTechStack projectTechStack) {
-		if (techStackIds != null && !techStackIds.isEmpty()) {
-			query.where(projectTechStack.techStack.id.in(techStackIds));
-		}
+	private BooleanExpression techStackFilter(List<Long> techStackIds, QProjectTechStack projectTechStack) {
+		return (techStackIds != null && !techStackIds.isEmpty()) ? projectTechStack.techStack.id.in(techStackIds) :
+			null;
 	}
 
-	private void applyDevPositionFilter(JPAQuery<Project> query, List<Long> devPositionIds,
-		QProjectDevPosition projectDevPosition) {
-		if (devPositionIds != null && !devPositionIds.isEmpty()) {
-			query.where(projectDevPosition.developmentPosition.id.in(devPositionIds));
-		}
+	private BooleanExpression devPositionFilter(List<Long> devPositionIds, QProjectDevPosition projectDevPosition) {
+		return (devPositionIds != null && !devPositionIds.isEmpty()) ?
+			projectDevPosition.developmentPosition.id.in(devPositionIds) : null;
 	}
 
-	private void applySort(JPAQuery<Project> query, String sort, QProject project, QLike like) {
-		if ("createdAt".equals(sort)) {
-			query.orderBy(project.createdAt.desc());
-		} else if ("like".equals(sort)) {
-			query.leftJoin(project.likes, QLike.like)
-				.groupBy(project.id)
-				.orderBy(QLike.like.id.count().desc());
-		}
+	private BooleanExpression isOpenFilter(QProject project) {
+		return project.isOpen.isTrue();
 	}
 
 	private List<Project> getQuerydslContent(JPAQuery<Project> query, Pageable pageable) {
