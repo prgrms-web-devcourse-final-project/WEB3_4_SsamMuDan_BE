@@ -11,6 +11,8 @@ import ssammudan.cotree.model.education.category.repository.EducationCategoryRep
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
 import ssammudan.cotree.model.education.techbook.category.repository.TechBookEducationCategoryRepository;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
+import ssammudan.cotree.model.education.techtube.category.repository.TechTubeEducationCategoryRepository;
+import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
 
@@ -45,6 +47,9 @@ public abstract class DataJpaTestSupporter {
 	protected TechBookRepository techBookRepository;
 
 	@Autowired
+	protected TechTubeRepository techTubeRepository;
+
+	@Autowired
 	protected EducationLevelRepository educationLevelRepository;
 
 	@Autowired
@@ -58,6 +63,9 @@ public abstract class DataJpaTestSupporter {
 
 	@Autowired
 	protected TechBookEducationCategoryRepository techBookEducationCategoryRepository;
+
+	@Autowired
+	protected TechTubeEducationCategoryRepository techTubeEducationCategoryRepository;
 
 	@BeforeEach
 	protected void setup() {
