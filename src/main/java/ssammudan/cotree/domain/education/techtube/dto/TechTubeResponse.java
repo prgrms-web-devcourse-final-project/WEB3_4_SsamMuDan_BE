@@ -51,8 +51,10 @@ public class TechTubeResponse {
 		//TODO: 프리뷰(미리보기) 영상 링크 추가 여부 확인 필요
 		// @Schema(description = "TechTube 영상 미리보기 URL", example = "https://cotree.ssammudan.com/techtube/SpringBoot_preview.mp4")
 		// String techTubePreviewUrl,    //TechTube 영상 미리보기 URL
+		@Schema(description = "TechTube 영상 길이(초)", example = "3600")
+		long techTubeDurationSeconds,
 		@Schema(description = "TechTube 썸네일 URL", example = "https://cotree.ssammudan.com/techtube/SpringBoot_thumbnail.png")
-		String techBookThumbnailUrl,  //TechTube 썸네일 URL
+		String techTubeThumbnailUrl,  //TechTube 썸네일 URL
 		@Schema(description = "TechTube 가격", example = "10000")
 		int price,                    //TechTube 가격
 		@Schema(description = "TechTube 조회 수", example = "123")
@@ -76,6 +78,7 @@ public class TechTubeResponse {
 				(double)techTube.getTotalRating() / techTube.getTotalReviewCount(),
 				techTube.getTotalReviewCount(),
 				techTube.getTechTubeUrl(),
+				techTube.getTechTubeDuration().getSeconds(),
 				techTube.getTechTubeThumbnailUrl(),
 				techTube.getPrice(),
 				techTube.getViewCount(),
@@ -97,7 +100,7 @@ public class TechTubeResponse {
 		@Schema(description = "TechTube 가격", example = "10000")
 		int price,    //TechTube 가격
 		@Schema(description = "TechTube 썸네일 URL", example = "https://cotree.ssammudan.com/techtube/SpringBoot_thumbnail.png")
-		String techBookThumbnailUrl,    //TechTube 썸네일 URL
+		String techTubeThumbnailUrl,    //TechTube 썸네일 URL
 		@Schema(description = "TechTube 좋아요 수", example = "123")
 		long likeCount,    //TechTube 좋아요 수
 		@Schema(description = "TechTube 등록 일자", example = "2025-01-01")
