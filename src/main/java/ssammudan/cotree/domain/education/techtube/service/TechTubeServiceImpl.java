@@ -77,6 +77,29 @@ public class TechTubeServiceImpl implements TechTubeService {
 
 	/**
 	 * TechTube 단 건 조회
+	 *
+	 * @param id       - PK
+	 * @param memberId - 회원 ID
+	 * @return TechTubeResponse Detail DTO
+	 */
+	@Override
+	public TechTubeResponse.Detail findTechTubeById(final Long id, final String memberId) {
+		//Member 존재 여부 확인
+		if (!memberRepository.existsById(memberId)) {
+			throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
+		}
+
+		TechTube techTube = techTubeRepository.findById(id)
+			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND));
+		//TODO: Member-Like 연관관계에 따라 수정 가능
+		boolean isLike = likeRepository.existsByMember_IdAndTechTube_Id(memberId, id);
+		techTube.increaseViewCount();
+		return TechTubeResponse.Detail.from(techTube, isLike);
+	}
+
+	/**
+	 * TechTube 단 건 조회
+	 *
 	 * @param id - PK
 	 * @return TechTubeResponse Detail DTO
 	 */

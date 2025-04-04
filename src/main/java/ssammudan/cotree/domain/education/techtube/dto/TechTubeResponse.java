@@ -61,6 +61,8 @@ public class TechTubeResponse {
 		int viewCount,                //TechTube 조회 수
 		@Schema(description = "TechTube 좋아요 수", example = "123")
 		long likeCount,                //TechTube 좋아요 수
+		@Schema(description = "로그인된 회원의 TechTube 좋아요 여부", example = "true")
+		boolean isLike,                //로그인된 회원의 TechTube 좋아요 여부
 		@Schema(description = "TechTube 등록 일자", example = "2025-01-01")
 		LocalDate createdAt           //TechTube 등록 일자
 	) {
@@ -83,6 +85,31 @@ public class TechTubeResponse {
 				techTube.getPrice(),
 				techTube.getViewCount(),
 				techTube.getLikes().size(),
+				false,
+				techTube.getCreatedAt().toLocalDate()
+			);
+		}
+
+		public static Detail from(final TechTube techTube, final boolean isLike) {
+			return new Detail(
+				techTube.getId(),
+				techTube.getWriter().getNickname(),
+				techTube.getEducationLevel().getName(),
+				techTube.getTechTubeEducationCategories().stream()
+					.map(TechTubeEducationCategory::getEducationCategory)
+					.map(EducationCategory::getName).toList(),    //TODO: 성능 최적화 시 FETCH JOIN 활용 형태 적용 고려
+				techTube.getTitle(),
+				techTube.getDescription(),
+				techTube.getIntroduction(),
+				(double)techTube.getTotalRating() / techTube.getTotalReviewCount(),
+				techTube.getTotalReviewCount(),
+				techTube.getTechTubeUrl(),
+				techTube.getTechTubeDuration().getSeconds(),
+				techTube.getTechTubeThumbnailUrl(),
+				techTube.getPrice(),
+				techTube.getViewCount(),
+				techTube.getLikes().size(),
+				isLike,
 				techTube.getCreatedAt().toLocalDate()
 			);
 		}

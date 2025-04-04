@@ -23,6 +23,8 @@ public interface TechTubeService {
 
 	TechTubeResponse.Detail findTechTubeById(Long id);
 
+	TechTubeResponse.Detail findTechTubeById(Long id, String memberId);
+
 	PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(String keyword, Pageable pageable);
 
 }

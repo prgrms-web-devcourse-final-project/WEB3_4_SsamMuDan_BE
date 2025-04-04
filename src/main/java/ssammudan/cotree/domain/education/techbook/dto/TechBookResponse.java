@@ -59,6 +59,8 @@ public class TechBookResponse {
 		int viewCount,                //TechBook 조회 수
 		@Schema(description = "TechBook 좋아요 수", example = "123")
 		long likeCount,                //TechBook 좋아요 수
+		@Schema(description = "로그인된 회원의 TechBook 좋아요 여부", example = "true")
+		boolean isLike,                //로그인된 회원의 TechBook 좋아요 여부
 		@Schema(description = "TechBook 등록 일자", example = "2025-01-01")
 		LocalDate createdAt           //TechBook 등록 일자
 	) {
@@ -82,6 +84,32 @@ public class TechBookResponse {
 				techBook.getPrice(),
 				techBook.getViewCount(),
 				techBook.getLikes().size(),
+				false,
+				techBook.getCreatedAt().toLocalDate()
+			);
+		}
+
+		public static Detail from(final TechBook techBook, final boolean isLike) {
+			return new Detail(
+				techBook.getId(),
+				techBook.getWriter().getNickname(),
+				techBook.getEducationLevel().getName(),
+				techBook.getTechBookEducationCategories().stream()
+					.map(TechBookEducationCategory::getEducationCategory)
+					.map(EducationCategory::getName).toList(),    //TODO: 성능 최적화 시 FETCH JOIN 활용 형태 적용 고려
+				techBook.getTitle(),
+				techBook.getDescription(),
+				techBook.getIntroduction(),
+				(double)techBook.getTotalRating() / techBook.getTotalReviewCount(),
+				techBook.getTotalReviewCount(),
+				techBook.getTechBookUrl(),
+				techBook.getTechBookPreviewUrl(),
+				techBook.getTechBookThumbnailUrl(),
+				techBook.getTechBookPage(),
+				techBook.getPrice(),
+				techBook.getViewCount(),
+				techBook.getLikes().size(),
+				isLike,
 				techBook.getCreatedAt().toLocalDate()
 			);
 		}
