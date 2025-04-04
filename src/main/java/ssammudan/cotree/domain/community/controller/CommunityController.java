@@ -88,7 +88,7 @@ public class CommunityController {
 
 	@PutMapping("/board/{boardId}")
 	@Operation(summary = "커뮤니티 글 수정")
-	public BaseResponse<Void> modifyBoard(
+	public BaseResponse<CommunityResponse.BoardModify> modifyBoard(
 		@PathVariable(value = "boardId") final Long boardId,
 		@Valid @RequestBody CommunityRequest.ModifyBoard modifyBoard,
 		@AuthenticationPrincipal CustomUser customUser
@@ -96,6 +96,6 @@ public class CommunityController {
 		String memberId = customUser.getId();
 		communityService.checkModifyAuthority(memberId, boardId);
 		communityService.modifyBoard(boardId, modifyBoard);
-		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_MODIFY_SUCCESS);
+		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_MODIFY_SUCCESS, new CommunityResponse.BoardModify(boardId));
 	}
 }

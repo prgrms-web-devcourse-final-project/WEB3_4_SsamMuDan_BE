@@ -26,4 +26,7 @@ public class CommunityResponse {
 	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
 							  Integer viewCount, Boolean isLike) {
 	}
+
+	public record BoardModify(Long boardId) {
+	}
 }
