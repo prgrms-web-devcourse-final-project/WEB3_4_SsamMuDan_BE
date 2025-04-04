@@ -64,7 +64,7 @@ public class MemberController {
 	}
 
 	@PostMapping("/signup")
-	@Operation(summary = "회원가입", description = "이메일을 이용해 회원가입을 진행합니다.")
+	@Operation(summary = "회원가입", description = "사용자 정보를 통해 회원가입을 진행합니다.")
 	public BaseResponse<Void> signUp(@Valid @RequestBody MemberSignupRequest request) {
 		memberService.signUp(request);
 		return BaseResponse.success(SuccessCode.MEMBER_CREATE_SUCCESS);
