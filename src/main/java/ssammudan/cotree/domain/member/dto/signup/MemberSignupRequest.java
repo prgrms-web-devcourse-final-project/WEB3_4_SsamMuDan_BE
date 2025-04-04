@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.member.dto.signup;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * PackageName : ssammudan.cotree.domain.member.dto.signup
@@ -17,6 +18,7 @@ import jakarta.validation.constraints.NotNull;
  */
 
 public record MemberSignupRequest(
+	@NotNull(message = "이메일을 입력해주세요.")
 	@Email(message = "이메일 형식이 올바르지 않습니다.")
 	@Schema(description = "사용자 이메일", examples = "test@example.com")
 	String email,
@@ -27,14 +29,15 @@ public record MemberSignupRequest(
 
 	@NotNull(message = "이름을 입력해주세요.") // todo : 이름 길이 제한
 	@Schema(description = "사용자 이름", examples = "홍길동")
-	String name,
+	String username,
 
 	@NotNull(message = "닉네임을 입력해주세요.") // todo : 닉네임 길이 제한
 	@Schema(description = "사용자 닉네임", examples = "MrHong")
 	String nickname,
 
-	@NotNull(message = "휴대폰 번호를 입력해주세요.") // todo : 휴대폰 번호 정규식 추가(010-1234-5678 or 01012345678)
-	@Schema(description = "사용자 휴대폰 번호", examples = "01012345678")
+	@NotNull(message = "휴대폰 번호를 입력해주세요.")
+	@Pattern(regexp = "^01[016789][0-9]{7,8}$", message = "휴대폰 번호 형식이 올바르지 않습니다.")
+	@Schema(description = "사용자 휴대폰 번호", example = "01012345678", pattern = "^01[016789][0-9]{7,8}$")
 	String phoneNumber
 ) {
-};
+}

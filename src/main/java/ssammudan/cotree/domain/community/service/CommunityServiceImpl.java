@@ -30,6 +30,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-28     Baekgwa               Initial creation
+ * 2025-04-04     Baekgwa               글 수정/삭제 기능 추가
  */
 @Service
 @RequiredArgsConstructor
@@ -44,16 +45,16 @@ public class CommunityServiceImpl implements CommunityService {
 	public void createNewBoard(CommunityRequest.CreateBoard createBoard, String userId) {
 		// 카테고리 조회 및 유효성 확인
 		CommunityCategory findCommunityCategory = communityCategoryRepository.findByName(createBoard.getCategory())
-				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
+			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
 
 		// userId 로 회원 정보 검색
 		Member findMember = memberRepository.findById(userId)
-				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_MEMBER_NOTFOUND));
+			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_MEMBER_NOTFOUND));
 
 		// 새 글 저장
 		Community newCommunityBoard =
-				Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(),
-						createBoard.getContent());
+			Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(),
+				createBoard.getContent());
 
 		communityRepository.save(newCommunityBoard);
 	}
@@ -61,14 +62,14 @@ public class CommunityServiceImpl implements CommunityService {
 	@Transactional(readOnly = true)
 	@Override
 	public PageResponse<CommunityResponse.BoardListDetail> getBoardList(
-			final Pageable pageable,
-			final SearchBoardSort sort,
-			final SearchBoardCategory category,
-			final String keyword,
-			final String memberId) {
+		final Pageable pageable,
+		final SearchBoardSort sort,
+		final SearchBoardCategory category,
+		final String keyword,
+		final String memberId) {
 
 		Page<CommunityResponse.BoardListDetail> findBoardList =
-				communityRepository.findBoardList(pageable, sort, category, keyword, memberId);
+			communityRepository.findBoardList(pageable, sort, category, keyword, memberId);
 
 		//todo : findBoardList 의 내용 중, Content 들, 글자수 제한 및 이미지 제거 필요.
 		return PageResponse.of(findBoardList);
@@ -79,12 +80,54 @@ public class CommunityServiceImpl implements CommunityService {
 	public CommunityResponse.BoardDetail getBoardDetail(final Long boardId, final String memberId) {
 		// 게시글 정보 조회
 		CommunityResponse.BoardDetail findData = communityRepository.findBoard(boardId, memberId).orElseThrow(
-				() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND));
+			() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND));
 
 		// 게시글 조회수 count 업데이트
 		// todo : 게시글 조회수 update 처리
 		// 벌크성 쿼리, redis 까지 붙일지는 고민 중.
 
 		return findData;
+	}
+
+	@Transactional
+	@Override
+	public void modifyBoard(final Long boardId, final CommunityRequest.ModifyBoard modifyBoard, final String memberId) {
+		// 글 수정 가능 검증
+		checkAuthorityBeforeOperation(memberId, boardId);
+
+		// 글 수정.
+		// JPA duty checking 사용
+		Community findCommunity = communityRepository.findById(boardId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND));
+		findCommunity.modifyCommunity(modifyBoard.getTitle(), modifyBoard.getContent());
+	}
+
+	@Transactional
+	@Override
+	public void deleteBoard(final Long boardId, final String memberId) {
+		// 글 삭제 가능 검증
+		checkAuthorityBeforeOperation(memberId, boardId);
+
+		// 현재 글삭제는 하드 delete
+		communityRepository.deleteById(boardId);
+	}
+
+	/**
+	 * 글 (삭제, 수정 등) 조작 전, 유효성 검증 공통 메서드
+	 * 1. 글 존재 유무 확인
+	 * 2. 글 조작 가능 권한 확인
+	 * @param memberId
+	 * @param boardId
+	 */
+	private void checkAuthorityBeforeOperation(final String memberId, final Long boardId) {
+		//글 존재 유무 확인
+		if (!communityRepository.existsById(boardId)) {
+			throw new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND);
+		}
+
+		//로그인 회원, 작성자인지 검증
+		if (!communityRepository.existsByMemberIdAndBoardId(memberId, boardId)) {
+			throw new GlobalException(ErrorCode.COMMUNITY_BOARD_OPERATION_FAIL_NOT_AUTHOR);
+		}
 	}
 }

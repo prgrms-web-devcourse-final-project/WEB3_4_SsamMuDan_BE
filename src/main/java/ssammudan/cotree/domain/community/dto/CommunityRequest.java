@@ -1,10 +1,11 @@
 package ssammudan.cotree.domain.community.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ssammudan.cotree.domain.community.dto.valid.CommunityContent;
+import ssammudan.cotree.domain.community.dto.valid.CommunityTitle;
 
 /**
  * PackageName : ssammudan.cotree.domain.community.dto
@@ -28,10 +29,10 @@ public class CommunityRequest {
 		@NotBlank(message = "글 카테고리는 필수값 입니다.")
 		private String category;
 
-		@Size(min = 1, max = 50, message = "제목은 1자 이상 50자 이하로 입력해주세요.")
+		@CommunityTitle
 		private String title;
 
-		@Size(min = 1, max = 1000, message = "내용은 1자 이상 1000자 이하로 입력해주세요.")
+		@CommunityContent
 		private String content;
 
 		public CreateBoard(String category, String title, String content) {
@@ -39,5 +40,15 @@ public class CommunityRequest {
 			this.title = title;
 			this.content = content;
 		}
+	}
+
+	@Getter
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	public static class ModifyBoard {
+		@CommunityTitle
+		private String title;
+
+		@CommunityContent
+		private String content;
 	}
 }

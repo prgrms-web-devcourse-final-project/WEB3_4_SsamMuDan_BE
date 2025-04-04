@@ -1,9 +1,14 @@
 package ssammudan.cotree.domain.member.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.global.error.GlobalException;
@@ -11,6 +16,7 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -24,13 +30,16 @@ public class MemberServiceImpl implements MemberService {
 			Member newMember = Member.builder()
 				.email(signupRequest.email())
 				.password(passwordEncoder.encode(signupRequest.password()))
-				.username(signupRequest.name())
+				.username(signupRequest.username())
 				.nickname(signupRequest.nickname())
 				.phoneNumber(signupRequest.phoneNumber())
 				.build();
 			return memberRepository.save(newMember);
-		} catch (Exception e) {
+		} catch (DataIntegrityViolationException e) {
 			throw new GlobalException(ErrorCode.MEMBER_DUPLICATED);
+		} catch (Exception e) {
+			log.error("회원가입 중 오류 발생", e);
+			throw new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -44,5 +53,23 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		return member;
+	}
+
+	@Override
+	@Transactional
+	public Member updateMember(Member member, MemberInfoRequest memberInfoRequest) {
+		return member.update(memberInfoRequest);
+	}
+
+	@Override
+	public Member findById(String memberId) {
+		return memberRepository.findById(memberId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+	}
+
+	@Override
+	public MemberInfoResponse getMemberInfo(String id) {
+		Member member = memberRepository.findById(id)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		return new MemberInfoResponse(member);
 	}
 }
