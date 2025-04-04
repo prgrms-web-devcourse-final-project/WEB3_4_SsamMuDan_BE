@@ -14,6 +14,7 @@ public enum ErrorCode {
 	MEMBER_DUPLICATED(HttpStatus.BAD_REQUEST, "0001", "이미 존재하는 회원입니다."),
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
 	MEMBER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "0003", "인증정보가 일치하지 않습니다."),
+	MEMBER_SIGNUP_VERIFY_FAILED(HttpStatus.UNAUTHORIZED, "0004", "회원가입 인증번호가 일치하지 않습니다."),
 
 	//Education: 1001 ~ 2000
 	EDUCATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "학습 카테고리를 찾을 수 없습니다."),
@@ -62,6 +63,7 @@ public enum ErrorCode {
 	ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "9006", "값을 찾지 못했습니다."),
 	HANDLE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "9007", "요청이 거부되었습니다."),
 	METHOD_ARGUMENT_TYPE_MISS_MATCH(HttpStatus.BAD_REQUEST, "9008", "요청 파라미터 타입 불일치. API 문서 확인해주세요."),
+	SMS_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "9009", "SMS 가 전송 실패하였습니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "9999", "서버 내부 오류 발생했습니다");
 
 	private final HttpStatus status;

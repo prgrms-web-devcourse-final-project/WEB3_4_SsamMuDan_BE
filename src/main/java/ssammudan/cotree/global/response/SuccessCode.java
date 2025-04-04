@@ -16,6 +16,8 @@ public enum SuccessCode {
 	MEMBER_SIGNOUT_SUCCESS(HttpStatus.OK, "200", "로그아웃을 완료했습니다."),
 	MEMBER_INFO_REQUEST_SUCCESS(HttpStatus.OK, "200", "회원정보 조회를 완료했습니다."),
 	MEMBER_INFO_UPDATE_SUCCESS(HttpStatus.OK, "200", "회원정보 수정을 완료했습니다."),
+	MEMBER_SIGNUP_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "회원가입 전화번호 발송 성공"),
+	MEMBER_SIGNUP_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "회원가입 전화번호 인증 성공"),
 
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 성공했습니다."),

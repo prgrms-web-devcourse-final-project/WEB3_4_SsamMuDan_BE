@@ -71,6 +71,7 @@ public class SecurityConfig {
 				// MEMBER Domain
 				.requestMatchers(POST, "/api/v1/member/signup").permitAll()
 				.requestMatchers(POST, "/api/v1/member/signin").permitAll()
+				.requestMatchers(POST, "/api/v1/member/signup/phone").permitAll()
 
 				// Category Domain
 				.requestMatchers(GET, "/api/v1/category/**").permitAll()

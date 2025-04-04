@@ -22,7 +22,10 @@ import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
 import ssammudan.cotree.domain.member.service.MemberService;
+import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
 import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
 import ssammudan.cotree.global.config.security.jwt.TokenBlacklistService;
@@ -40,6 +43,7 @@ public class MemberController {
 	private final AccessTokenService accessTokenService;
 	private final RefreshTokenService refreshTokenService;
 	private final TokenBlacklistService tokenBlacklistService;
+	private final SmsService smsService;
 
 	@GetMapping
 	@Operation(summary = "회원 조회", description = "로그인한 회원의 정보를 제공합니다.")
@@ -102,6 +106,20 @@ public class MemberController {
 		response.addHeader("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
 		response.addHeader("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNOUT_SUCCESS);
+	}
+
+	@PostMapping("/signup/phone")
+	@Operation(summary = "회원가입 전화번호 인증 코드 전송", description = "입력하신 전화번호로 인증 코드를 전송합니다")
+	public BaseResponse<Void> sendSignupCode(@Valid @RequestBody MemberSignupSmsRequest request) {
+		smsService.sendSignupMsg(request);
+		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_SEND_SUCCESS);
+	}
+
+	@PostMapping("/signup/phone/verify")
+	@Operation(summary = "회원가입 전화번호 인증 확인", description = "인증번호를 확인합니다.")
+	public BaseResponse<Void> verifySignupCode(@Valid @RequestBody MemberSignupSmsVerifyRequest request) {
+		smsService.verifySignupCode(request);
+		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_VERIFY_SUCCESS);
 	}
 
 	private String getValueInCookie(String value, HttpServletRequest request) {
