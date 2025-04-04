@@ -19,6 +19,7 @@ import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
@@ -115,13 +116,14 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
+	public PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
 		Page<Project> projects = projectRepository.findByIsOpenTrue(pageable);
-		List<ProjectListResponse> hotPojectListRespons = projects.stream()
+		List<ProjectListResponse> hotPojectList = projects.stream()
 			.map(this::toProjectResponse)
 			.toList();
 
-		return new PageImpl<>(hotPojectListRespons, pageable, projects.getTotalElements());
+		Page<ProjectListResponse> hotProjectPage = new PageImpl<>(hotPojectList, pageable, projects.getTotalElements());
+		return PageResponse.of(hotProjectPage);
 	}
 
 	@Transactional(readOnly = true)

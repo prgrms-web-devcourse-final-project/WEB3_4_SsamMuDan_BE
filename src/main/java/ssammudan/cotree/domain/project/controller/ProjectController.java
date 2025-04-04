@@ -80,14 +80,14 @@ public class ProjectController {
 	}
 
 	@GetMapping("/hot/main")
-	@Operation(summary = "메인페이지 HOT 프로젝트 조회", description = "메인 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.")
+	@Operation(summary = "메인페이지 HOT 프로젝트 조회", description = "메인 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.(조회수, 작성일 기준)")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<PageResponse<ProjectListResponse>> getHotProjectsForMain(
 		@ParameterObject @PageableDefault(page = 0, size = 4, sort = {"viewCount",
 			"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable
 	) {
-		Page<ProjectListResponse> hotProjects = projectServiceImpl.getHotProjectsForMain(pageable);
-		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS, PageResponse.of(hotProjects));
+		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS,
+			projectServiceImpl.getHotProjectsForMain(pageable));
 	}
 
 	@GetMapping("/hot")
