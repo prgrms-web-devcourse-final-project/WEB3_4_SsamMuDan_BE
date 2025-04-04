@@ -1,8 +1,11 @@
 package ssammudan.cotree.domain.education.techbook.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import ssammudan.cotree.model.education.category.entity.EducationCategory;
+import ssammudan.cotree.model.education.techbook.category.entity.TechBookEducationCategory;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 
 /**
@@ -29,6 +32,8 @@ public class TechBookResponse {
 		String writer,                //TechBook 저자
 		@Schema(description = "TechBook 교육 난이도", example = "입문")
 		String educationLevel,        //TechBook 교육 난이도
+		@Schema(description = "TechBook 교육 카테고리", example = "백엔드")
+		List<String> educationCategories,
 		@Schema(description = "TechBook 제목", example = "Spring Boot")
 		String title,                 //TechBook 제목
 		@Schema(description = "TechBook 설명", example = "스프링 부트를 1000% 활용하는 방법!!")
@@ -61,6 +66,9 @@ public class TechBookResponse {
 				techBook.getId(),
 				techBook.getWriter().getNickname(),
 				techBook.getEducationLevel().getName(),
+				techBook.getTechBookEducationCategories().stream()
+					.map(TechBookEducationCategory::getEducationCategory)
+					.map(EducationCategory::getName).toList(),    //TODO: 성능 최적화 시 FETCH JOIN 활용 형태 적용 고려
 				techBook.getTitle(),
 				techBook.getDescription(),
 				techBook.getIntroduction(),
