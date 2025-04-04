@@ -2,6 +2,9 @@ package ssammudan.cotree.domain.education.techtube.controller;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
 import ssammudan.cotree.domain.education.techtube.service.TechTubeService;
 import ssammudan.cotree.domain.education.type.SearchEducationSort;
+import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
@@ -42,8 +46,17 @@ public class TechTubeController {
 	@GetMapping("/{id}/info")
 	@Operation(summary = "TechTube 상세 조회", description = "ID를 통해 특정 TechTube를 조회")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<TechTubeResponse.Detail> getTechTubeById(@PathVariable @Min(1) Long id) {
-		TechTubeResponse.Detail responseDto = techTubeService.findTechTubeById(id);
+	public BaseResponse<TechTubeResponse.Detail> getTechTubeById(
+		@PathVariable @Min(1) Long id,
+		@Nullable @AuthenticationPrincipal final UserDetails userDetails
+	) {
+		TechTubeResponse.Detail responseDto;
+		if (userDetails != null) {
+			String memberId = ((CustomUser)userDetails).getId();
+			responseDto = techTubeService.findTechTubeById(id, memberId);
+		} else {
+			responseDto = techTubeService.findTechTubeById(id);
+		}
 		return BaseResponse.success(SuccessCode.TECH_TUBE_READ_SUCCESS, responseDto);
 	}
 
