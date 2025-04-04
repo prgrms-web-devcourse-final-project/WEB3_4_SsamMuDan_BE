@@ -46,14 +46,14 @@ public class CommunityController {
 
 	@PostMapping("/board")
 	@Operation(summary = "커뮤니티 글 작성")
-	public BaseResponse<Void> createNewBoard(
+	public BaseResponse<CommunityResponse.BoardCreate> createNewBoard(
 			@Valid @RequestBody CommunityRequest.CreateBoard createBoard,
 			@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
 
-		communityService.createNewBoard(createBoard, memberId);
-		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_CREATE_SUCCESS);
+		CommunityResponse.BoardCreate boardCreate = communityService.createNewBoard(createBoard, memberId);
+		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_CREATE_SUCCESS, boardCreate);
 	}
 
 	@GetMapping("/board")

@@ -41,34 +41,37 @@ public class CommunityServiceImpl implements CommunityService {
 
 	@Transactional
 	@Override
-	public void createNewBoard(CommunityRequest.CreateBoard createBoard, String userId) {
+	public CommunityResponse.BoardCreate createNewBoard(
+		final CommunityRequest.CreateBoard createBoard, final String userId) {
 		// 카테고리 조회 및 유효성 확인
 		CommunityCategory findCommunityCategory = communityCategoryRepository.findByName(createBoard.getCategory())
-				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
+			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
 
 		// userId 로 회원 정보 검색
 		Member findMember = memberRepository.findById(userId)
-				.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_MEMBER_NOTFOUND));
+			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_MEMBER_NOTFOUND));
 
 		// 새 글 저장
 		Community newCommunityBoard =
-				Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(),
-						createBoard.getContent());
+			Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(),
+				createBoard.getContent());
 
-		communityRepository.save(newCommunityBoard);
+		//저장 후 응답
+		Community savedCommunity = communityRepository.save(newCommunityBoard);
+		return CommunityResponse.BoardCreate.of(savedCommunity.getId());
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public PageResponse<CommunityResponse.BoardListDetail> getBoardList(
-			final Pageable pageable,
-			final SearchBoardSort sort,
-			final SearchBoardCategory category,
-			final String keyword,
-			final String memberId) {
+		final Pageable pageable,
+		final SearchBoardSort sort,
+		final SearchBoardCategory category,
+		final String keyword,
+		final String memberId) {
 
 		Page<CommunityResponse.BoardListDetail> findBoardList =
-				communityRepository.findBoardList(pageable, sort, category, keyword, memberId);
+			communityRepository.findBoardList(pageable, sort, category, keyword, memberId);
 
 		//todo : findBoardList 의 내용 중, Content 들, 글자수 제한 및 이미지 제거 필요.
 		return PageResponse.of(findBoardList);
@@ -79,7 +82,7 @@ public class CommunityServiceImpl implements CommunityService {
 	public CommunityResponse.BoardDetail getBoardDetail(final Long boardId, final String memberId) {
 		// 게시글 정보 조회
 		CommunityResponse.BoardDetail findData = communityRepository.findBoard(boardId, memberId).orElseThrow(
-				() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND));
+			() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND));
 
 		// 게시글 조회수 count 업데이트
 		// todo : 게시글 조회수 update 처리
