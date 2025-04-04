@@ -56,7 +56,7 @@ public class Community extends BaseEntity {
 	@Column(name = "view_count", nullable = false)
 	private Integer viewCount;
 
-	@Builder
+	@Builder(access = AccessLevel.PRIVATE)
 	private Community(CommunityCategory communityCategory, Member member, String title, String content,
 			Integer viewCount) {
 		this.communityCategory = communityCategory;

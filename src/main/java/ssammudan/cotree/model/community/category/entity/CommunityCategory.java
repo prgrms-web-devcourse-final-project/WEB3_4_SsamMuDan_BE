@@ -35,7 +35,7 @@ public class CommunityCategory {
 	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 
-	@Builder
+	@Builder(access = AccessLevel.PRIVATE)
 	private CommunityCategory(String name) {
 		this.name = name;
 	}

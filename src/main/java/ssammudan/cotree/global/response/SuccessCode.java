@@ -42,6 +42,7 @@ public enum SuccessCode {
 
 	//Comment:
 	COMMENT_CREATE_SUCCESS(HttpStatus.CREATED, "201", "댓글 작성 성공"),
+	COMMENT_SEARCH_SUCCESS(HttpStatus.OK, "200", "댓글 목록 조회 성공"),
 
 	//Like
 	LIKE_ADD_SUCCESS(HttpStatus.OK, "200", "좋아요 추가 성공"),
