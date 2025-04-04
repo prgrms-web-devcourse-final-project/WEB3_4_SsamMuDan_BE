@@ -49,8 +49,8 @@ public class CommunityController {
 	@PostMapping("/board")
 	@Operation(summary = "커뮤니티 글 작성")
 	public BaseResponse<CommunityResponse.BoardCreate> createNewBoard(
-			@Valid @RequestBody CommunityRequest.CreateBoard createBoard,
-			@AuthenticationPrincipal CustomUser customUser
+		@Valid @RequestBody CommunityRequest.CreateBoard createBoard,
+		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
 
