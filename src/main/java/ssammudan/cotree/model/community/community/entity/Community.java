@@ -81,4 +81,9 @@ public class Community extends BaseEntity {
 				.viewCount(0)
 				.build();
 	}
+
+	public void modifyCommunity(final String title, final String content) {
+		this.title = title;
+		this.content = content;
+	}
 }

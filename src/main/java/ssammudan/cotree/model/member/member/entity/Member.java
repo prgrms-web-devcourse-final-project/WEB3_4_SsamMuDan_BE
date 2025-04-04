@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
@@ -69,5 +70,12 @@ public class Member extends BaseEntity {
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role.getRole()));
+	}
+
+	public Member update(MemberInfoRequest request) {
+		this.nickname = request.username();
+		this.phoneNumber = request.nickname();
+		this.profileImageUrl = request.profileImageUrl();
+		return this;
 	}
 }

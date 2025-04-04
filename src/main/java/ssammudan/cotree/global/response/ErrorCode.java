@@ -32,19 +32,20 @@ public enum ErrorCode {
 
 	//Project: 4001 ~ 5000
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
-	
+
 	//Community: 5001 ~ 6000
 	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
-	COMMUNITY_MEMBER_NOTFOUND(HttpStatus.BAD_REQUEST, "5002", "존재하지 않은 회원입니다."),
-	COMMUNITY_BOARD_NOTFOUND(HttpStatus.BAD_REQUEST, "5003", "존재하지 않은 글입니다."),
+	COMMUNITY_MEMBER_NOTFOUND(HttpStatus.NOT_FOUND, "5002", "존재하지 않은 회원입니다."),
+	COMMUNITY_BOARD_NOTFOUND(HttpStatus.NOT_FOUND, "5003", "존재하지 않은 글입니다."),
+	COMMUNITY_BOARD_OPERATION_FAIL_NOT_AUTHOR(HttpStatus.FORBIDDEN, "5004", "작성자만 수정할 수 있습니다."),
 
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
 
 	//Comment: 7001 ~ 8000
-	POST_COMMENT_FAIL_COMMUNITY_NOTFOUND(HttpStatus.BAD_REQUEST, "7001", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
-	POST_COMMENT_FAIL_RESUME_NOTFOUND(HttpStatus.BAD_REQUEST, "7002", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
-	POST_COMMENT_FAIL_PARENT_COMMENT_NOTFOUND(HttpStatus.BAD_REQUEST, "7003", "대댓글 작성 실패. 잘못된 댓글 ID 입니다."),
+	POST_COMMENT_FAIL_COMMUNITY_NOTFOUND(HttpStatus.NOT_FOUND, "7001", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
+	POST_COMMENT_FAIL_RESUME_NOTFOUND(HttpStatus.NOT_FOUND, "7002", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
+	POST_COMMENT_FAIL_PARENT_COMMENT_NOTFOUND(HttpStatus.NOT_FOUND, "7003", "대댓글 작성 실패. 잘못된 댓글 ID 입니다."),
 	POST_COMMENT_FAIL_INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "7004", "댓글 작성 실패. 잘못된 카테고리 입니다."),
 	COMMENT_GET_FAIL_INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "7005", "댓글 조회 실패. 잘못된 카테고리 입니다."),
 

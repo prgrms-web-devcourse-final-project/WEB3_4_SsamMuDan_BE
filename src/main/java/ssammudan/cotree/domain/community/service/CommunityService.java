@@ -30,4 +30,8 @@ public interface CommunityService {
 			final String memberId);
 
 	CommunityResponse.BoardDetail getBoardDetail(final Long boardId, final String memberId);
+
+	void modifyBoard(final Long boardId, final CommunityRequest.ModifyBoard modifyBoard, final String memberId);
+
+	void deleteBoard(final Long boardId, final String memberId);
 }

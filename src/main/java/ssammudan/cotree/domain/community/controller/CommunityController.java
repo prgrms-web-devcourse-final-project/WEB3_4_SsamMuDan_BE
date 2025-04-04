@@ -3,9 +3,11 @@ package ssammudan.cotree.domain.community.controller;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,17 +61,17 @@ public class CommunityController {
 	@GetMapping("/board")
 	@Operation(summary = "커뮤니티 글 목록 조회")
 	public BaseResponse<PageResponse<CommunityResponse.BoardListDetail>> getBoardList(
-			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
-			@RequestParam(value = "size", defaultValue = "5", required = false) int size,
-			@RequestParam(value = "sort", defaultValue = "LATEST", required = false) SearchBoardSort sort,
-			@RequestParam(value = "category", defaultValue = "TOTAL", required = false) SearchBoardCategory category,
-			@RequestParam(value = "keyword", defaultValue = "", required = false) String keyword,
-			@AuthenticationPrincipal CustomUser customUser
+		@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+		@RequestParam(value = "size", defaultValue = "5", required = false) int size,
+		@RequestParam(value = "sort", defaultValue = "LATEST", required = false) SearchBoardSort sort,
+		@RequestParam(value = "category", defaultValue = "TOTAL", required = false) SearchBoardCategory category,
+		@RequestParam(value = "keyword", defaultValue = "", required = false) String keyword,
+		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = (customUser != null) ? customUser.getId() : null;
 		Pageable pageable = PageRequest.of(page, size);
 		PageResponse<CommunityResponse.BoardListDetail> boardList =
-				communityService.getBoardList(pageable, sort, category, keyword, memberId);
+			communityService.getBoardList(pageable, sort, category, keyword, memberId);
 
 		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_SEARCH_SUCCESS, boardList);
 	}
@@ -77,11 +79,36 @@ public class CommunityController {
 	@GetMapping("/board/{boardId}")
 	@Operation(summary = "커뮤니티 글 상세 조회")
 	public BaseResponse<CommunityResponse.BoardDetail> getBoardDetail(
-			@PathVariable(value = "boardId") Long boardId,
-			@AuthenticationPrincipal CustomUser customUser
+		@PathVariable(value = "boardId") final Long boardId,
+		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = (customUser != null) ? customUser.getId() : null;
 		CommunityResponse.BoardDetail boardDetail = communityService.getBoardDetail(boardId, memberId);
 		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_DETAIL_SEARCH_SUCCESS, boardDetail);
+	}
+
+	@PutMapping("/board/{boardId}")
+	@Operation(summary = "커뮤니티 글 수정")
+	public BaseResponse<CommunityResponse.BoardModify> modifyBoard(
+		@PathVariable(value = "boardId") final Long boardId,
+		@Valid @RequestBody CommunityRequest.ModifyBoard modifyBoard,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		communityService.modifyBoard(boardId, modifyBoard, memberId);
+		return BaseResponse.success(
+			SuccessCode.COMMUNITY_BOARD_MODIFY_SUCCESS,
+			new CommunityResponse.BoardModify(boardId));
+	}
+
+	@DeleteMapping("/board/{boardId}")
+	@Operation(summary = "커뮤니티 글 삭제")
+	public BaseResponse<Void> deleteBoard(
+		@PathVariable(value = "boardId") final Long boardId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		communityService.deleteBoard(boardId, memberId);
+		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_DELETE_SUCCESS);
 	}
 }

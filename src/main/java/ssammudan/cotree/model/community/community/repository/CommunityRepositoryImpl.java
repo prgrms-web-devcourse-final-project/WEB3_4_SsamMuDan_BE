@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -51,11 +52,11 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
 	@Override
 	public Page<CommunityResponse.BoardListDetail> findBoardList(
-			final Pageable pageable,
-			final SearchBoardSort sort,
-			final SearchBoardCategory category,
-			final String keyword,
-			final String memberId) {
+		final Pageable pageable,
+		final SearchBoardSort sort,
+		final SearchBoardCategory category,
+		final String keyword,
+		final String memberId) {
 
 		OrderSpecifier<?> orderSpecifier = createOrderSpecifier(sort);
 		BooleanBuilder whereCondition = createWhereCondition(category, keyword);
@@ -63,47 +64,47 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
 		// 쿼리 실행 - 데이터 조회
 		List<CommunityResponse.BoardListDetail> content = jpaQueryFactory
-				.select(Projections.constructor(CommunityResponse.BoardListDetail.class,
-						community.id,
-						community.title,
-						member.nickname,
-						community.createdAt,
-						community.content,
-						JPAExpressions
-								.select(comment.count())
-								.from(comment)
-								.where(comment.community.id.eq(community.id)),
-						JPAExpressions
-								.select(like.count())
-								.from(like)
-								.where(like.community.id.eq(community.id)),
-						community.viewCount,
-						community.title,     // todo : 대표 이미지 그냥 필드로 가지고 있는게 간단할듯
-						memberId != null ? JPAExpressions
-								.select(like.count())
-								.from(like)
-								.where(like.community.id.eq(community.id)
-										.and(like.member.id.eq(memberId)))
-								.exists()
-								: Expressions.constant(Boolean.FALSE),
-						Expressions.booleanTemplate("{0} >= {1}", community.createdAt, oneDayAgo)
-				))
-				.from(community)
-				.join(member).on(community.member.id.eq(member.id))
-				.join(communityCategory).on(community.communityCategory.id.eq(communityCategory.id))
-				.where(whereCondition)
-				.orderBy(orderSpecifier)
-				.offset(pageable.getOffset())
-				.limit(pageable.getPageSize())
-				.fetch();
+			.select(Projections.constructor(CommunityResponse.BoardListDetail.class,
+				community.id,
+				community.title,
+				member.nickname,
+				community.createdAt,
+				community.content,
+				JPAExpressions
+					.select(comment.count())
+					.from(comment)
+					.where(comment.community.id.eq(community.id)),
+				JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.community.id.eq(community.id)),
+				community.viewCount,
+				community.title,     // todo : 대표 이미지 그냥 필드로 가지고 있는게 간단할듯
+				memberId != null ? JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.community.id.eq(community.id)
+						.and(like.member.id.eq(memberId)))
+					.exists()
+					: Expressions.constant(Boolean.FALSE),
+				Expressions.booleanTemplate("{0} >= {1}", community.createdAt, oneDayAgo)
+			))
+			.from(community)
+			.join(member).on(community.member.id.eq(member.id))
+			.join(communityCategory).on(community.communityCategory.id.eq(communityCategory.id))
+			.where(whereCondition)
+			.orderBy(orderSpecifier)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
 
 		// 전체 개수 조회
 		Long total = jpaQueryFactory
-				.select(community.count())
-				.from(community)
-				.join(communityCategory).on(community.communityCategory.id.eq(communityCategory.id))
-				.where(whereCondition)
-				.fetchOne();
+			.select(community.count())
+			.from(community)
+			.join(communityCategory).on(community.communityCategory.id.eq(communityCategory.id))
+			.where(whereCondition)
+			.fetchOne();
 
 		return new PageImpl<>(content, pageable, total != null ? total : 0);
 	}
@@ -111,28 +112,33 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 	@Override
 	public Optional<CommunityResponse.BoardDetail> findBoard(final Long boardId, final String memberId) {
 		return Optional.ofNullable(jpaQueryFactory
-				.select(Projections.constructor(CommunityResponse.BoardDetail.class,
-						community.title,
-						member.username,
-						community.createdAt,
-						community.content,
-						JPAExpressions
-								.select(like.count())
-								.from(like)
-								.where(like.community.id.eq(community.id)),
-						community.viewCount,
-						memberId != null ? JPAExpressions
-								.select(like.count())
-								.from(like)
-								.where(like.community.id.eq(community.id)
-										.and(like.member.id.eq(memberId)))
-								.exists()
-								: Expressions.constant(Boolean.FALSE)
-				))
-				.from(community)
-				.join(member).on(community.member.id.eq(member.id))
-				.where(community.id.eq(boardId))
-				.fetchOne());
+			.select(Projections.constructor(CommunityResponse.BoardDetail.class,
+				community.title,
+				member.nickname,
+				community.createdAt,
+				community.content,
+				JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.community.id.eq(community.id)),
+				community.viewCount,
+				memberId != null ? JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.community.id.eq(community.id)
+						.and(like.member.id.eq(memberId)))
+					.exists()
+					: Expressions.constant(Boolean.FALSE),
+				memberId != null ? Expressions.booleanOperation(
+					Ops.EQ,
+					community.member.id,
+					Expressions.constant(memberId)
+				) : Expressions.constant(Boolean.FALSE)
+			))
+			.from(community)
+			.join(member).on(community.member.id.eq(member.id))
+			.where(community.id.eq(boardId))
+			.fetchOne());
 	}
 
 	/**
@@ -142,14 +148,14 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 		return switch (sort) {
 			case LATEST -> new OrderSpecifier<>(Order.DESC, community.createdAt);
 			case COMMENT -> new OrderSpecifier<>(Order.DESC,
-					JPAExpressions.select(comment.count())
-							.from(comment)
-							.where(comment.community.id.eq(community.id))
+				JPAExpressions.select(comment.count())
+					.from(comment)
+					.where(comment.community.id.eq(community.id))
 			);
 			case LIKE -> new OrderSpecifier<>(Order.DESC,
-					JPAExpressions.select(like.count())
-							.from(like)
-							.where(like.community.id.eq(community.id))
+				JPAExpressions.select(like.count())
+					.from(like)
+					.where(like.community.id.eq(community.id))
 			);
 		};
 	}
@@ -168,8 +174,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 		// 키워드 검색 조건
 		if (keyword != null && !keyword.isEmpty()) {
 			builder.and(
-					community.title.containsIgnoreCase(keyword)
-							.or(community.content.containsIgnoreCase(keyword))
+				community.title.containsIgnoreCase(keyword)
+					.or(community.content.containsIgnoreCase(keyword))
 			);
 		}
 
