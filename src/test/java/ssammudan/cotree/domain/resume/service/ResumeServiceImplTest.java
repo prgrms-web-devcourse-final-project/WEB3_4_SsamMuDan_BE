@@ -16,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import jakarta.transaction.Transactional;
 import software.amazon.awssdk.services.s3.S3Client;
+import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.domain.resume.ResumeTestHelper;
 import ssammudan.cotree.domain.resume.dto.BasicInfo;
 import ssammudan.cotree.domain.resume.dto.CareerInfo;
@@ -59,6 +60,8 @@ class ResumeServiceImplTest {
 	private S3Client s3Client;
 	@MockitoBean
 	private S3Uploader s3Uploader;
+	@MockitoBean
+	SmsService service;
 
 	private String memberId;
 
