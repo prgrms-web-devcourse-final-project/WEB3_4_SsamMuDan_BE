@@ -18,6 +18,7 @@ import jakarta.validation.constraints.Pattern;
  */
 
 public record MemberSignupRequest(
+	@NotNull(message = "이메일을 입력해주세요.")
 	@Email(message = "이메일 형식이 올바르지 않습니다.")
 	@Schema(description = "사용자 이메일", examples = "test@example.com")
 	String email,
@@ -35,11 +36,8 @@ public record MemberSignupRequest(
 	String nickname,
 
 	@NotNull(message = "휴대폰 번호를 입력해주세요.")
-	@Pattern(
-		regexp = "^(010|011|016|017|018|019)-\\d{3,4}-\\d{4}$",
-		message = "휴대폰 번호 형식이 올바르지 않습니다. 예: 010-****-****"
-	)
-	@Schema(description = "사용자 휴대폰 번호", examples = "010-1234-5678")
+	@Pattern(regexp = "^01[016789][0-9]{7,8}$", message = "휴대폰 번호 형식이 올바르지 않습니다.")
+	@Schema(description = "사용자 휴대폰 번호", example = "01012345678", pattern = "^01[016789][0-9]{7,8}$")
 	String phoneNumber
 ) {
 }
