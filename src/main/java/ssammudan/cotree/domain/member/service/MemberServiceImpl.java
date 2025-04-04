@@ -3,7 +3,10 @@ package ssammudan.cotree.domain.member.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.global.error.GlobalException;
@@ -24,7 +27,7 @@ public class MemberServiceImpl implements MemberService {
 			Member newMember = Member.builder()
 				.email(signupRequest.email())
 				.password(passwordEncoder.encode(signupRequest.password()))
-				.username(signupRequest.name())
+				.username(signupRequest.username())
 				.nickname(signupRequest.nickname())
 				.phoneNumber(signupRequest.phoneNumber())
 				.build();
@@ -44,5 +47,23 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		return member;
+	}
+
+	@Override
+	@Transactional
+	public Member updateMember(Member member, MemberInfoRequest memberInfoRequest) {
+		return member.update(memberInfoRequest);
+	}
+
+	@Override
+	public Member findById(String memberId) {
+		return memberRepository.findById(memberId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+	}
+
+	@Override
+	public MemberInfoResponse getMemberInfo(String id) {
+		Member member = memberRepository.findById(id)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		return new MemberInfoResponse(member);
 	}
 }

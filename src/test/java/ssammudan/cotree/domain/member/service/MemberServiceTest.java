@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.transaction.Transactional;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.integration.SpringBootTestSupporter;
@@ -85,5 +86,34 @@ class MemberServiceTest extends SpringBootTestSupporter {
 		assertThat(signInMember.getEmail()).isEqualTo(savedMember.getEmail());
 		assertThat(signInMember.getNickname()).isEqualTo(savedMember.getNickname());
 		assertThat(signInMember.getPhoneNumber()).isEqualTo(savedMember.getPhoneNumber());
+	}
+
+	@Test
+	@DisplayName("회원 정보 수정")
+	@Transactional
+	void updateMember() {
+		// given
+		MemberSignupRequest testMemberSignupRequest = new MemberSignupRequest(
+			"testEmail123@mail.com",
+			"password123",
+			"testName",
+			"testNickName",
+			"01012345678"
+		);
+		Member member = memberService.signUp(testMemberSignupRequest);
+
+		MemberInfoRequest testMemberInfoRequest = new MemberInfoRequest(
+			"name",
+			"nickname",
+			"profileImageUrl"
+		);
+
+		// when
+		Member updatedMember = memberService.updateMember(member, testMemberInfoRequest);
+
+		// then
+		assertThat(updatedMember.getNickname()).isEqualTo(testMemberInfoRequest.username());
+		assertThat(updatedMember.getPhoneNumber()).isEqualTo(testMemberInfoRequest.nickname());
+		assertThat(updatedMember.getProfileImageUrl()).isEqualTo(testMemberInfoRequest.profileImageUrl());
 	}
 }
