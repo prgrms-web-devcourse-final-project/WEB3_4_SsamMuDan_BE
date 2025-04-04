@@ -64,7 +64,7 @@ public class TechTubeRepositoryImpl implements TechTubeRepositoryCustom {
 	 * 검색어(keyword) 기준 BooleanExpression 생성
 	 *
 	 * @param keyword  - 검색어
-	 * @param techTube - Querydsl TechBook
+	 * @param techTube - Querydsl TechTube
 	 * @return BooleanExpression
 	 */
 	private BooleanExpression getSearchCondition(final String keyword, @NotNull final QTechTube techTube) {
