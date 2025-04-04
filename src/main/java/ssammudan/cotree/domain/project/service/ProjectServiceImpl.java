@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.project.dto.HotProjectResponse;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
@@ -114,17 +116,35 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<HotProjectResponse> getHotProjectsForMain(Pageable pageable) {
+	public PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
 		Page<Project> projects = projectRepository.findByIsOpenTrue(pageable);
-		return projects.stream().map(this::toHotProjectResponse).toList();
+		List<ProjectListResponse> hotPojectList = projects.stream()
+			.map(this::toProjectResponse)
+			.toList();
+
+		Page<ProjectListResponse> hotProjectPage = new PageImpl<>(hotPojectList, pageable, projects.getTotalElements());
+		return PageResponse.of(hotProjectPage);
 	}
 
 	@Transactional(readOnly = true)
-	public List<HotProjectResponse> getHotProjectsForProject() {
+	public List<ProjectListResponse> getHotProjectsForProject() {
 		//todo: 캐싱 작업
 		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
-			.map(this::toHotProjectResponse)
+			.map(this::toProjectResponse)
 			.toList();
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
+		List<Long> devPositionIds,
+		String sort) {
+		Page<Project> projects = projectRepository.findByFilters(pageable, techStackIds, devPositionIds, sort);
+		List<ProjectListResponse> content = projects.getContent().stream()
+			.map(this::toProjectResponse)
+			.toList();
+
+		Page<ProjectListResponse> page = new PageImpl<>(content, pageable, projects.getTotalElements());
+		return PageResponse.of(page);
 	}
 
 	// 모집분야명, 인원수 조회
@@ -144,14 +164,14 @@ public class ProjectServiceImpl implements ProjectService {
 			.toList();
 	}
 
-	// Hot프로젝트 데이터가공
-	private HotProjectResponse toHotProjectResponse(Project project) {
+	// 프로젝트 데이터가공
+	private ProjectListResponse toProjectResponse(Project project) {
 		List<String> techStackImageUrls = getTechStackImageUrls(project.getId());
 		long likeCount = likeRepository.countByProjectId(project.getId());
 		Member member = memberRepository.findById(project.getMember().getId()).orElse(null);
 		int recruitmentCount = getRecruitmentCount(project.getId());
 
-		return HotProjectResponse.from(project, techStackImageUrls, likeCount, member, recruitmentCount);
+		return ProjectListResponse.from(project, techStackImageUrls, likeCount, member, recruitmentCount);
 	}
 
 	// 프로젝트에 해당하는 techstack들의 이미지들 가져오는 메서드

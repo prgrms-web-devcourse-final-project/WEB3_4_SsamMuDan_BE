@@ -1,6 +1,7 @@
 package ssammudan.cotree.model.project.project.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.global.entity.BaseEntity;
+import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
+import ssammudan.cotree.model.project.techstack.entity.ProjectTechStack;
 
 /**
  * PackageName : ssammudan.cotree.model.project.project.entity
@@ -48,6 +53,15 @@ public class Project extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
+
+	@OneToMany(mappedBy = "project")
+	private Set<ProjectTechStack> projectTechStacks;
+
+	@OneToMany(mappedBy = "project")
+	private Set<ProjectDevPosition> projectDevPositions;
+
+	@OneToMany(mappedBy = "project")
+	private Set<Like> likes;
 
 	@Column(name = "title", nullable = false)
 	private String title;

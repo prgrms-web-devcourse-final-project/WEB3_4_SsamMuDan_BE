@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.project.controller;
 import java.util.List;
 
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,13 +23,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.project.dto.HotProjectResponse;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.service.ProjectServiceImpl;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
 
 /**
@@ -76,22 +79,37 @@ public class ProjectController {
 	}
 
 	@GetMapping("/hot/main")
-	@Operation(summary = "메인페이지 HOT 프로젝트 조회", description = "메인 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.")
+	@Operation(summary = "메인페이지 HOT 프로젝트 조회", description = "메인 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.(조회수, 작성일 기준)")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<List<HotProjectResponse>> getHotProjectsForMain(
+	public BaseResponse<PageResponse<ProjectListResponse>> getHotProjectsForMain(
 		@ParameterObject @PageableDefault(page = 0, size = 4, sort = {"viewCount",
 			"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable
 	) {
-		return BaseResponse.success(SuccessCode.PROJECT_FETCH_SUCCESS,
+		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS,
 			projectServiceImpl.getHotProjectsForMain(pageable));
 	}
 
 	@GetMapping("/hot")
 	@Operation(summary = "프로젝트 페이지 HOT 프로젝트 조회", description = "프로젝트 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<List<HotProjectResponse>> getHotProjectsForProject() {
-		return BaseResponse.success(SuccessCode.PROJECT_FETCH_SUCCESS,
+	public BaseResponse<List<ProjectListResponse>> getHotProjectsForProject() {
+		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS,
 			projectServiceImpl.getHotProjectsForProject());
+	}
+
+	@GetMapping
+	@Operation(summary = "프로젝트 목록 조회", description = "프로젝트 목록을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public BaseResponse<PageResponse<ProjectListResponse>> getProjects(
+		@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+		@RequestParam(value = "size", defaultValue = "12", required = false) int size,
+		@RequestParam(value = "sort", defaultValue = "createdAt", required = false) String sort,
+		@RequestParam(value = "techStack", required = false) List<Long> techStackIds,
+		@RequestParam(value = "jobPosition", required = false) List<Long> devPositionIds
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS,
+			projectServiceImpl.getProjects(pageable, techStackIds, devPositionIds, sort));
 	}
 
 }
