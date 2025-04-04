@@ -27,7 +27,7 @@ public class MemberServiceImpl implements MemberService {
 			Member newMember = Member.builder()
 				.email(signupRequest.email())
 				.password(passwordEncoder.encode(signupRequest.password()))
-				.username(signupRequest.name())
+				.username(signupRequest.username())
 				.nickname(signupRequest.nickname())
 				.phoneNumber(signupRequest.phoneNumber())
 				.build();
