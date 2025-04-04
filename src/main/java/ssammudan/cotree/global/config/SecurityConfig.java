@@ -76,7 +76,7 @@ public class SecurityConfig {
 				.requestMatchers(GET, "/api/v1/category/**").permitAll()
 
 				// Comment Domain
-				// 해당 없음. 모두 인증 필요
+				.requestMatchers(GET, "/api/v1/comment/**").permitAll()
 
 				// Community Domain
 				.requestMatchers(GET, "/api/v1/community/board").permitAll()
@@ -94,10 +94,11 @@ public class SecurityConfig {
 				.requestMatchers(GET, "/api/v1/education/review").permitAll()
 
 				// Resume Domain
-				// .requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
+				.requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
 
 				// Project Domain
 				.requestMatchers(GET, "/api/v1/project/team/hot").permitAll()
+				.requestMatchers(GET, "/api/v1/project/team/hot/main").permitAll()
 				.requestMatchers(GET, "/api/v1/project/team/{projectId}").permitAll()
 
 				// Upload Domain

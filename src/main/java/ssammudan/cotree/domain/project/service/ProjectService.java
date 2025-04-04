@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.project.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import ssammudan.cotree.domain.project.dto.HotProjectResponse;
@@ -25,7 +26,7 @@ import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 public interface ProjectService {
 	ProjectCreateResponse create(ProjectCreateRequest request, MultipartFile file, String memberId);
 
-	List<HotProjectResponse> getHotProjects();
+	List<HotProjectResponse> getHotProjectsForMain(Pageable pageable);
 
 	ProjectInfoResponse getProjectInfo(Long projectId, String memberId);
 }

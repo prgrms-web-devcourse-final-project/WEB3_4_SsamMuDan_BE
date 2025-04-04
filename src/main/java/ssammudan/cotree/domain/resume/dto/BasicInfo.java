@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.resume.dto;
 import java.util.Set;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -30,6 +31,7 @@ public record BasicInfo(
 	String email,
 
 	@Min(value = 0, message = "연차는 0 이상이여야 합니다.")
+	@Max(value = 10, message = "10년차가 최대 값 입니다.")
 	Integer years,
 
 	@NotBlank(message = "자기소개는 필수입니다.")

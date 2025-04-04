@@ -2,6 +2,7 @@ package ssammudan.cotree.model.education.techbook.techbook.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +107,14 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 			.sampleList(size);
 	}
 
+	private void sleep(final long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	//@RepeatedTest(10)
 	@Test
 	@DisplayName("[Success] save(): TechBook 엔티티 저장")
@@ -198,7 +207,10 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 		EducationLevel educationLevel = createEducationLevel();
 		entityManager.persist(educationLevel);
 		List<TechBook> techBooks = createTechBooks(member, educationLevel, 50);
-		techBooks.forEach(techBook -> entityManager.persist(techBook));
+		techBooks.forEach(techBook -> {
+			sleep(1);
+			entityManager.persist(techBook);
+		});
 		clearEntityContext();
 
 		String keyword = fixtureMonkey.giveMeOne(String.class);
@@ -214,7 +226,8 @@ class TechBookRepositoryTest extends DataJpaTestSupporter {
 					|| techBook.getDescription().contains(keyword)
 					|| techBook.getIntroduction().contains(keyword))
 			)
-			.sorted(Comparator.comparing(TechBook::getCreatedAt).reversed())
+			.sorted(Comparator.comparing(TechBook::getCreatedAt).reversed()
+				.thenComparing(book -> book.getCreatedAt().truncatedTo(ChronoUnit.MILLIS), Comparator.reverseOrder()))
 			.limit(pageable.getPageSize())
 			.toList();
 
