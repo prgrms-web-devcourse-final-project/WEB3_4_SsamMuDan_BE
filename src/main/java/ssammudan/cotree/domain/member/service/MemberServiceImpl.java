@@ -1,9 +1,11 @@
 package ssammudan.cotree.domain.member.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.global.error.GlobalException;
@@ -11,6 +13,7 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
@@ -29,8 +32,11 @@ public class MemberServiceImpl implements MemberService {
 				.phoneNumber(signupRequest.phoneNumber())
 				.build();
 			return memberRepository.save(newMember);
-		} catch (Exception e) {
+		} catch (DataIntegrityViolationException e) {
 			throw new GlobalException(ErrorCode.MEMBER_DUPLICATED);
+		} catch (Exception e) {
+			log.error("회원가입 중 오류 발생", e);
+			throw new GlobalException(ErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
 

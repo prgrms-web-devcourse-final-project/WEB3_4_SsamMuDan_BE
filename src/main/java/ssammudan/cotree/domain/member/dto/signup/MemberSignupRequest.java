@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.member.dto.signup;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * PackageName : ssammudan.cotree.domain.member.dto.signup
@@ -33,8 +34,12 @@ public record MemberSignupRequest(
 	@Schema(description = "사용자 닉네임", examples = "MrHong")
 	String nickname,
 
-	@NotNull(message = "휴대폰 번호를 입력해주세요.") // todo : 휴대폰 번호 정규식 추가(010-1234-5678 or 01012345678)
-	@Schema(description = "사용자 휴대폰 번호", examples = "01012345678")
+	@NotNull(message = "휴대폰 번호를 입력해주세요.")
+	@Pattern(
+		regexp = "^(010|011|016|017|018|019)-\\d{3,4}-\\d{4}$",
+		message = "휴대폰 번호 형식이 올바르지 않습니다. 예: 010-****-****"
+	)
+	@Schema(description = "사용자 휴대폰 번호", examples = "010-1234-5678")
 	String phoneNumber
 ) {
-};
+}
