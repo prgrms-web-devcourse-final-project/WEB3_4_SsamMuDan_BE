@@ -20,7 +20,7 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * 2025. 4. 3.     sangxxjin               Initial creation
  */
 @Builder(access = AccessLevel.PRIVATE)
-public record HotProjectResponse(
+public record ProjectListResponse(
 	Long id,
 	String title,
 	String description,
@@ -34,10 +34,10 @@ public record HotProjectResponse(
 	String username,
 	String userProfileImageUrl
 ) {
-	public static HotProjectResponse from(Project project, List<String> techStacksImageUrl, long likeCount,
+	public static ProjectListResponse from(Project project, List<String> techStacksImageUrl, long likeCount,
 		Member member,
 		int recruitmentCount) {
-		return HotProjectResponse.builder()
+		return ProjectListResponse.builder()
 			.id(project.getId())
 			.title(project.getTitle())
 			.description(project.getDescription().length() > 30 ? project.getDescription().substring(0, 30) + "..." :

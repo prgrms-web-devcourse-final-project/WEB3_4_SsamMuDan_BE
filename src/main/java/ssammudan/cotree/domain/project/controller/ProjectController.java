@@ -89,8 +89,8 @@ public class ProjectController {
 	@GetMapping("/hot")
 	@Operation(summary = "프로젝트 페이지 HOT 프로젝트 조회", description = "프로젝트 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<List<HotProjectResponse>> getHotProjectsForProject() {
-		return BaseResponse.success(SuccessCode.PROJECT_FETCH_SUCCESS,
+	public BaseResponse<List<ProjectListResponse>> getHotProjectsForProject() {
+		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS,
 			projectServiceImpl.getHotProjectsForProject());
 	}
 

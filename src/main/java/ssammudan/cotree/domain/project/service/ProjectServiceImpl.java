@@ -120,10 +120,10 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<HotProjectResponse> getHotProjectsForProject() {
+	public List<ProjectListResponse> getHotProjectsForProject() {
 		//todo: 캐싱 작업
 		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
-			.map(this::toHotProjectResponse)
+			.map(this::toProjectResponse)
 			.toList();
 	}
 
@@ -145,13 +145,13 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	// Hot프로젝트 데이터가공
-	private HotProjectResponse toHotProjectResponse(Project project) {
+	private ProjectListResponse toProjectResponse(Project project) {
 		List<String> techStackImageUrls = getTechStackImageUrls(project.getId());
 		long likeCount = likeRepository.countByProjectId(project.getId());
 		Member member = memberRepository.findById(project.getMember().getId()).orElse(null);
 		int recruitmentCount = getRecruitmentCount(project.getId());
 
-		return HotProjectResponse.from(project, techStackImageUrls, likeCount, member, recruitmentCount);
+		return ProjectListResponse.from(project, techStackImageUrls, likeCount, member, recruitmentCount);
 	}
 
 	// 프로젝트에 해당하는 techstack들의 이미지들 가져오는 메서드
