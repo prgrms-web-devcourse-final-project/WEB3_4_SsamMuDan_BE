@@ -1,10 +1,10 @@
 package ssammudan.cotree.domain.education.techbook.service;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import ssammudan.cotree.domain.education.techbook.dto.TechBookRequest;
 import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
+import ssammudan.cotree.global.response.PageResponse;
 
 /**
  * PackageName : ssammudan.cotree.domain.education.service
@@ -20,10 +20,10 @@ import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
  */
 public interface TechBookService {
 
-	Long createTechBook(TechBookRequest.Create requestDto);
+	Long createTechBook(String memberId, TechBookRequest.Create requestDto);
 
 	TechBookResponse.Detail findTechBookById(Long id);
 
-	Page<TechBookResponse.ListInfo> findAllTechBooks(String keyword, Pageable pageable);
+	PageResponse<TechBookResponse.ListInfo> findAllTechBooks(String keyword, Pageable pageable);
 
 }

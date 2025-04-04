@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -34,6 +35,10 @@ public record ProjectCreateRequest(
 	@NotBlank @Email String contact,
 	@NotBlank String partnerType,
 	@NotEmpty @Size(min = 1, max = 9) Set<Long> techStackIds,
+	@Schema(
+		description = "분야별 모집 인원 (Key: 분야 ID, Value: 모집 인원)",
+		example = "{\"1\": 3, \"2\": 5}"
+	)
 	@NotEmpty Map<Long, @NotNull @Min(1) @Max(10) Integer> recruitmentPositions,
 	@NotNull @PastOrPresent @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
 	@Nullable @FutureOrPresent @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate

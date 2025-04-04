@@ -1,5 +1,8 @@
 package ssammudan.cotree.infra.s3;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,15 +47,18 @@ public class S3Uploader {
 	 * return : 읽기 가능한 저장된 파일 url
 	 */
 	public S3UploadResult upload(String memberId, MultipartFile file, S3Directory directory) {
-		String key = fileKeyGenerator(memberId, file.getName(), directory);
+		String fileName = URLEncoder.encode(file.getOriginalFilename(), StandardCharsets.UTF_8)
+			.replace("+", "%20");
+
+		String key = fileKeyGenerator(memberId, fileName, directory);
 		try {
 			PutObjectRequest objectRequest = PutObjectRequest
-					.builder()
-					.bucket(bucketName)
-					.key(key)
-					.contentType(file.getContentType())
-					.contentLength(file.getSize())
-					.build();
+				.builder()
+				.bucket(bucketName)
+				.key(key)
+				.contentType(file.getContentType())
+				.contentLength(file.getSize())
+				.build();
 			s3Client.putObject(objectRequest, RequestBody.fromBytes(file.getBytes()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -64,7 +70,7 @@ public class S3Uploader {
 
 	private String fileKeyGenerator(String memberId, String fileName, S3Directory directory) {
 		return directory.isMultiFile()
-				? directory.getPath() + memberId + "/" + System.currentTimeMillis() + "_" + fileName
-				: directory.getPath() + memberId + "/" + fileName;
+			? directory.getPath() + memberId + "/" + System.currentTimeMillis() + "_" + fileName
+			: directory.getPath() + memberId + "/" + fileName;
 	}
 }

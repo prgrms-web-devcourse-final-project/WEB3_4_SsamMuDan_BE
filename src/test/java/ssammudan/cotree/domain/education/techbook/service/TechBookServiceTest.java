@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -28,8 +29,11 @@ import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.integration.SpringBootTestSupporter;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
+import ssammudan.cotree.model.education.level.type.EducationLevelType;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.member.member.type.MemberStatus;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
@@ -82,13 +86,41 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	private Member createMember() {
 		return entityFixtureMonkey.giveMeBuilder(Member.class)
 			.setNull("id")
+			.set("email", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("username", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("nickname", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("password", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("phoneNumber",
+				Arbitraries.strings()
+					.withCharRange('a', 'z')
+					.ofMinLength(1)
+					.ofMaxLength(219)
+					.map(s -> s + UUID.randomUUID()))
+			.set("role", MemberRole.USER)
+			.set("memberStatus", MemberStatus.ACTIVE)
 			.sample();
 	}
 
 	private EducationLevel createEducationLevel() {
 		return entityFixtureMonkey.giveMeBuilder(EducationLevel.class)
 			.instantiate(Instantiator.factoryMethod("create"))
-			.set("name", Arbitraries.of("입문", "초급", "중급"))
+			.set("name", "입문")
 			.sample();
 	}
 
@@ -116,26 +148,28 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	@Test
 	@DisplayName("[Success] createTechBook(): 신규 TechBook 생성")
 	void createTechBook() {
-		//TODO: 저자 추가 로직 및 검증
 		//Given
 		setup();
+
+		Member writer = createMember();
+		em.persist(writer);
 
 		EducationLevel educationLevel = createEducationLevel();
 		em.persist(educationLevel);
 
 		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(TechBookRequest.Create.class)
-			.set("educationLevel", educationLevel.getName())
+			.set("educationLevel", EducationLevelType.BEGINNER)
 			.sample();
 
 		//When
-		Long id = techBookService.createTechBook(requestDto);
+		Long id = techBookService.createTechBook(writer.getId(), requestDto);
 		clearEntityContext();
 
 		//Then
 		TechBook savedTechBook = techBookRepository.findById(id).get();
 
 		assertNotNull(savedTechBook, "TechBook 엔티티 존재");
-		assertEquals(requestDto.educationLevel(), savedTechBook.getEducationLevel().getName(), "학습 난이도 일치");
+		assertEquals(requestDto.educationLevel().getId(), savedTechBook.getEducationLevel().getId(), "학습 난이도 일치");
 		assertEquals(requestDto.title(), savedTechBook.getTitle(), "제목 일치");
 		assertEquals(requestDto.description(), savedTechBook.getDescription(), "설명 일치");
 		assertEquals(requestDto.introduction(), savedTechBook.getIntroduction(), "소개 일치");
@@ -152,17 +186,46 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 	@DisplayName("[Exception] createTechBook_unknownEducationLevel(): 신규 TechBook 생성, 존재하지 않는 학습 난이도")
 	void createTechBook_unknownEducationLevel() {
 		//Given
+		setup();
+
+		Member writer = createMember();
+		em.persist(writer);
+
 		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.Create.class);
 
 		//When
 
 		//Then
 		GlobalException globalException = assertThrows(GlobalException.class,
-			() -> techBookService.createTechBook(requestDto), "GlobalException 발생");
+			() -> techBookService.createTechBook(writer.getId(), requestDto), "GlobalException 발생");
 
 		assertAll(
 			() -> assertNotNull(globalException, "예외 존재"),
 			() -> assertEquals(globalException.getErrorCode(), ErrorCode.EDUCATION_LEVEL_NOT_FOUND, "에러 코드 일치")
+		);
+	}
+
+	//@RepeatedTest(10)
+	@Test
+	@DisplayName("[Exception] createTechBook_unknownWriter(): 신규 TechBook 생성, 존재하지 않는 회원")
+	void createTechBook_unknownWriter() {
+		//Given
+		setup();
+
+		EducationLevel educationLevel = createEducationLevel();
+		em.persist(educationLevel);
+
+		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.Create.class);
+
+		//When
+
+		//Then
+		GlobalException globalException = assertThrows(GlobalException.class,
+			() -> techBookService.createTechBook(UUID.randomUUID().toString(), requestDto), "GlobalException 발생");
+
+		assertAll(
+			() -> assertNotNull(globalException, "예외 존재"),
+			() -> assertEquals(globalException.getErrorCode(), ErrorCode.MEMBER_NOT_FOUND, "에러 코드 일치")
 		);
 	}
 
@@ -193,14 +256,14 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.title(), techBook.getTitle(), "제목 일치");
 		assertEquals(responseDto.description(), techBook.getDescription(), "설명 일치");
 		assertEquals(responseDto.introduction(), techBook.getIntroduction(), "소개 일치");
-		assertEquals(responseDto.totalRating(), techBook.getTotalRating(), "전체 누적 평점 일치");
 		assertEquals(responseDto.totalReviewCount(), techBook.getTotalReviewCount(), "전체 리뷰 수 일치");
 		assertEquals(responseDto.techBookUrl(), techBook.getTechBookUrl(), "PDF URL 일치");
 		assertEquals(responseDto.techBookPreviewUrl(), techBook.getTechBookPreviewUrl(), "PDF 미리보기 URL 일치");
 		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
 		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
-		assertEquals(responseDto.viewCount(), techBook.getViewCount(), "조회 수 일치");
+		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
+		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
 		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
 	}
 
@@ -265,9 +328,11 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 
 			assertEquals(filteredTechBookDto.id(), findTechBookDto.id(), "PK 일치");
 			assertEquals(filteredTechBookDto.writer(), findTechBookDto.writer(), "저자 일치");
+			assertEquals(filteredTechBookDto.title(), findTechBookDto.title(), "제목 일치");
 			assertEquals(filteredTechBookDto.price(), findTechBookDto.price(), "가격 일치");
 			assertEquals(filteredTechBookDto.techBookThumbnailUrl(), findTechBookDto.techBookThumbnailUrl(),
 				"썸네일 URL 일치");
+			assertEquals(filteredTechBookDto.likeCount(), findTechBookDto.likeCount(), "좋아요 수 일치");
 			assertEquals(filteredTechBookDto.createdAt(), findTechBookDto.createdAt(), "등록 일자 일치");
 		}
 	}

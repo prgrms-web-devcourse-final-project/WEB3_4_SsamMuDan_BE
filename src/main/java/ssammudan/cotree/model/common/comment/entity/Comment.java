@@ -59,7 +59,7 @@ public class Comment extends BaseEntity {
 	@Column(name = "content", nullable = false, columnDefinition = "TEXT")
 	private String content;
 
-	@Builder
+	@Builder(access = AccessLevel.PRIVATE)
 	private Comment(Comment parentComment, Member author, Community community, Resume resume, String content) {
 		this.parentComment = parentComment;
 		this.author = author;
