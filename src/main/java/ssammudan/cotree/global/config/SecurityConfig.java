@@ -94,7 +94,7 @@ public class SecurityConfig {
 				.requestMatchers(GET, "/api/v1/education/review").permitAll()
 
 				// Resume Domain
-				// .requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
+				.requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
 
 				// Project Domain
 				.requestMatchers(GET, "/api/v1/project/team/hot").permitAll()
