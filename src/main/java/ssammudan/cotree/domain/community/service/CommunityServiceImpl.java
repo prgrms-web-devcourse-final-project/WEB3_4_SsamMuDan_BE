@@ -30,6 +30,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-28     Baekgwa               Initial creation
+ * 2025-04-04     Baekgwa               글 수정/삭제 기능 추가
  */
 @Service
 @RequiredArgsConstructor
