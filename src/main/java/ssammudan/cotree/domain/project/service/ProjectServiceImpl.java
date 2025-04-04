@@ -13,10 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.project.dto.HotProjectResponse;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.infra.s3.S3Directory;
@@ -115,9 +115,13 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<HotProjectResponse> getHotProjectsForMain(Pageable pageable) {
+	public Page<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
 		Page<Project> projects = projectRepository.findByIsOpenTrue(pageable);
-		return projects.stream().map(this::toHotProjectResponse).toList();
+		List<ProjectListResponse> hotPojectListRespons = projects.stream()
+			.map(this::toProjectResponse)
+			.toList();
+
+		return new PageImpl<>(hotPojectListRespons, pageable, projects.getTotalElements());
 	}
 
 	@Transactional(readOnly = true)

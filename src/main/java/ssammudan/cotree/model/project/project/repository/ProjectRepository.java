@@ -20,7 +20,7 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * 2025-03-29     Baekgwa               Initial creation
  * 2025-04-02    sangxxjin             get HotProject
  */
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+public interface ProjectRepository extends JpaRepository<Project, Long>, ProjectRepositoryCustom {
 	List<Project> findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc();
 
 	Page<Project> findByIsOpenTrue(Pageable pageable);
