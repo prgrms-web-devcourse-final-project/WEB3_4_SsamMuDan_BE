@@ -7,18 +7,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * PackageName : ssammudan.cotree.model.review.techeducationtype.entity
  * FileName    : TechEducationType
- * Author      : SSamMuDan
+ * Author      : loadingKKamo21
  * Date        : 25. 3. 29.
  * Description : TechEducationType 엔티티
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 25. 3. 29.    SSamMuDan            Initial creation
+ * 25. 3. 29.    loadingKKamo21       Initial creation
  */
 @Entity
 @Table(
@@ -28,6 +32,9 @@ import lombok.Getter;
 	}
 )
 @Getter
+@Builder(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TechEducationType {
 
 	@Id
@@ -37,5 +44,9 @@ public class TechEducationType {
 
 	@Column(name = "name", nullable = false)
 	private String name;
+
+	public static TechEducationType create(final String name) {
+		return TechEducationType.builder().name(name).build();
+	}
 
 }

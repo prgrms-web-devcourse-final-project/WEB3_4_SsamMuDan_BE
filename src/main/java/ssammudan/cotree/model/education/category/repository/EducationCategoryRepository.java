@@ -1,5 +1,8 @@
 package ssammudan.cotree.model.education.category.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ssammudan.cotree.model.education.category.entity.EducationCategory;
@@ -17,4 +20,9 @@ import ssammudan.cotree.model.education.category.entity.EducationCategory;
  */
 public interface EducationCategoryRepository
 	extends JpaRepository<EducationCategory, Long>, EducationCategoryRepositoryCustom {
+
+	Optional<EducationCategory> findByNameIgnoreCase(String name);
+
+	List<EducationCategory> findAllByNameContainsIgnoreCase(String name);
+
 }

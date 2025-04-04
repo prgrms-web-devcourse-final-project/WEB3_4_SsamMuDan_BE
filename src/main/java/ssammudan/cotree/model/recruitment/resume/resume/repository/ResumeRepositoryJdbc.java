@@ -13,7 +13,7 @@ import java.util.Map;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 1.     kwak               Initial creation
  */
-public interface ResumeRepositoryCustom {
+public interface ResumeRepositoryJdbc {
 
 	void bulkUpdateViewCount(Map<Long, Integer> viewCountData);
 }

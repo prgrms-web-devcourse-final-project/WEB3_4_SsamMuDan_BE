@@ -1,4 +1,4 @@
-package ssammudan.cotree.model.education.supporter;
+package ssammudan.cotree.integration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,8 +7,12 @@ import org.springframework.test.context.ActiveProfiles;
 
 import jakarta.persistence.EntityManager;
 import ssammudan.cotree.global.annotation.RepositoryTest;
+import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
+import ssammudan.cotree.model.education.techbook.category.repository.TechBookEducationCategoryRepository;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
+import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
+import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
@@ -43,13 +47,31 @@ public abstract class DataJpaTestSupporter {
 	@Autowired
 	protected EducationLevelRepository educationLevelRepository;
 
+	@Autowired
+	protected EducationCategoryRepository educationCategoryRepository;
+
+	@Autowired
+	protected TechEducationTypeRepository techEducationTypeRepository;
+
+	@Autowired
+	protected TechEducationReviewRepository techEducationReviewRepository;
+
+	@Autowired
+	protected TechBookEducationCategoryRepository techBookEducationCategoryRepository;
+
 	@BeforeEach
 	protected void setup() {
 		entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();    //H2 DB 외래키 제약 해제
 
 		entityManager.createNativeQuery("TRUNCATE TABLE member RESTART IDENTITY").executeUpdate();
 		entityManager.createNativeQuery("TRUNCATE TABLE education_level RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE education_category RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE tech_tube RESTART IDENTITY").executeUpdate();
 		entityManager.createNativeQuery("TRUNCATE TABLE tech_book RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE techEducation_type RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE techEducation_review RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE techTube_educationCategory RESTART IDENTITY").executeUpdate();
+		entityManager.createNativeQuery("TRUNCATE TABLE techBook_educationCategory RESTART IDENTITY").executeUpdate();
 
 		entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();    //H2 DB 외래키 제약 설정
 	}

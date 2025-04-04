@@ -15,5 +15,5 @@ import ssammudan.cotree.model.common.comment.entity.Comment;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
  */
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 }

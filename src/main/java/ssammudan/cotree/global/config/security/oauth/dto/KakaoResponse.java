@@ -15,10 +15,14 @@ import java.util.Map;
  */
 public class KakaoResponse implements OAuth2Response {
 
-	private final Map<String, Object> attribute;
+	private final Map<String, Object> attributes;
+	private final Map<String, Object> kakaoAccount;
+	private final Map<String, Object> profile;
 
 	public KakaoResponse(Map<String, Object> attributes) {
-		this.attribute = attributes; // 따로 확인 후 설정 필요
+		this.attributes = attributes;
+		this.kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
+		this.profile = (Map<String, Object>)kakaoAccount.get("profile");
 	}
 
 	@Override
@@ -28,21 +32,21 @@ public class KakaoResponse implements OAuth2Response {
 
 	@Override
 	public String getProviderId() {
-		return attribute.get("sub").toString();
+		return attributes.get("id").toString();
 	}
 
 	@Override
 	public String getEmail() {
-		return attribute.get("email").toString();
+		return kakaoAccount.get("email").toString();
 	}
 
 	@Override
 	public String getName() {
-		return attribute.get("name").toString();
+		return profile.get("nickname").toString();
 	}
 
-	// @Override
-	// public String getPhoneNumber() {
-	// 	return "";
-	// }
+	public String getProfileUrl() {
+		return profile.get("profile_image_url").toString();
+	}
+
 }

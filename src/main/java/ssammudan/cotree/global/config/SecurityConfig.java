@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.global.config.security.exception.CustomAccessDeniedHandler;
 import ssammudan.cotree.global.config.security.exception.CustomAuthenticationEntryPoint;
 import ssammudan.cotree.global.config.security.filter.JwtAuthenticationFilter;
+import ssammudan.cotree.global.config.security.oauth.OAuth2UserService;
+import ssammudan.cotree.global.config.security.oauth.handler.OAuth2FailureHandler;
+import ssammudan.cotree.global.config.security.oauth.handler.OAuth2SuccessHandler;
 import ssammudan.cotree.infra.frontend.FrontendConfig;
 
 @Configuration
@@ -32,6 +35,9 @@ public class SecurityConfig {
 	private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 	private final CustomAccessDeniedHandler accessDeniedHandler;
 	private final FrontendConfig frontendConfig;
+	private final OAuth2UserService oAuth2UserService;
+	private final OAuth2SuccessHandler oAuth2SuccessHandler;
+	private final OAuth2FailureHandler oAuth2FailureHandler;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -70,7 +76,7 @@ public class SecurityConfig {
 				.requestMatchers(GET, "/api/v1/category/**").permitAll()
 
 				// Comment Domain
-				// 해당 없음. 모두 인증 필요
+				.requestMatchers(GET, "/api/v1/comment/**").permitAll()
 
 				// Community Domain
 				.requestMatchers(GET, "/api/v1/community/board").permitAll()
@@ -83,8 +89,12 @@ public class SecurityConfig {
 				// Education / TechTube Domain
 				// 해당 없음. 모두 인증 필요
 
+				// Education / Review Domain
+				.requestMatchers(GET, "/api/v1/education/review/**").permitAll()
+				.requestMatchers(GET, "/api/v1/education/review").permitAll()
+
 				// Resume Domain
-				// .requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
+				.requestMatchers(GET, "/api/v1/recruitment/resume/**").permitAll()
 
 				// Project Domain
 				.requestMatchers(GET, "/api/v1/project/team/hot").permitAll()
@@ -94,7 +104,17 @@ public class SecurityConfig {
 				// Upload Domain
 				// 해당 없음. 모두 인증 필요
 
+				// Like Domain
+				// 해당 없음. 모두 인증 필요
+
 				.anyRequest().authenticated()) // 그 외 요청은 인증 필요
+
+			// ✅ OAuth2 로그인 설정
+			.oauth2Login(oauth2 -> oauth2
+				.userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+					.userService(oAuth2UserService)) // 사용자 정보 서비스 설정
+				.successHandler(oAuth2SuccessHandler) // OAuth2 로그인 성공 핸들러
+				.failureHandler(oAuth2FailureHandler)) // OAuth2 로그인 실패 핸들러
 
 			// ✅ 기본 인증 방식 비활성화 (JWT 사용)
 			.httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화

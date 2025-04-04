@@ -1,12 +1,17 @@
 package ssammudan.cotree.domain.comment.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.comment.dto.CommentRequest;
+import ssammudan.cotree.domain.comment.dto.CommentResponse;
+import ssammudan.cotree.domain.comment.type.CommentCategory;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.common.comment.entity.Comment;
 import ssammudan.cotree.model.common.comment.repository.CommentRepository;
 import ssammudan.cotree.model.community.community.entity.Community;
@@ -49,6 +54,18 @@ public class CommentServiceImpl implements CommentService {
 		Comment newComment = createCommentByCategory(postComment, commentAuthor, parentComment);
 
 		commentRepository.save(newComment);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public PageResponse<CommentResponse.CommentInfo> getCommentList(
+			final Pageable pageable,
+			final String memberId,
+			final CommentCategory category,
+			final Long itemId) {
+		Page<CommentResponse.CommentInfo> commentList =
+				commentRepository.findCommentList(pageable, memberId, category, itemId);
+		return PageResponse.of(commentList);
 	}
 
 	private Member findCommentAuthor(String memberId) {

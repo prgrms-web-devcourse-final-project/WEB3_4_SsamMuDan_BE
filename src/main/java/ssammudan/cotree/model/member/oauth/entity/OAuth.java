@@ -15,7 +15,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import ssammudan.cotree.global.config.security.oauth.dto.OAuth2Response;
 import ssammudan.cotree.model.member.member.entity.Member;
 
 /**
@@ -33,7 +36,14 @@ import ssammudan.cotree.model.member.member.entity.Member;
 @Getter
 @Table(name = "oauth")
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OAuth {
+
+	public OAuth(Member member, OAuth2Response oAuth2Response) {
+		this.member = member;
+		this.providerName = oAuth2Response.getProvider();
+		this.providerId = oAuth2Response.getProviderId();
+	}
 
 	@Id
 	@Column(name = "id")

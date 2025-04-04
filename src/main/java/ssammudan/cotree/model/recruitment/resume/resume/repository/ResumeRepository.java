@@ -22,7 +22,7 @@ import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-29     Baekgwa               Initial creation
  */
-public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRepositoryCustom {
+public interface ResumeRepository extends JpaRepository<Resume, Long>, ResumeRepositoryJdbc, ResumeRepositoryQueryDsl {
 
 	@Query("""
 		SELECT new ssammudan.cotree.domain.resume.dto.query.BasicInfoQueryDto
