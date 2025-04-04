@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.education.techbook.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -316,7 +317,8 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 					|| techBook.getDescription().contains(keyword)
 					|| techBook.getIntroduction().contains(keyword))
 			)
-			.sorted(Comparator.comparing(TechBook::getCreatedAt).reversed())
+			.sorted(Comparator.comparing(TechBook::getCreatedAt).reversed()
+				.thenComparing(book -> book.getCreatedAt().truncatedTo(ChronoUnit.MILLIS), Comparator.reverseOrder()))
 			.limit(pageable.getPageSize())
 			.map(TechBookResponse.ListInfo::from)
 			.toList();
