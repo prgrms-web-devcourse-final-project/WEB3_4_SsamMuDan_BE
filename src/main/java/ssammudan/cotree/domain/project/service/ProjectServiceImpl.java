@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,6 +126,17 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
 			.map(this::toProjectResponse)
 			.toList();
+	}
+
+	@Transactional(readOnly = true)
+	public Page<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds, List<Long> devPositionIds,
+		String sort) {
+		Page<Project> projects = projectRepository.findByFilters(pageable, techStackIds, devPositionIds, sort);
+		List<ProjectListResponse> projectListResponse = projects.getContent().stream()
+			.map(this::toProjectResponse)
+			.toList();
+
+		return new PageImpl<>(projectListResponse, pageable, projects.getTotalElements());
 	}
 
 	// 모집분야명, 인원수 조회

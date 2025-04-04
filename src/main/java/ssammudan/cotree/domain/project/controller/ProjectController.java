@@ -94,5 +94,21 @@ public class ProjectController {
 			projectServiceImpl.getHotProjectsForProject());
 	}
 
+	@GetMapping
+	@Operation(summary = "프로젝트 목록 조회", description = "프로젝트 목록을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public BaseResponse<PageResponse<ProjectListResponse>> getProjects(
+		@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+		@RequestParam(value = "size", defaultValue = "12", required = false) int size,
+		@RequestParam(value = "sort", defaultValue = "createdAt", required = false) String sort,
+		@RequestParam(value = "techStack", required = false) List<Long> techStackIds,
+		@RequestParam(value = "jobPosition", required = false) List<Long> devPositionIds
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<ProjectListResponse> hotProjects = projectServiceImpl.getProjects(pageable, techStackIds, devPositionIds,
+			sort);
+		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS, PageResponse.of(hotProjects));
+	}
+
 }
 
