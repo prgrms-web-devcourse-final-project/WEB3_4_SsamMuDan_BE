@@ -26,6 +26,7 @@ public class TechBookResponse {
 	@Schema(description = "TechBook 상세 조회 응답 DTO")
 	public record Detail(
 		//TODO: 구매 상태 정보 필요(비회원: 비구매, 회원: 구매 vs 비구매)
+		//TODO: 로그인한 회원의 좋아요 상태
 		@Schema(description = "TechBook ID", example = "1")
 		long id,                      //TechBook ID
 		@Schema(description = "TechBook 저자", example = "홍길동")
@@ -88,6 +89,7 @@ public class TechBookResponse {
 
 	@Schema(description = "TechBook 목록 조회 응답 DTO")
 	public record ListInfo(
+		//TODO: 로그인한 회원의 좋아요 상태
 		@Schema(description = "TechBook ID", example = "1")
 		long id,    //TechBook ID
 		@Schema(description = "TechBook 저자", example = "홍길동")
