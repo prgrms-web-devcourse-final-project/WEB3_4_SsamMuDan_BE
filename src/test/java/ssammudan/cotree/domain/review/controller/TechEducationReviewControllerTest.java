@@ -126,7 +126,7 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("page", "0");
 		params.add("size", "10");
-		params.add("sort", "createdAt,DESC");
+		params.add("sort", "LATEST");
 		params.add("reviewType", "TECH_TUBE");
 		params.add("itemId", itemId.toString());
 

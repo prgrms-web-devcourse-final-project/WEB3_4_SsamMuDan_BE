@@ -20,6 +20,8 @@ public enum SuccessCode {
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 성공했습니다."),
 	TECH_BOOK_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechBook 목록 조회를 성공했습니다."),
+	TECH_TUBE_READ_SUCCESS(HttpStatus.OK, "200", "TechTube 조회를 성공했습니다."),
+	TECH_TUBE_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechTube 목록 조회를 성공했습니다."),
 	TECH_EDUCATION_REVIEW_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "리뷰 목록 조회를 성공했습니다."),
 	TECH_EDUCATION_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "201", "리뷰 등록을 성공했습니다."),
 
@@ -28,6 +30,7 @@ public enum SuccessCode {
 	//Recruitment
 	RESUME_CREATE_SUCCESS(HttpStatus.CREATED, "201", "이력서 작성을 성공하였습니다."),
 	RESUME_DETAIL_SUCCESS(HttpStatus.OK, "200", "이력서 상세 조회를 성공하였습니다."),
+	RESUME_LIST_SUCCESS(HttpStatus.OK, "200", "이력서 리스트 조회를 성공하였습니다."),
 
 	//Project
 	PROJECT_CREATE_SUCCESS(HttpStatus.CREATED, "201", "프로젝트 생성 성공"),

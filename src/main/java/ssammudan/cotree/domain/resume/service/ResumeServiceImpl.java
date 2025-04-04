@@ -3,6 +3,9 @@ package ssammudan.cotree.domain.resume.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +17,13 @@ import ssammudan.cotree.domain.resume.dto.PortfolioInfoResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
+import ssammudan.cotree.domain.resume.dto.ResumeResponse;
+import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
 import ssammudan.cotree.domain.resume.dto.query.BasicInfoQueryDto;
 import ssammudan.cotree.domain.resume.dto.query.TechStackInfo;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
@@ -122,8 +128,21 @@ public class ResumeServiceImpl implements ResumeService {
 	}
 
 	@Transactional
+	@Override
 	public void bulkViewCount(Map<Long, Integer> viewCountData) {
 		resumeRepository.bulkUpdateViewCount(viewCountData);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public PageResponse<ResumeResponse> getResumeList(int page, int size, List<Long> positionIds, List<Long> skillIds,
+		Integer startYear, Integer endYear, SearchResumeSort sort) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<ResumeResponse> resumeList = resumeRepository.getResumeList(pageable, positionIds, skillIds, startYear,
+			endYear, sort);
+
+		return PageResponse.of(resumeList);
+
 	}
 
 	private List<TechStack> getTechStackInfos(Career career) {

@@ -24,6 +24,6 @@ public class CommunityResponse {
 	}
 
 	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
-							  Integer viewCount, Boolean isLike) {
+							  Integer viewCount, Boolean isLike, Boolean isOwner) {
 	}
 }

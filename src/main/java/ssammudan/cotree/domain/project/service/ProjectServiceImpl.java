@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,6 +46,7 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     sangxxjin          create project 구현
+ * 2025. 4. 2.     sangxxjin          get project 구현
  */
 @Service
 @RequiredArgsConstructor
@@ -111,11 +114,19 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<HotProjectResponse> getHotProjects() {
+	public List<HotProjectResponse> getHotProjectsForMain(Pageable pageable) {
+		Page<Project> projects = projectRepository.findByIsOpenTrue(pageable);
+		return projects.stream().map(this::toHotProjectResponse).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<HotProjectResponse> getHotProjectsForProject() {
+		//todo: 캐싱 작업
 		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
 			.map(this::toHotProjectResponse)
 			.toList();
 	}
+
 	// 모집분야명, 인원수 조회
 	private List<Map<String, Integer>> getDevPositionsInfo(Long projectId) {
 		return projectDevPositionRepository.findByProjectId(projectId).stream()
@@ -160,7 +171,6 @@ public class ProjectServiceImpl implements ProjectService {
 			.mapToInt(ProjectDevPosition::getAmount)
 			.sum();
 	}
-
 
 	private List<TechStack> getTechStackNames(ProjectCreateRequest request) {
 		return techStackRepository.findByIds(request.techStackIds());

@@ -90,6 +90,28 @@ public class TechBookServiceImpl implements TechBookService {
 	}
 
 	/**
+	 * TechBook 단 건 조회
+	 *
+	 * @param id       - PK
+	 * @param memberId - 회원 ID
+	 * @return TechBookResponse Detail DTO
+	 */
+	@Override
+	public TechBookResponse.Detail findTechBookById(final Long id, final String memberId) {
+		//Member 존재 여부 확인
+		if (!memberRepository.existsById(memberId)) {
+			throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
+		}
+
+		TechBook techBook = techBookRepository.findById(id)
+			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
+		//TODO: Member-Like 연관관계에 따라 수정 가능
+		boolean isLike = likeRepository.existsByMember_IdAndTechBook_Id(memberId, id);
+		techBook.increseViewCount();
+		return TechBookResponse.Detail.from(techBook, isLike);
+	}
+
+	/**
 	 * TechBook 다 건 조회
 	 *
 	 * @param keyword  - 검색어

@@ -1,8 +1,7 @@
 package ssammudan.cotree.domain.review.controller;
 
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewRequest;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.domain.review.service.TechEducationReviewService;
+import ssammudan.cotree.domain.review.type.SearchReviewSort;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
@@ -62,10 +62,13 @@ public class TechEducationReviewController {
 	public BaseResponse<PageResponse<TechEducationReviewResponse.Detail>> getTechEducationReviews(
 		@RequestParam final TechEducationReviewType reviewType,
 		@RequestParam final Long itemId,
-		@PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
+		@RequestParam(value = "size", required = false, defaultValue = "10") final int size,
+		@RequestParam(value = "sort", required = false, defaultValue = "LATEST") final SearchReviewSort sort
 	) {
 		PageResponse<TechEducationReviewResponse.Detail> responseDto = techEducationReviewService.findAllTechEducationReviews(
-			new TechEducationReviewRequest.Read(reviewType, itemId), pageable
+			new TechEducationReviewRequest.Read(reviewType, itemId),
+			PageRequest.of(page, size, Sort.Direction.DESC, sort.getValue())
 		);
 		return BaseResponse.success(SuccessCode.TECH_EDUCATION_REVIEW_LIST_FIND_SUCCESS, responseDto);
 	}

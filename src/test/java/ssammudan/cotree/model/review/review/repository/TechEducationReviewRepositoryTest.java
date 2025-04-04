@@ -2,6 +2,10 @@ package ssammudan.cotree.model.review.review.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +15,9 @@ import javax.validation.constraints.Min;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import net.jqwik.api.Arbitraries;
 
@@ -72,6 +79,39 @@ class TechEducationReviewRepositoryTest extends DataJpaTestSupporter {
 			.sample();
 	}
 
+	private List<Member> createMembers(final int size) {
+		return fixtureMonkey.giveMeBuilder(Member.class)
+			.setNull("id")
+			.set("email", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("username", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("nickname", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("password", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("phoneNumber", Arbitraries.strings()
+				.withCharRange('a', 'z')
+				.ofMinLength(1)
+				.ofMaxLength(219)
+				.map(s -> s + UUID.randomUUID()))
+			.set("role", MemberRole.USER)
+			.set("memberStatus", MemberStatus.ACTIVE)
+			.sampleList(size);
+	}
+
 	private TechEducationType createTechEducationType() {
 		return fixtureMonkey.giveMeBuilder(TechEducationType.class)
 			.instantiate(Instantiator.factoryMethod("create"))
@@ -93,6 +133,30 @@ class TechEducationReviewRepositoryTest extends DataJpaTestSupporter {
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", Arbitraries.longs().greaterOrEqual(1))
 			.sample();
+	}
+
+	private List<TechEducationReview> createTechEducationReviews(
+		final List<Member> members, final TechEducationType techEducationType, final Long itemId
+	) {
+		List<TechEducationReview> reviews = new ArrayList<>();
+		members.forEach(member -> reviews.add(
+			fixtureMonkey.giveMeBuilder(TechEducationReview.class)
+				.instantiate(Instantiator.factoryMethod("create"))
+				.set("reviewer", member)
+				.set("techEducationType", techEducationType)
+				.set("rating", Arbitraries.integers().between(0, 5))
+				.set("itemId", itemId)
+				.sample()
+		));
+		return reviews;
+	}
+
+	private void sleep(final long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	//@RepeatedTest(10)
@@ -171,7 +235,7 @@ class TechEducationReviewRepositoryTest extends DataJpaTestSupporter {
 
 	//@RepeatedTest(10)
 	@Test
-	@DisplayName("[Success] findByReviewer_IdAndTechEducationType_IdAndItemId(): ")
+	@DisplayName("[Success] findByReviewer_IdAndTechEducationType_IdAndItemId(): TechEducationReview 엔티티, 리뷰 작성자 ID, 교육 컨텐츠 타입 ID, 리뷰 컨텐츠 ID 기반 단 건 조회")
 	void findByReviewer_IdAndTechEducationType_IdAndItemId() {
 		//Given
 		setup();
@@ -198,6 +262,54 @@ class TechEducationReviewRepositoryTest extends DataJpaTestSupporter {
 		assertEquals(techEducationReview.getItemId(), savedTechEducationReview.getItemId(), "리뷰 컨텐츠 일치");
 		assertEquals(techEducationReview.getRating(), savedTechEducationReview.getRating(), "리뷰 평점 일치");
 		assertEquals(techEducationReview.getContent(), savedTechEducationReview.getContent(), "리뷰 내용 일치");
+	}
+
+	//@RepeatedTest(10)
+	@Test
+	@DisplayName("[Success] findAllTechEducationReviews(): TechEducationReview 엔티티 다 건 조회, 페이징 적용")
+	void findAllTechEducationReviews() {
+		//Given
+		setup();
+
+		Long itemId = 1234567890L;
+		List<Member> members = createMembers(50);
+		members.forEach(member -> entityManager.persist(member));
+		TechEducationType techEducationType = createTechEducationType();
+		entityManager.persist(techEducationType);
+		List<TechEducationReview> reviews = createTechEducationReviews(members, techEducationType, itemId);
+		reviews.forEach(review -> {
+			sleep(1);
+			entityManager.persist(review);
+		});
+		clearEntityContext();
+
+		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "rating");
+
+		//When
+		List<TechEducationReview> findAllTechEducationReviews = techEducationReviewRepository.findAllTechEducationReviews(
+			techEducationType.getId(), itemId, pageable
+		).getContent();
+
+		//Then
+		List<TechEducationReview> sortedTechEducationReviews = reviews.stream()
+			.sorted(Comparator.comparing(TechEducationReview::getRating).reversed()
+				.thenComparing(type -> type.getCreatedAt().truncatedTo(ChronoUnit.MILLIS), Comparator.reverseOrder()))
+			.limit(pageable.getPageSize())
+			.toList();
+
+		assertEquals(sortedTechEducationReviews.size(), findAllTechEducationReviews.size(), "조회 결과 갯수 일치");
+		for (int i = 0; i < sortedTechEducationReviews.size(); i++) {
+			TechEducationReview sortedReview = sortedTechEducationReviews.get(i);
+			TechEducationReview findReview = findAllTechEducationReviews.get(i);
+
+			assertEquals(sortedReview.getId(), findReview.getId(), "PK 일치");
+			assertEquals(sortedReview.getReviewer().getId(), findReview.getReviewer().getId(), "리뷰 작성자 일치");
+			assertEquals(sortedReview.getTechEducationType().getId(), findReview.getTechEducationType().getId(),
+				"교육 컨텐츠 타입 일치");
+			assertEquals(sortedReview.getItemId(), findReview.getItemId(), "리뷰 컨텐츠 일치");
+			assertEquals(sortedReview.getRating(), findReview.getRating(), "리뷰 평점 일치");
+			assertEquals(sortedReview.getContent(), findReview.getContent(), "리뷰 내용 일치");
+		}
 	}
 
 }
