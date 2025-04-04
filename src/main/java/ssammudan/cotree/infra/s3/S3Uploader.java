@@ -25,6 +25,7 @@ import ssammudan.cotree.global.response.ErrorCode;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-31     Baekgwa               Initial creation
+ * 2025-04-04     Baekgwa               버그로 인한 S3 Upload 시 Encoding 처리 삭제. 대신, 특수문자만 _ 로 replace 진행
  */
 @Slf4j
 @Component
@@ -47,9 +48,8 @@ public class S3Uploader {
 	 * return : 읽기 가능한 저장된 파일 url
 	 */
 	public S3UploadResult upload(String memberId, MultipartFile file, S3Directory directory) {
-		String fileName = URLEncoder.encode(file.getOriginalFilename(), StandardCharsets.UTF_8)
-			.replace("+", "%20");
-
+		String fileName = file.getOriginalFilename()
+			.replaceAll("[^a-zA-Z0-9ㄱ-ㅎ가-힣.-]", "_");
 		String key = fileKeyGenerator(memberId, fileName, directory);
 		try {
 			PutObjectRequest objectRequest = PutObjectRequest
