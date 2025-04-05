@@ -24,6 +24,8 @@ public interface TechBookService {
 
 	TechBookResponse.Detail findTechBookById(Long id);
 
+	TechBookResponse.Detail findTechBookById(Long id, String memberId);
+
 	PageResponse<TechBookResponse.ListInfo> findAllTechBooks(String keyword, Pageable pageable);
 
 }

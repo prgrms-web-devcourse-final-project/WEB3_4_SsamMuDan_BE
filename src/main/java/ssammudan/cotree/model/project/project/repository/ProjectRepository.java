@@ -5,6 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import ssammudan.cotree.model.project.project.entity.Project;
 
@@ -20,8 +24,13 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * 2025-03-29     Baekgwa               Initial creation
  * 2025-04-02    sangxxjin             get HotProject
  */
-public interface ProjectRepository extends JpaRepository<Project, Long> {
+public interface ProjectRepository extends JpaRepository<Project, Long>, ProjectRepositoryCustom {
 	List<Project> findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc();
 
 	Page<Project> findByIsOpenTrue(Pageable pageable);
+
+	@Transactional
+	@Modifying
+	@Query("UPDATE Project p SET p.viewCount = p.viewCount + :viewCount WHERE p.id = :projectId")
+	void incrementViewCount(@Param("projectId") Long projectId, @Param("viewCount") int viewCount);
 }
