@@ -51,7 +51,6 @@ public class ResumeController {
 	@PostMapping
 	public BaseResponse<ResumeCreateResponse> register(
 			@Valid @RequestBody ResumeCreateRequest request,
-			@RequestParam("id") String dummyMemberId,
 			@AuthenticationPrincipal CustomUser customUser
 	) {
 		ResumeCreateResponse response = resumeService.register(request, customUser.getId());
