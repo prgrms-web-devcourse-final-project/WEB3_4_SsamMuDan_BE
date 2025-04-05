@@ -42,7 +42,8 @@ public class CommunityServiceImpl implements CommunityService {
 
 	@Transactional
 	@Override
-	public void createNewBoard(CommunityRequest.CreateBoard createBoard, String userId) {
+	public CommunityResponse.BoardCreate createNewBoard(
+		final CommunityRequest.CreateBoard createBoard, final String userId) {
 		// 카테고리 조회 및 유효성 확인
 		CommunityCategory findCommunityCategory = communityCategoryRepository.findByName(createBoard.getCategory())
 			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
@@ -56,7 +57,9 @@ public class CommunityServiceImpl implements CommunityService {
 			Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(),
 				createBoard.getContent());
 
-		communityRepository.save(newCommunityBoard);
+		//저장 후 응답
+		Community savedCommunity = communityRepository.save(newCommunityBoard);
+		return CommunityResponse.BoardCreate.of(savedCommunity.getId());
 	}
 
 	@Transactional(readOnly = true)

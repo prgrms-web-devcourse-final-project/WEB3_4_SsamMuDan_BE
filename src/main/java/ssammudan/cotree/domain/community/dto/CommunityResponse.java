@@ -29,4 +29,10 @@ public class CommunityResponse {
 
 	public record BoardModify(Long boardId) {
 	}
+
+	public record BoardCreate(Long boardId) {
+		public static BoardCreate of(Long boardId) {
+			return new BoardCreate(boardId);
+		}
+	}
 }

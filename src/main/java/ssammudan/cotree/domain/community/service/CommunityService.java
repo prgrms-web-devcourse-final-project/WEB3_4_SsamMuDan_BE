@@ -20,7 +20,7 @@ import ssammudan.cotree.global.response.PageResponse;
  * 2025-03-28     Baekgwa               Initial creation
  */
 public interface CommunityService {
-	void createNewBoard(final CommunityRequest.CreateBoard createBoard, final String memberId);
+	CommunityResponse.BoardCreate createNewBoard(final CommunityRequest.CreateBoard createBoard, final String memberId);
 
 	PageResponse<CommunityResponse.BoardListDetail> getBoardList(
 			final Pageable pageable,
