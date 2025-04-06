@@ -28,6 +28,7 @@ public record ProjectListResponse(
 	int viewCount,
 	long likeCount,
 	int recruitmentCount,
+	boolean isOpen,
 	LocalDate startDate,
 	LocalDate endDate,
 	List<String> techStacksImageUrl,
@@ -46,6 +47,7 @@ public record ProjectListResponse(
 			.viewCount(project.getViewCount())
 			.likeCount(likeCount)
 			.recruitmentCount(recruitmentCount)
+			.isOpen(project.getIsOpen())
 			.startDate(project.getStartDate())
 			.endDate(project.getEndDate())
 			.techStacksImageUrl(techStacksImageUrl)
