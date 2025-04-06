@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import ssammudan.cotree.model.project.project.entity.Project;
+import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 
 /**
  * PackageName : ssammudan.cotree.model.project.project.repository
@@ -19,5 +19,10 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * 2025. 4. 4.     sangxxjin               Initial creation
  */
 public interface ProjectRepositoryCustom {
-	Page<Project> findByFilters(Pageable pageable, List<Long> techStackIds, List<Long> devPositionIds, String sort);
+	Page<ProjectListResponse> findHotProjectsForMain(Pageable pageable);
+
+	List<ProjectListResponse> findHotProjectsForProject(int limit);
+
+	Page<ProjectListResponse> findByFilters(Pageable pageable, List<Long> techStackIds,
+		List<Long> devPositionIds, String sort);
 }
