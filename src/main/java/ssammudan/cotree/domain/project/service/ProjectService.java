@@ -28,4 +28,6 @@ public interface ProjectService {
 	PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable);
 
 	ProjectInfoResponse getProjectInfo(Long projectId, String memberId);
+
+	void updateRecruitmentStatus(Long projectId, String memberId);
 }
