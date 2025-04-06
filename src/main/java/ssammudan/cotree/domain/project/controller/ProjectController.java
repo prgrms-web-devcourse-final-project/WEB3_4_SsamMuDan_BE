@@ -105,7 +105,7 @@ public class ProjectController {
 		@RequestParam(value = "size", defaultValue = "12", required = false) int size,
 		@RequestParam(value = "sort", defaultValue = "createdAt", required = false) String sort,
 		@RequestParam(value = "techStack", required = false) List<Long> techStackIds,
-		@RequestParam(value = "jobPosition", required = false) List<Long> devPositionIds
+		@RequestParam(value = "devPosition", required = false) List<Long> devPositionIds
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS,
