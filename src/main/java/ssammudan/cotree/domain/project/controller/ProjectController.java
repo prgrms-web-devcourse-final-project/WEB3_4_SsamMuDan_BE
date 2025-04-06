@@ -2,11 +2,8 @@ package ssammudan.cotree.domain.project.controller;
 
 import java.util.List;
 
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -91,7 +88,7 @@ public class ProjectController {
 	}
 
 	@GetMapping("/hot")
-	@Operation(summary = "프로젝트 페이지 HOT 프로젝트 조회", description = "프로젝트 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.")
+	@Operation(summary = "프로젝트 페이지 HOT 프로젝트 조회", description = "프로젝트 페이지에서 인기 있는 HOT 프로젝트 목록을 조회합니다.(조회수, 좋아요 기준)")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<List<ProjectListResponse>> getHotProjectsForProject() {
 		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS,
@@ -99,7 +96,7 @@ public class ProjectController {
 	}
 
 	@GetMapping
-	@Operation(summary = "프로젝트 목록 조회", description = "프로젝트 목록을 조회합니다.")
+	@Operation(summary = "프로젝트 목록 조회", description = "프로젝트 목록을 조회합니다.(최신순, 좋아요순 선택 - default 최신순)")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<PageResponse<ProjectListResponse>> getProjects(
 		@RequestParam(value = "page", defaultValue = "0", required = false) int page,
