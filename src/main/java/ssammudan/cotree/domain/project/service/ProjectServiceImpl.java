@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,7 @@ import ssammudan.cotree.model.project.membership.repository.ProjectMembershipRep
 import ssammudan.cotree.model.project.membership.type.ProjectMembershipStatus;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
+import ssammudan.cotree.model.project.project.repository.ProjectRepositoryImpl;
 import ssammudan.cotree.model.project.techstack.entity.ProjectTechStack;
 import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepository;
 
@@ -62,6 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private final S3Uploader s3Uploader;
 	private final LikeRepository likeRepository;
 	private final ProjectMembershipRepository projectMembershipRepository;
+	private final ProjectRepositoryImpl projectRepositoryImpl;
 
 	@Override
 	@Transactional
@@ -117,34 +118,22 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
-		Page<Project> projects = projectRepository.findByIsOpenTrue(pageable);
-		List<ProjectListResponse> hotPojectList = projects.stream()
-			.map(this::toProjectResponse)
-			.toList();
-
-		Page<ProjectListResponse> hotProjectPage = new PageImpl<>(hotPojectList, pageable, projects.getTotalElements());
-		return PageResponse.of(hotProjectPage);
+		Page<ProjectListResponse> projects = projectRepository.findHotProjectsForMain(pageable);
+		return PageResponse.of(projects);
 	}
 
 	@Transactional(readOnly = true)
 	public List<ProjectListResponse> getHotProjectsForProject() {
 		//todo: 캐싱 작업
-		return projectRepository.findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc().stream()
-			.map(this::toProjectResponse)
-			.toList();
+		return projectRepository.findHotProjectsForProject(2);
 	}
 
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
-		List<Long> devPositionIds,
-		String sort) {
-		Page<Project> projects = projectRepository.findByFilters(pageable, techStackIds, devPositionIds, sort);
-		List<ProjectListResponse> content = projects.getContent().stream()
-			.map(this::toProjectResponse)
-			.toList();
-
-		Page<ProjectListResponse> page = new PageImpl<>(content, pageable, projects.getTotalElements());
-		return PageResponse.of(page);
+		List<Long> devPositionIds, String sort) {
+		Page<ProjectListResponse> projects = projectRepositoryImpl.findByFilters(pageable, techStackIds,
+			devPositionIds, sort);
+		return PageResponse.of(projects);
 	}
 
 	// 모집분야명, 인원수 조회
@@ -162,34 +151,6 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectTechStackRepository.findByProjectId(projectId).stream()
 			.map(projectTechStack -> projectTechStack.getTechStack().getName())
 			.toList();
-	}
-
-	// 프로젝트 데이터가공
-	private ProjectListResponse toProjectResponse(Project project) {
-		List<String> techStackImageUrls = getTechStackImageUrls(project.getId());
-		long likeCount = likeRepository.countByProjectId(project.getId());
-		Member member = project.getMember();
-		int recruitmentCount = getRecruitmentCount(project.getId());
-
-		return ProjectListResponse.from(project, techStackImageUrls, likeCount, member, recruitmentCount);
-	}
-
-	// 프로젝트에 해당하는 techstack들의 이미지들 가져오는 메서드
-	private List<String> getTechStackImageUrls(Long projectId) {
-		List<Long> techStackIds = projectTechStackRepository.findByProjectId(projectId).stream()
-			.map(projectTechStack -> projectTechStack.getTechStack().getId())
-			.toList();
-
-		return techStackRepository.findAllById(techStackIds).stream()
-			.map(TechStack::getImageUrl)
-			.toList();
-	}
-
-	// 프로젝트 총 모집인원 계산 메서드
-	private int getRecruitmentCount(Long projectId) {
-		return projectDevPositionRepository.findByProjectId(projectId).stream()
-			.mapToInt(ProjectDevPosition::getAmount)
-			.sum();
 	}
 
 	private List<TechStack> getTechStackNames(ProjectCreateRequest request) {
