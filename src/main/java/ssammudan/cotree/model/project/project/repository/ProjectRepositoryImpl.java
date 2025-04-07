@@ -1,8 +1,6 @@
 package ssammudan.cotree.model.project.project.repository;
 
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -133,19 +131,18 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 	}
 
 	private List<ProjectListResponse> convertToDtoOrdered(List<Project> projects, List<Long> orderedIds) {
-		Map<Long, Integer> orderMap = new HashMap<>();
-		for (int i = 0; i < orderedIds.size(); i++) {
-			orderMap.put(orderedIds.get(i), i);
-		}
-		projects.sort(Comparator.comparingInt(p -> orderMap.get(p.getId())));
+		Map<Long, ProjectListResponse> projectDtoMap = projects.stream()
+			.collect(Collectors.toMap(Project::getId, this::toDto));
 
-		return projects.stream().map(this::toDto).collect(Collectors.toList());
+		return orderedIds.stream()
+			.map(projectDtoMap::get)
+			.toList();
 	}
 
 	private ProjectListResponse toDto(Project p) {
 		List<String> techStacksImageUrl = p.getProjectTechStacks().stream()
 			.map(ts -> ts.getTechStack().getImageUrl())
-			.collect(Collectors.toList());
+			.toList();
 
 		long likeCount = p.getLikes().size();
 		int recruitmentCount = p.getProjectDevPositions().stream()
