@@ -67,6 +67,8 @@ public enum ErrorCode {
 	HANDLE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "9007", "요청이 거부되었습니다."),
 	METHOD_ARGUMENT_TYPE_MISS_MATCH(HttpStatus.BAD_REQUEST, "9008", "요청 파라미터 타입 불일치. API 문서 확인해주세요."),
 	SMS_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "9009", "SMS 가 전송 실패하였습니다."),
+	EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "9010", "이메일 전송에 실패했습니다."),
+	EMAIL_VERIFY_FAILED(HttpStatus.BAD_REQUEST, "9011", "이메일 인증번호가 유효하지 않습니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "9999", "서버 내부 오류 발생했습니다");
 
 	private final HttpStatus status;

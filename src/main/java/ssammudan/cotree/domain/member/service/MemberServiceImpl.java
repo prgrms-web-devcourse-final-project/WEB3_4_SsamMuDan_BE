@@ -1,6 +1,7 @@
 package ssammudan.cotree.domain.member.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +24,20 @@ public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	public Member signUp(MemberSignupRequest signupRequest) {
+		String redisEmail = (String)redisTemplate.opsForValue().get(signupRequest.email());
+		if (redisEmail == null) {
+			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
+		}
+		String redisPhoneNumber = (String)redisTemplate.opsForValue().get(signupRequest.phoneNumber());
+		if (redisPhoneNumber == null) {
+			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
+		}
 		try {
+
 			Member newMember = Member.builder()
 				.email(signupRequest.email())
 				.password(passwordEncoder.encode(signupRequest.password()))

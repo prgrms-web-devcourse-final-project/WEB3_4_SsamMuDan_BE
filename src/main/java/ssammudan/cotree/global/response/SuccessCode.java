@@ -58,6 +58,10 @@ public enum SuccessCode {
 	//Like
 	LIKE_ADD_SUCCESS(HttpStatus.OK, "200", "좋아요 추가 성공"),
 
+	// email
+	EMAIL_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "이메일 인증 코드 발송 성공"),
+	EMAIL_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "이메일 인증 코드 확인 성공"),
+
 	//Common: 9001 ~ 9999
 	TECH_STACK_FIND_SUCCESS(HttpStatus.OK, "200", "기술 스택 조회 성공"),
 	EDUCATION_CATEGORY_FIND_SUCCESS(HttpStatus.OK, "200", "교육 카테고리 조회 성공"),
