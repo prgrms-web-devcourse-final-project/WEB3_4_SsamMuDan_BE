@@ -198,8 +198,6 @@ public class SmsService {
 		if (count != null && count == 1) {
 			redisTemplate.expire(LIMIT_COUNT_RECOVERY_LOGIN_ID_KEY.formatted(key), Duration.ofHours(1));
 		}
-		// redisTemplate.delete(request.receiverNumber());
-		redisTemplate.expire(request.receiverNumber(), Duration.ofMinutes(10)); // 인증 코드 만료 시간 연장
 	}
 
 	private int generateRandomCode() {
