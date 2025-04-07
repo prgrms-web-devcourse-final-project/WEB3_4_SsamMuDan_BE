@@ -32,10 +32,10 @@ public class MemberServiceImpl implements MemberService {
 		if (redisEmail == null) {
 			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
 		}
-		// String redisPhoneNumber = (String)redisTemplate.opsForValue().get(signupRequest.phoneNumber());
-		// if (redisPhoneNumber == null) {
-		// 	throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
-		// }
+		String redisPhoneNumber = (String)redisTemplate.opsForValue().get(signupRequest.phoneNumber());
+		if (redisPhoneNumber == null) {
+			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
+		}
 		try {
 
 			Member newMember = Member.builder()
