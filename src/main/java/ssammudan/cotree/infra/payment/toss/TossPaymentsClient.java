@@ -49,7 +49,6 @@ public class TossPaymentsClient implements PaymentClient {
 			.bodyValue(requestDto)
 			.retrieve()
 			.onStatus(HttpStatusCode::isError, clientResponse ->
-				// clientResponse.bodyToMono(PaymentResponse.TossPayments.class)
 				clientResponse.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
 					})
 					.flatMap(response -> {
