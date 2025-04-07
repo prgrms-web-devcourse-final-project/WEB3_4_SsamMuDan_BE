@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import jakarta.persistence.EntityManager;
 import ssammudan.cotree.global.annotation.RepositoryTest;
@@ -13,6 +14,7 @@ import ssammudan.cotree.model.education.techbook.category.repository.TechBookEdu
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
 import ssammudan.cotree.model.education.techtube.category.repository.TechTubeEducationCategoryRepository;
 import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
+import ssammudan.cotree.model.project.project.helper.ProjectQueryHelper;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
 
@@ -66,6 +68,9 @@ public abstract class DataJpaTestSupporter {
 
 	@Autowired
 	protected TechTubeEducationCategoryRepository techTubeEducationCategoryRepository;
+
+	@MockitoBean
+	protected ProjectQueryHelper projectQueryHelper;
 
 	@BeforeEach
 	protected void setup() {

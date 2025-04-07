@@ -1,5 +1,7 @@
 package ssammudan.cotree.domain.project.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +30,10 @@ public interface ProjectService {
 	PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable);
 
 	ProjectInfoResponse getProjectInfo(Long projectId, String memberId);
+
+	PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
+		List<Long> devPositionIds,
+		String sort);
 
 	void updateRecruitmentStatus(Long projectId, String memberId);
 }

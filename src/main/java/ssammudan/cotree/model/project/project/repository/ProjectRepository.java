@@ -1,9 +1,5 @@
 package ssammudan.cotree.model.project.project.repository;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,9 +21,6 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * 2025-04-02    sangxxjin             get HotProject
  */
 public interface ProjectRepository extends JpaRepository<Project, Long>, ProjectRepositoryCustom {
-	List<Project> findTop2ByIsOpenTrueOrderByViewCountDescCreatedAtDesc();
-
-	Page<Project> findByIsOpenTrue(Pageable pageable);
 
 	@Transactional
 	@Modifying
