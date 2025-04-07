@@ -23,6 +23,7 @@ import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
+import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
 import ssammudan.cotree.model.project.techstack.entity.ProjectTechStack;
 
 /**
@@ -59,6 +60,9 @@ public class Project extends BaseEntity {
 
 	@OneToMany(mappedBy = "project")
 	private Set<ProjectDevPosition> projectDevPositions;
+
+	@OneToMany(mappedBy = "project")
+	private Set<ProjectMembership> projectMemberships;
 
 	@OneToMany(mappedBy = "project")
 	private Set<Like> likes;

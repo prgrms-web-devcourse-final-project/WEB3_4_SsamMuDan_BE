@@ -99,19 +99,17 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Transactional(readOnly = true)
 	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
-
+		Project project = getProjectByIdAndOptionalMemberId(projectId, memberId);
 		Member creator = project.getMember();
 
 		return ProjectInfoResponse.of(
 			project,
 			creator,
-			getLikeCount(projectId),
-			getDevPositionsInfo(projectId),
-			getTechStackNames(projectId),
-			isLikedByMember(projectId, memberId),
-			isMemberParticipant(projectId, memberId),
+			project.getLikes().size(),
+			convertDevPositions(project.getProjectDevPositions()),
+			convertTechStacks(project.getProjectTechStacks()),
+			isLikedByMember(project.getLikes(), memberId),
+			isMemberParticipant(project.getProjectMemberships(), memberId),
 			isProjectOwner(project, memberId)
 		);
 	}
@@ -136,14 +134,13 @@ public class ProjectServiceImpl implements ProjectService {
 		return PageResponse.of(projects);
 	}
 
-	// 모집분야명, 인원수 조회
-	private List<Map<String, Integer>> getDevPositionsInfo(Long projectId) {
-		return projectDevPositionRepository.findByProjectId(projectId).stream()
-			.map(projectDevPosition -> Map.of(
-				projectDevPosition.getDevelopmentPosition().getName(),
-				projectDevPosition.getAmount()
-			))
-			.toList();
+	private Project getProjectByIdAndOptionalMemberId(Long projectId, String memberId) {
+		if (memberId != null) {
+			return projectRepository.fetchProjectDetailById(projectId, memberId)
+				.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+		}
+		return projectRepository.fetchProjectDetailById(projectId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
 	}
 
 	// 기술 스택 이름 조회

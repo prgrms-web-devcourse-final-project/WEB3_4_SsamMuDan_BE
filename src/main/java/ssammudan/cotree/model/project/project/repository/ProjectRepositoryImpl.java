@@ -3,6 +3,7 @@ package ssammudan.cotree.model.project.project.repository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
@@ -18,6 +20,7 @@ import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.entity.QProjectDevPosition;
+import ssammudan.cotree.model.project.membership.entity.QProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.entity.QProject;
 import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
@@ -41,6 +44,38 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	public ProjectRepositoryImpl(EntityManager em) {
 		this.queryFactory = new JPAQueryFactory(em);
+	}
+
+	@Override
+	public Optional<Project> fetchProjectDetailById(Long projectId, String memberId) {
+		QProject project = QProject.project;
+		QProjectTechStack projectTechStack = QProjectTechStack.projectTechStack;
+		QProjectDevPosition projectDevPosition = QProjectDevPosition.projectDevPosition;
+		QLike like = QLike.like;
+		QProjectMembership projectMembership = QProjectMembership.projectMembership;
+
+		JPAQuery<Project> query = baseProjectJoinQuery(project, projectTechStack, projectDevPosition, like)
+			.leftJoin(project.projectMemberships, projectMembership).fetchJoin()
+			.where(project.id.eq(projectId))
+			.distinct();
+
+		Project result = query.fetchOne();
+		return Optional.ofNullable(result);
+	}
+
+	@Override
+	public Optional<Project> fetchProjectDetailById(Long projectId) {
+		QProject project = QProject.project;
+		QProjectTechStack projectTechStack = QProjectTechStack.projectTechStack;
+		QProjectDevPosition projectDevPosition = QProjectDevPosition.projectDevPosition;
+		QLike like = QLike.like;
+
+		JPAQuery<Project> query = baseProjectJoinQuery(project, projectTechStack, projectDevPosition, like)
+			.where(project.id.eq(projectId))
+			.distinct();
+
+		Project result = query.fetchOne();
+		return Optional.ofNullable(result);
 	}
 
 	@Override
@@ -103,6 +138,21 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		List<ProjectListResponse> content = convertToDtoOrdered(projects, sortedIds);
 
 		return new PageImpl<>(content, pageable, filteredProjectIds.size());
+	}
+
+	private JPAQuery<Project> baseProjectJoinQuery(
+		QProject project,
+		QProjectTechStack projectTechStack,
+		QProjectDevPosition projectDevPosition,
+		QLike like
+	) {
+		return queryFactory.selectFrom(project)
+			.leftJoin(project.projectTechStacks, projectTechStack).fetchJoin()
+			.leftJoin(projectTechStack.techStack).fetchJoin()
+			.leftJoin(project.projectDevPositions, projectDevPosition).fetchJoin()
+			.leftJoin(projectDevPosition.developmentPosition).fetchJoin()
+			.leftJoin(project.likes, like).fetchJoin()
+			.leftJoin(project.member).fetchJoin();
 	}
 
 	private List<Long> getHotProjectIds(long offset, long limit) {
