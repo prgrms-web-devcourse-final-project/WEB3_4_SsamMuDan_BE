@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,7 @@ public class EmailController {
 
 	@PostMapping("/code")
 	@Operation(summary = "이메일 인증코드 전송", description = "이메일로 인증코드를 전송합니다.")
-	public BaseResponse<Void> sendCode(@Valid @RequestBody EmailRequest emailRequest, HttpServletRequest request) {
+	public BaseResponse<Void> sendCode(@Valid @RequestBody EmailRequest emailRequest) {
 		String email = emailRequest.email();
 		emailService.sendCode(email);
 		return BaseResponse.success(SuccessCode.EMAIL_CODE_SEND_SUCCESS);
