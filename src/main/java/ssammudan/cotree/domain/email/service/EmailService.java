@@ -94,7 +94,7 @@ public class EmailService {
 		String code = String.format("%06d", random.nextInt(1_000_000));
 
 		// 인증 코드 email 전송
-		String subject = "Cotree) 인증번호 발송";
+		String subject = "[Cotree] 인증번호 발송";
 		String title = "이메일 인증번호";
 		String body = "인증번호 : " + code;
 
@@ -110,7 +110,6 @@ public class EmailService {
 		if (redisCode == null || !redisCode.equals(code)) {
 			throw new GlobalException(ErrorCode.EMAIL_VERIFY_FAILED);
 		}
-		// 인증 코드 삭제
-		redisTemplate.delete(email);
+		redisTemplate.expire(email, Duration.ofMinutes(10)); // 인증 코드 만료 시간 연장(10분)
 	}
 }
