@@ -1,6 +1,7 @@
 package ssammudan.cotree.domain.education.techtube.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,10 +19,10 @@ import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 4.     loadingKKamo21       Initial creation
+ * 25. 4. 7.     Baekgwa       		  TechTube 목록 조회, 회원의 좋아요 상태 추가
  */
 @Schema(description = "TechTube 응답\n"
-	+ "\t\t//TODO: 구매 상태 정보 필요(비회원: 비구매, 회원: 구매 vs 비구매)\n"
-	+ "\t\t//TODO: 로그인한 회원의 좋아요 상태 DTO")
+	+ "\t\t//TODO: 구매 상태 정보 필요(비회원: 비구매, 회원: 구매 vs 비구매)")
 public class TechTubeResponse {
 
 	@Schema(description = "TechTube 상세 조회 응답 DTO")
@@ -117,33 +118,30 @@ public class TechTubeResponse {
 
 	@Schema(description = "TechTube 목록 조회 응답 DTO")
 	public record ListInfo(
-		//TODO: 로그인한 회원의 좋아요 상태
 		@Schema(description = "TechTube ID", example = "1")
-		long id,    //TechTube ID
+		Long id,    //TechTube ID
+
 		@Schema(description = "TechTube 저자", example = "홍길동")
 		String writer,    //TechTube 저자
+
 		@Schema(description = "TechTube 제목", example = "Spring Boot")
 		String title,    //TechTube 제목
+
 		@Schema(description = "TechTube 가격", example = "10000")
-		int price,    //TechTube 가격
+		Integer price,    //TechTube 가격
+
 		@Schema(description = "TechTube 썸네일 URL", example = "https://cotree.ssammudan.com/techtube/SpringBoot_thumbnail.png")
 		String techTubeThumbnailUrl,    //TechTube 썸네일 URL
+
 		@Schema(description = "TechTube 좋아요 수", example = "123")
-		long likeCount,    //TechTube 좋아요 수
+		Long likeCount,    //TechTube 좋아요 수
+
 		@Schema(description = "TechTube 등록 일자", example = "2025-01-01")
-		LocalDate createdAt    //TechTube 등록 일자
+		LocalDateTime createdAt,    //TechTube 등록 일자
+
+		@Schema(description = "로그인 회원의 좋아요 유무", example = "true")
+		Boolean isLike
 	) {
-		public static ListInfo from(final TechTube techTube) {
-			return new ListInfo(
-				techTube.getId(),
-				techTube.getWriter().getNickname(),
-				techTube.getTitle(),
-				techTube.getPrice(),
-				techTube.getTechTubeThumbnailUrl(),
-				techTube.getLikes().size(),
-				techTube.getCreatedAt().toLocalDate()
-			);
-		}
 	}
 
 }

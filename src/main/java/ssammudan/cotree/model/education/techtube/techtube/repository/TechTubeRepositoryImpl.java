@@ -1,25 +1,27 @@
 package ssammudan.cotree.model.education.techtube.techtube.repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
+import ssammudan.cotree.domain.education.type.SearchEducationSort;
+import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.education.techtube.techtube.entity.QTechTube;
-import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
+import ssammudan.cotree.model.member.member.entity.QMember;
 
 /**
  * PackageName : ssammudan.cotree.model.education.techtube.techtube.repository
@@ -31,89 +33,99 @@ import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 30.    loadingKKamo21       Initial creation
+ * 25. 4. 7.     Baekgwa       		  로직 리팩토링 및, 회원의 좋아요 상태 추가.
  */
 @Repository
 @RequiredArgsConstructor
 public class TechTubeRepositoryImpl implements TechTubeRepositoryCustom {
 
 	private final JPAQueryFactory jpaQueryFactory;
+	private static final QTechTube techTube = QTechTube.techTube;
+	private static final QMember member = QMember.member;
+	private static final QLike like = QLike.like;
 
 	/**
-	 * 검색어(keyword)로 TechTube 페이징 목록 조회
-	 *
-	 * @param keyword  - 검색어
-	 * @param pageable - 페이징 객체
-	 * @return Page<TechTube>
+	 * 전체 TechTube 목록 조회
+	 * @param keyword
+	 * @param sort
+	 * @param pageable
+	 * @param memberId
+	 * @return
 	 */
 	@Override
-	public Page<TechTube> findAllTechTubesByKeyword(final String keyword, final Pageable pageable) {
-		QTechTube techTube = QTechTube.techTube;
-		List<TechTube> content = jpaQueryFactory.selectFrom(techTube)
-			.where(getSearchCondition(keyword, techTube))
-			.orderBy(getSortCondition(pageable, techTube))
+	public Page<TechTubeResponse.ListInfo> findAllTechTubesByKeyword(
+		final String keyword,
+		final SearchEducationSort sort,
+		final Pageable pageable,
+		final String memberId
+	) {
+		List<TechTubeResponse.ListInfo> content = jpaQueryFactory
+			.select(Projections.constructor(TechTubeResponse.ListInfo.class,
+				techTube.id,
+				member.nickname,
+				techTube.title,
+				techTube.price,
+				techTube.techTubeThumbnailUrl,
+				JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.techTube.id.eq(techTube.id)),
+				techTube.createdAt,
+				memberId != null ? JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.techTube.id.eq(techTube.id)
+						.and(like.member.id.eq(memberId)))
+					.exists()
+					: Expressions.constant(Boolean.FALSE)
+			))
+			.from(techTube)
+			.join(member).on(techTube.writer.id.eq(member.id))
+			.where(getSearchCondition(keyword))
+			.orderBy(getSortCondition(sort))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
-		JPAQuery<Long> count = jpaQueryFactory.select(techTube.count())
+
+		Long total = jpaQueryFactory
+			.select(techTube.count())
 			.from(techTube)
-			.where(getSearchCondition(keyword, techTube));
-		return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
+			.where(getSearchCondition(keyword))
+			.fetchOne();
+
+		return new PageImpl<>(content, pageable, total != null ? total : 0);
 	}
 
 	/**
 	 * 검색어(keyword) 기준 BooleanExpression 생성
-	 *
-	 * @param keyword  - 검색어
-	 * @param techTube - Querydsl TechTube
-	 * @return BooleanExpression
 	 */
-	private BooleanExpression getSearchCondition(final String keyword, @NotNull final QTechTube techTube) {
+	private BooleanExpression getSearchCondition(final String keyword) {
 		BooleanExpression expression = null;
 
 		if (StringUtils.hasText(keyword)) {
-			expression = techTube.title.contains(keyword)
-				.or(techTube.description.contains(keyword))
-				.or(techTube.introduction.contains(keyword));
+			expression = techTube.title.containsIgnoreCase(keyword)
+				.or(techTube.description.containsIgnoreCase(keyword))
+				.or(techTube.introduction.containsIgnoreCase(keyword));
 		}
 
 		return expression;
 	}
 
 	/**
-	 * 페이징 객체에 포함된 정렬 조건에 따라 OrderSpecifier[] 생성
-	 *
-	 * @param pageable - 페이징 객체
-	 * @param techTube - Querydsl TechTube
-	 * @return OrderSpecifier[]
+	 * 정렬 조건 생성
+	 * @param sort
+	 * @return
 	 */
-	private OrderSpecifier<?>[] getSortCondition(@NotNull final Pageable pageable, @NotNull final QTechTube techTube) {
-		List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
-		boolean hasCreatedAt = pageable.getSort().stream().anyMatch(order -> "createdAt".equals(order.getProperty()));
-
-		if (!pageable.getSort().isEmpty()) {
-			pageable.getSort().forEach(order -> {
-				Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
-
-				switch (order.getProperty()) {
-					case "rating" -> orderSpecifiers.add(new OrderSpecifier(direction,
-						Expressions.numberTemplate(Double.class, "CASE WHEN {1} = 0 THEN 0 ELSE ({0} * 1.0 / {1}) END",
-							techTube.totalRating, techTube.totalReviewCount))
-					);
-					case "viewCount" -> orderSpecifiers.add(new OrderSpecifier(direction, techTube.viewCount));
-					case "reviewCount" -> orderSpecifiers.add(new OrderSpecifier(direction, techTube.totalReviewCount));
-					case "createdAt" -> orderSpecifiers.add(new OrderSpecifier(direction, techTube.createdAt));
-					case "likeCount" -> orderSpecifiers.add(new OrderSpecifier(direction, techTube.likes.size()));
-					default -> {
-					}
-				}
-			});
-		}
-
-		if (!hasCreatedAt) {
-			orderSpecifiers.add(new OrderSpecifier(Order.DESC, techTube.createdAt));
-		}
-
-		return orderSpecifiers.toArray(new OrderSpecifier[0]);
+	private OrderSpecifier<?> getSortCondition(SearchEducationSort sort) {
+		return switch (sort) {
+			case LATEST -> new OrderSpecifier<>(Order.DESC,
+				techTube.createdAt);
+			case RATING -> new OrderSpecifier<>(Order.DESC,
+				Expressions.numberTemplate(Double.class, "CASE WHEN {1} = 0 THEN 0 ELSE ({0} * 1.0 / {1}) END",
+					techTube.totalRating, techTube.totalReviewCount));
+			case LIKES -> new OrderSpecifier<>(Order.DESC, techTube.likes.size());
+			case VIEWS -> new OrderSpecifier<>(Order.DESC, techTube.viewCount);
+			case REVIEWS -> new OrderSpecifier<>(Order.DESC, techTube.totalReviewCount);
+		};
 	}
-
 }

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeRequest;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
+import ssammudan.cotree.domain.education.type.SearchEducationSort;
 import ssammudan.cotree.global.response.PageResponse;
 
 /**
@@ -16,6 +17,7 @@ import ssammudan.cotree.global.response.PageResponse;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 4.     loadingKKamo21       Initial creation
+ * 25. 4. 7.     Baekgwa       		  목록 조회 method params 변경
  */
 public interface TechTubeService {
 
@@ -25,6 +27,10 @@ public interface TechTubeService {
 
 	TechTubeResponse.Detail findTechTubeById(Long id, String memberId);
 
-	PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(String keyword, Pageable pageable);
+	PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(
+		String keyword,
+		SearchEducationSort sort,
+		Pageable pageable,
+		String memberId);
 
 }

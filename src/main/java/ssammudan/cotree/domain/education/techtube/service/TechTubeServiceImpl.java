@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeRequest;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
+import ssammudan.cotree.domain.education.type.SearchEducationSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
@@ -119,10 +120,13 @@ public class TechTubeServiceImpl implements TechTubeService {
 	 * @return PageResponse TechTubeResponse ListInfo DTO
 	 */
 	@Override
-	public PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(final String keyword, final Pageable pageable) {
-		return PageResponse.of(
-			techTubeRepository.findAllTechTubesByKeyword(keyword, pageable).map(TechTubeResponse.ListInfo::from)
-		);
+	public PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(
+		final String keyword,
+		final SearchEducationSort sort,
+		final Pageable pageable,
+		final String memberId
+	) {
+		return PageResponse.of(techTubeRepository.findAllTechTubesByKeyword(keyword, sort, pageable, memberId));
 	}
 
 }
