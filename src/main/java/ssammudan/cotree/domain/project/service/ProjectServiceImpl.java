@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,8 +62,6 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectDevPositionRepository projectDevPositionRepository;
 	private final S3Uploader s3Uploader;
 	private final ProjectRepositoryImpl projectRepositoryImpl;
-	private final LikeRepository likeRepository;
-	private final ProjectMembershipRepository projectMembershipRepository;
 	private final ProjectViewService projectViewService;
 
 	@Override
@@ -115,6 +112,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public List<ProjectListResponse> getHotProjectsForProject() {
 		//todo: 캐싱 작업
 		return projectRepository.findHotProjectsForProject(2);
+	}
 
 	@Override
 	@Transactional
