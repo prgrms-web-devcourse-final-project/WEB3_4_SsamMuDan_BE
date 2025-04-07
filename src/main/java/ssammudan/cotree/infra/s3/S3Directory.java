@@ -18,11 +18,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum S3Directory {
 	USER_PROFILE("user/profile/", false),
+
+	USER_RESUME("resume/", false),
+
 	COMMUNITY_BOARD("community/board/", true),
+
 	PROJECT("project/team/", false),
+
 	EDUCATION_TECHBOOK_MAIN("education/techbook/main/", false),
 	EDUCATION_TECHBOOK_PREVIEW("education/techbook/preview/", false),
-	EDUCATION_TECHBOOK_THUNBNAIL("education/techbook/thumbnail/", false);
+	EDUCATION_TECHBOOK_THUMBNAIL("education/techbook/thumbnail/", false),
+
+	EDUCATION_TECHTUBE_MAIN("education/techtube/main/", false),
+	EDUCATION_TECHTUBE_THUMBNAIL("education/techtube/thumbnail/", false),
+
+	TECHSTACK("techstack/", false);
 
 	private final String path;
 	private final boolean isMultiFile;
