@@ -12,13 +12,13 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
 import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
+import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
 import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 /**
  * PackageName : ssammudan.cotree.domain.review.review.service
@@ -58,7 +58,7 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 
 		//TODO: 작성자의 구매 이력에 해당 교육 컨텐츠 유효성 확인 필요
 
-		Long reviewTypeId = TechEducationReviewType.getTechEducationTypeId(
+		Long reviewTypeId = EducationType.getTechEducationTypeId(
 			requestDto.techEducationType()
 		); //TechTube = 1 or TechBook = 2
 
@@ -108,7 +108,7 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 		final TechEducationReviewRequest.Read requestDto, final Pageable pageable
 	) {
 		return PageResponse.of(techEducationReviewRepository.findAllTechEducationReviews(
-			TechEducationReviewType.getTechEducationTypeId(
+			EducationType.getTechEducationTypeId(
 				requestDto.techEducationType()), requestDto.itemId(), pageable
 		).map(TechEducationReviewResponse.Detail::from));
 	}

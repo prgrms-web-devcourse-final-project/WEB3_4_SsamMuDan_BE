@@ -27,12 +27,12 @@ import ssammudan.cotree.integration.SpringBootTestSupporter;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
+import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
@@ -244,7 +244,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
-			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
+			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("content", Arbitraries.strings()
 				.withCharRange('a', 'z')
@@ -286,7 +286,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
-			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
+			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", Arbitraries.longs().greaterOrEqual(1))
 			.sample();
@@ -322,7 +322,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
-			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
+			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", itemId)
 			.sample();
@@ -369,7 +369,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		TechEducationReviewRequest.Read requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Read.class
 			)
-			.set("techEducationType", TechEducationReviewType.TECH_TUBE)
+			.set("techEducationType", EducationType.TECH_TUBE)
 			.set("itemId", techTube.getId())
 			.sample();
 
