@@ -11,10 +11,15 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsRequest;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsResponse;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsVerifyRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.repository.MemberRepository;
 
 /**
  * PackageName : ssammudan.cotree.domain.member.service
@@ -31,9 +36,18 @@ import ssammudan.cotree.global.response.ErrorCode;
 public class SmsService {
 	private final DefaultMessageService messageService;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final MemberRepository memberRepository;
 
+	private static final String EMAIL_DELIMITER = "@";
+	private static final String MASKING = "*";
 	private static final String coolSmsUrl = "https://api.coolsms.co.kr";
 	private static final long CODE_EXPIRATION = 3;
+	private static final String SIGNUP_KEY = "signup:sms:%s";
+	private static final String RECOVER_LOGIN_ID_KEY = "loginId:sms:%s";
+	private static final String LIMIT_COUNT_SIGNUP_KEY = "signup:limit:%s";
+	private static final String LIMIT_COUNT_RECOVERY_LOGIN_ID_KEY = "loginId:limit:%s";
+	private static final String COOLDOWN_SIGNUP_KEY = "cooldown:signup:%s";
+	private static final String COOLDOWN_RECOVER_LOGIN_ID_KEY = "cooldown:loginId:%s";
 
 	@Value("${SENDER_PHONE_NUMBER}")
 	private String senderPhoneNumber;
@@ -41,18 +55,22 @@ public class SmsService {
 	public SmsService(
 		@Value("${COOL_SMS_API_KEY}") String apiKey,
 		@Value("${COOL_SMS_SECRET_KEY}") String apiSecret,
-		RedisTemplate<String, String> redisTemplate
+		RedisTemplate<String, String> redisTemplate,
+		MemberRepository memberRepository
 	) {
 		this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, coolSmsUrl);
 		this.redisTemplate = redisTemplate;
+		this.memberRepository = memberRepository;
 	}
 
-	public void sendSignupMsg(MemberSignupSmsRequest request) {
+	public void sendSignupCode(MemberSignupSmsRequest request) {
+
+		//  쿨다운 키에 존재 시 에러 , 특정 전화번호로 1시간에 최대 5번 시도 가능
+		validateSignupCodeSendLimit(request.receiverNumber());
 
 		// 기존의 인증 코드가 남아있을 경우 삭제
-		if (redisTemplate.opsForValue().get(request.receiverNumber()) != null) {
-			redisTemplate.delete(request.receiverNumber());
-		}
+		redisTemplate.delete(SIGNUP_KEY.formatted(request.receiverNumber()));
+
 		// 랜덤 6자리
 		int randomCode = generateRandomCode();
 
@@ -70,16 +88,116 @@ public class SmsService {
 		}
 
 		redisTemplate.opsForValue()
-			.set(request.receiverNumber(), String.valueOf(randomCode), Duration.ofMinutes(CODE_EXPIRATION));
+			.set(SIGNUP_KEY.formatted(request.receiverNumber()), String.valueOf(randomCode),
+				Duration.ofMinutes(CODE_EXPIRATION));
 	}
 
 	public void verifySignupCode(MemberSignupSmsVerifyRequest request) {
-		String code = redisTemplate.opsForValue().get(request.receiverNumber());
+		String key = request.receiverNumber();
+		String code = redisTemplate.opsForValue().get(SIGNUP_KEY.formatted(key));
 
 		if (code == null || !code.equals(request.code())) {
 			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
 		}
-		redisTemplate.delete(request.receiverNumber());
+		redisTemplate.delete(SIGNUP_KEY.formatted(request.receiverNumber()));
+	}
+
+	public void recoverLoginId(MemberRecoverSmsRequest request) {
+
+		Member member = memberRepository.findByUsernameAndPhoneNumber(request.username(), request.receiverNumber())
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+
+		// 이름 + 전화번호 조합
+		String key = request.username() + request.receiverNumber();
+
+		validateRecoverLoginIdSendLimit(key);
+
+		// 기존의 인증 코드가 남아있을 경우 삭제
+		redisTemplate.delete(RECOVER_LOGIN_ID_KEY.formatted(key));
+
+		// 랜덤 6자리
+		int randomCode = generateRandomCode();
+
+		Message message = new Message();
+		message.setFrom(senderPhoneNumber);
+		message.setTo(request.receiverNumber());
+
+		message.setText("[cotree]" + "\n" + "인증번호 : " + randomCode);
+
+		try {
+			messageService.sendOne(
+				new SingleMessageSendingRequest(message));
+		} catch (Exception e) {
+			throw new GlobalException(ErrorCode.SMS_SEND_FAILED);
+		}
+
+		redisTemplate.opsForValue()
+			.set(RECOVER_LOGIN_ID_KEY.formatted(key), String.valueOf(randomCode),
+				Duration.ofMinutes(CODE_EXPIRATION));
+	}
+
+	public MemberRecoverSmsResponse verifyRecoverLoginId(MemberRecoverSmsVerifyRequest request) {
+		String key = request.username() + request.receiverNumber();
+		String code = redisTemplate.opsForValue().get(RECOVER_LOGIN_ID_KEY.formatted(key));
+
+		if (code == null || !code.equals(request.code())) {
+			throw new GlobalException(ErrorCode.SMS_SEND_FAILED);
+		}
+		redisTemplate.delete(RECOVER_LOGIN_ID_KEY.formatted(key));
+
+		String maskingEmail = extractMaskingEmail(request);
+		return MemberRecoverSmsResponse.from(maskingEmail);
+	}
+
+	private String extractMaskingEmail(MemberRecoverSmsVerifyRequest request) {
+		Member member = memberRepository.findByUsernameAndPhoneNumber(request.username(), request.receiverNumber())
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+
+		String[] part = member.getEmail().split(EMAIL_DELIMITER);
+		String localPart = member.getEmail().split(EMAIL_DELIMITER)[0];
+		String domain = member.getEmail().split(EMAIL_DELIMITER)[1];
+
+		int invisibleLength = localPart.length() / 2;
+
+		return localPart.substring(0, (invisibleLength / 2)) + MASKING.repeat(localPart.length() - invisibleLength);
+	}
+
+	private void validateSignupCodeSendLimit(String key) {
+		if (Boolean.TRUE.equals(redisTemplate.hasKey(COOLDOWN_SIGNUP_KEY))) {
+			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_COOLDOWN);
+		}
+		Long count = redisTemplate.opsForValue()
+			.increment(LIMIT_COUNT_SIGNUP_KEY.formatted(key), 1);
+
+		if (count != null && count > 5) {
+			redisTemplate.opsForValue()
+				.set(COOLDOWN_SIGNUP_KEY.formatted(key), "1",
+					Duration.ofMinutes(CODE_EXPIRATION));
+			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_COOLDOWN);
+		}
+
+		if (count != null && count == 1) {
+			redisTemplate.expire(LIMIT_COUNT_SIGNUP_KEY.formatted(key), Duration.ofHours(1));
+		}
+	}
+
+	private void validateRecoverLoginIdSendLimit(String key) {
+		if (Boolean.TRUE.equals(redisTemplate.hasKey(COOLDOWN_RECOVER_LOGIN_ID_KEY.formatted(key)))) {
+			throw new GlobalException(ErrorCode.MEMBER_RECOVER_COOLDOWN);
+		}
+		Long count = redisTemplate.opsForValue()
+			.increment(LIMIT_COUNT_RECOVERY_LOGIN_ID_KEY.formatted(key), 1);
+
+		if (count != null && count > 5) {
+			redisTemplate.opsForValue()
+				.set(COOLDOWN_RECOVER_LOGIN_ID_KEY.formatted(key), "1",
+					Duration.ofMinutes(CODE_EXPIRATION));
+			throw new GlobalException(ErrorCode.MEMBER_RECOVER_COOLDOWN);
+		}
+
+		if (count != null && count == 1) {
+			redisTemplate.expire(LIMIT_COUNT_RECOVERY_LOGIN_ID_KEY.formatted(key), Duration.ofHours(1));
+		}
 	}
 
 	private int generateRandomCode() {
