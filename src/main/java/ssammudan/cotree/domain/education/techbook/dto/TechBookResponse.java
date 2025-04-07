@@ -1,8 +1,11 @@
 package ssammudan.cotree.domain.education.techbook.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import ssammudan.cotree.model.education.category.entity.EducationCategory;
+import ssammudan.cotree.model.education.techbook.category.entity.TechBookEducationCategory;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 
 /**
@@ -23,12 +26,15 @@ public class TechBookResponse {
 	@Schema(description = "TechBook 상세 조회 응답 DTO")
 	public record Detail(
 		//TODO: 구매 상태 정보 필요(비회원: 비구매, 회원: 구매 vs 비구매)
+		//TODO: 로그인한 회원의 좋아요 상태
 		@Schema(description = "TechBook ID", example = "1")
 		long id,                      //TechBook ID
 		@Schema(description = "TechBook 저자", example = "홍길동")
 		String writer,                //TechBook 저자
 		@Schema(description = "TechBook 교육 난이도", example = "입문")
 		String educationLevel,        //TechBook 교육 난이도
+		@Schema(description = "TechBook 교육 카테고리", example = "백엔드")
+		List<String> educationCategories,
 		@Schema(description = "TechBook 제목", example = "Spring Boot")
 		String title,                 //TechBook 제목
 		@Schema(description = "TechBook 설명", example = "스프링 부트를 1000% 활용하는 방법!!")
@@ -53,6 +59,8 @@ public class TechBookResponse {
 		int viewCount,                //TechBook 조회 수
 		@Schema(description = "TechBook 좋아요 수", example = "123")
 		long likeCount,                //TechBook 좋아요 수
+		@Schema(description = "로그인된 회원의 TechBook 좋아요 여부", example = "true")
+		boolean isLike,                //로그인된 회원의 TechBook 좋아요 여부
 		@Schema(description = "TechBook 등록 일자", example = "2025-01-01")
 		LocalDate createdAt           //TechBook 등록 일자
 	) {
@@ -61,6 +69,9 @@ public class TechBookResponse {
 				techBook.getId(),
 				techBook.getWriter().getNickname(),
 				techBook.getEducationLevel().getName(),
+				techBook.getTechBookEducationCategories().stream()
+					.map(TechBookEducationCategory::getEducationCategory)
+					.map(EducationCategory::getName).toList(),    //TODO: 성능 최적화 시 FETCH JOIN 활용 형태 적용 고려
 				techBook.getTitle(),
 				techBook.getDescription(),
 				techBook.getIntroduction(),
@@ -73,6 +84,32 @@ public class TechBookResponse {
 				techBook.getPrice(),
 				techBook.getViewCount(),
 				techBook.getLikes().size(),
+				false,
+				techBook.getCreatedAt().toLocalDate()
+			);
+		}
+
+		public static Detail from(final TechBook techBook, final boolean isLike) {
+			return new Detail(
+				techBook.getId(),
+				techBook.getWriter().getNickname(),
+				techBook.getEducationLevel().getName(),
+				techBook.getTechBookEducationCategories().stream()
+					.map(TechBookEducationCategory::getEducationCategory)
+					.map(EducationCategory::getName).toList(),    //TODO: 성능 최적화 시 FETCH JOIN 활용 형태 적용 고려
+				techBook.getTitle(),
+				techBook.getDescription(),
+				techBook.getIntroduction(),
+				(double)techBook.getTotalRating() / techBook.getTotalReviewCount(),
+				techBook.getTotalReviewCount(),
+				techBook.getTechBookUrl(),
+				techBook.getTechBookPreviewUrl(),
+				techBook.getTechBookThumbnailUrl(),
+				techBook.getTechBookPage(),
+				techBook.getPrice(),
+				techBook.getViewCount(),
+				techBook.getLikes().size(),
+				isLike,
 				techBook.getCreatedAt().toLocalDate()
 			);
 		}
@@ -80,6 +117,7 @@ public class TechBookResponse {
 
 	@Schema(description = "TechBook 목록 조회 응답 DTO")
 	public record ListInfo(
+		//TODO: 로그인한 회원의 좋아요 상태
 		@Schema(description = "TechBook ID", example = "1")
 		long id,    //TechBook ID
 		@Schema(description = "TechBook 저자", example = "홍길동")

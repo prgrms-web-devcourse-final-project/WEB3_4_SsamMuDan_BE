@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,11 +104,24 @@ public class ProjectController {
 		@RequestParam(value = "size", defaultValue = "12", required = false) int size,
 		@RequestParam(value = "sort", defaultValue = "createdAt", required = false) String sort,
 		@RequestParam(value = "techStack", required = false) List<Long> techStackIds,
-		@RequestParam(value = "devPosition", required = false) List<Long> devPositionIds
+		@RequestParam(value = "jobPosition", required = false) List<Long> devPositionIds
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS,
 			projectServiceImpl.getProjects(pageable, techStackIds, devPositionIds, sort));
+	}
+
+
+	@PatchMapping("/{projectId}/status")
+	@Operation(summary = "프로젝트 모집 상태 변경", description = "프로젝트의 모집 상태(모집 중/모집 완료)를 변경합니다.")
+	@ApiResponse(responseCode = "200", description = "상태 변경 성공")
+	public BaseResponse<Void> updateRecruitmentStatus(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		projectServiceImpl.updateRecruitmentStatus(projectId, memberId);
+		return BaseResponse.success(SuccessCode.PROJECT_STATUS_UPDATE_SUCCESS);
 	}
 
 }

@@ -89,28 +89,28 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	 */
 	private OrderSpecifier<?>[] getSortCondition(@NotNull final Pageable pageable, @NotNull final QTechBook techBook) {
 		List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+		boolean hasCreatedAt = pageable.getSort().stream().anyMatch(order -> "createdAt".equals(order.getProperty()));
 
 		if (!pageable.getSort().isEmpty()) {
 			pageable.getSort().forEach(order -> {
 				Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
 
 				switch (order.getProperty()) {
-					case "title" -> orderSpecifiers.add(new OrderSpecifier(direction, techBook.title));
 					case "rating" -> orderSpecifiers.add(new OrderSpecifier(direction,
 						Expressions.numberTemplate(Double.class, "CASE WHEN {1} = 0 THEN 0 ELSE ({0} * 1.0 / {1}) END",
 							techBook.totalRating, techBook.totalReviewCount))
 					);
 					case "viewCount" -> orderSpecifiers.add(new OrderSpecifier(direction, techBook.viewCount));
-					case "totalReviewCount" ->
-						orderSpecifiers.add(new OrderSpecifier(direction, techBook.totalReviewCount));
+					case "reviewCount" -> orderSpecifiers.add(new OrderSpecifier(direction, techBook.totalReviewCount));
 					case "createdAt" -> orderSpecifiers.add(new OrderSpecifier(direction, techBook.createdAt));
+					case "likeCount" -> orderSpecifiers.add(new OrderSpecifier(direction, techBook.likes.size()));
 					default -> {
 					}
 				}
 			});
 		}
 
-		if (orderSpecifiers.isEmpty()) {
+		if (!hasCreatedAt) {
 			orderSpecifiers.add(new OrderSpecifier(Order.DESC, techBook.createdAt));
 		}
 

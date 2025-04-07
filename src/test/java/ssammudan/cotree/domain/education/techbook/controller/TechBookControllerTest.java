@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -106,9 +105,7 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 		//Given
 
 		//When
-		ResultActions resultActions = mockMvc.perform(get("/api/v1/education/techbook/{id}/info", invalidId)
-			.accept(MediaType.APPLICATION_JSON_VALUE)
-			.contentType(MediaType.APPLICATION_JSON_VALUE));
+		ResultActions resultActions = mockMvc.perform(get("/api/v1/education/techbook/{id}/info", invalidId));
 
 		//Then
 		BaseResponse<Void> baseResponse = BaseResponse.fail(ErrorCode.INVALID_INPUT_VALUE);
@@ -138,7 +135,7 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("page", "0");
 		params.add("size", "16");
-		params.add("sort", "createdAt,DESC");
+		params.add("sort", "LATEST");
 		params.add("keyword", dtoFixtureMonkey.giveMeOne(String.class));
 
 		//When

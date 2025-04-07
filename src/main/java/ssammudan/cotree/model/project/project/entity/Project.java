@@ -111,4 +111,8 @@ public class Project extends BaseEntity {
 			.endDate(request.endDate())
 			.build();
 	}
+
+	public void toggleIsOpen() {
+		this.isOpen = !this.isOpen;
+	}
 }

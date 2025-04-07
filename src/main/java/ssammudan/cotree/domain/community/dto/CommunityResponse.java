@@ -24,6 +24,15 @@ public class CommunityResponse {
 	}
 
 	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
-							  Integer viewCount, Boolean isLike) {
+							  Integer viewCount, Boolean isLike, Boolean isOwner) {
+	}
+
+	public record BoardModify(Long boardId) {
+	}
+
+	public record BoardCreate(Long boardId) {
+		public static BoardCreate of(Long boardId) {
+			return new BoardCreate(boardId);
+		}
 	}
 }
