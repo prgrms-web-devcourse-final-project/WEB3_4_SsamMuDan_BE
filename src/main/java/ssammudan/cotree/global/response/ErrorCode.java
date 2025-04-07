@@ -24,6 +24,7 @@ public enum ErrorCode {
 	TECH_EDUCATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "1005", "TechEducation 카테고리를 찾을 수 없습니다."),
 	TECH_EDUCATION_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "1006", "TechEducation 리뷰를 찾을 수 없습니다."),
 	TECH_EDUCATION_REVIEW_DUPLICATED(HttpStatus.BAD_REQUEST, "1007", "작성된 리뷰가 존재합니다."),
+	INVALID_EDUCATION_CATEGORY_ID(HttpStatus.BAD_REQUEST, "1008", "유효하지 않은 Education Category 입니다."),
 
 	//Payment: 2001 ~ 3000
 
@@ -33,6 +34,7 @@ public enum ErrorCode {
 
 	//Project: 4001 ~ 5000
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
+	PROJECT_FORBIDDEN(HttpStatus.FORBIDDEN, "4002", "해당 프로젝트의 작성자만 수정할 수 있습니다."),
 
 	//Community: 5001 ~ 6000
 	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
@@ -42,6 +44,7 @@ public enum ErrorCode {
 
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
+	INVALID_FILE(HttpStatus.BAD_REQUEST, "6002", "파일 업로드 실패. 잘못된 파일 입니다."),
 
 	//Comment: 7001 ~ 8000
 	POST_COMMENT_FAIL_COMMUNITY_NOTFOUND(HttpStatus.NOT_FOUND, "7001", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),

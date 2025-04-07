@@ -1,18 +1,18 @@
 INSERT INTO tech_stack (name, image_url)
-VALUES ('Java', 'https://worldvectorlogo.com/download/java.svg'),
-       ('Kotlin', 'https://worldvectorlogo.com/download/kotlin-1.svg'),
-       ('Spring', 'https://worldvectorlogo.com/download/spring-3.svg'),
-       ('Spring Boot', 'https://worldvectorlogo.com/download/spring-boot-1.svg'),
-       ('JavaScript', 'https://worldvectorlogo.com/download/javascript-2.svg'),
-       ('React', 'https://worldvectorlogo.com/download/react-2.svg'),
-       ('Typescript', 'https://worldvectorlogo.com/download/typescript.svg'),
-       ('Django', 'https://worldvectorlogo.com/download/django.svg'),
-       ('MySQL', 'https://worldvectorlogo.com/download/mysql-3.svg'),
-       ('MariaDB', 'https://worldvectorlogo.com/download/mariadb.svg'),
-       ('PostgreSQL', 'https://worldvectorlogo.com/download/postgresql.svg'),
-       ('MongoDB', 'https://worldvectorlogo.com/download/mongodb-icon-1.svg'),
-       ('AWS', 'https://worldvectorlogo.com/download/aws-2.svg'),
-       ('Node.js', 'https://worldvectorlogo.com/download/nodejs.svg');
+VALUES ('Java', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/java.svg'),
+       ('Kotlin', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/kotlin-1.svg'),
+       ('Spring', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/spring-3.svg'),
+       ('Spring Boot', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/spring-boot-1.svg'),
+       ('JavaScript', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/javascript-2.svg'),
+       ('React', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/react-2.svg'),
+       ('Typescript', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/typescript.svg'),
+       ('Django', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/django.svg'),
+       ('MySQL', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/mysql-3.svg'),
+       ('MariaDB', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/mariadb.svg'),
+       ('PostgreSQL', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/postgresql.svg'),
+       ('MongoDB', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/mongodb-icon-1.svg'),
+       ('AWS', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/aws-2.svg'),
+       ('Node.js', 'https://devcouse4-team15-bucket.s3.ap-northeast-2.amazonaws.com/techstack/nodejs.svg');
 
 INSERT INTO development_position (name)
 VALUES ('프론트엔드'),

@@ -151,6 +151,18 @@ public class ProjectServiceImpl implements ProjectService {
 		return PageResponse.of(page);
 	}
 
+	@Override
+	@Transactional
+	public void updateRecruitmentStatus(Long projectId, String memberId) {
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+
+		if (!isProjectOwner(project, memberId)) {
+			throw new GlobalException(ErrorCode.PROJECT_FORBIDDEN);
+		}
+		project.toggleIsOpen();
+	}
+
 	// 모집분야명, 인원수 조회
 	private List<Map<String, Integer>> getDevPositionsInfo(Long projectId) {
 		return projectDevPositionRepository.findByProjectId(projectId).stream()
