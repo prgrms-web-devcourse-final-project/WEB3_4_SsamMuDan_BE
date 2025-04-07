@@ -69,15 +69,15 @@ public class TechTubeController {
 		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
 		@RequestParam(value = "size", required = false, defaultValue = "16") final int size,
 		@RequestParam(value = "sort", required = false, defaultValue = "LATEST") final SearchEducationSort sort,
+		@RequestParam(value = "categoryId", required = false) final Long educationId,
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = (customUser != null) ? customUser.getId() : null;
 		Pageable pageable = PageRequest.of(page, size);
 
 		PageResponse<TechTubeResponse.ListInfo> responseDto =
-			techTubeService.findAllTechTubes(keyword, sort, pageable, memberId);
+			techTubeService.findAllTechTubes(keyword, sort, pageable, memberId, educationId);
 
 		return BaseResponse.success(SuccessCode.TECH_TUBE_LIST_FIND_SUCCESS, responseDto);
 	}
-
 }

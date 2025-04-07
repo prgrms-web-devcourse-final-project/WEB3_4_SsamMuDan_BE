@@ -31,6 +31,8 @@ public interface TechTubeService {
 		String keyword,
 		SearchEducationSort sort,
 		Pageable pageable,
-		String memberId);
+		String memberId,
+		Long educationId
+	);
 
 }

@@ -14,12 +14,14 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
 import ssammudan.cotree.domain.education.type.SearchEducationSort;
 import ssammudan.cotree.model.common.like.entity.QLike;
+import ssammudan.cotree.model.education.techtube.category.entity.QTechTubeEducationCategory;
 import ssammudan.cotree.model.education.techtube.techtube.entity.QTechTube;
 import ssammudan.cotree.model.member.member.entity.QMember;
 
@@ -43,23 +45,31 @@ public class TechTubeRepositoryImpl implements TechTubeRepositoryCustom {
 	private static final QTechTube techTube = QTechTube.techTube;
 	private static final QMember member = QMember.member;
 	private static final QLike like = QLike.like;
+	private static final QTechTubeEducationCategory techTubeEducationCategory =
+		QTechTubeEducationCategory.techTubeEducationCategory;
 
 	/**
 	 * 전체 TechTube 목록 조회
-	 * @param keyword
-	 * @param sort
-	 * @param pageable
-	 * @param memberId
-	 * @return
 	 */
 	@Override
-	public Page<TechTubeResponse.ListInfo> findAllTechTubesByKeyword(
+	public Page<TechTubeResponse.ListInfo> findTechTubeList(
 		final String keyword,
 		final SearchEducationSort sort,
 		final Pageable pageable,
-		final String memberId
+		final String memberId,
+		final Long educationId
 	) {
-		List<TechTubeResponse.ListInfo> content = jpaQueryFactory
+		List<TechTubeResponse.ListInfo> content = getTechTubeList(keyword, sort, pageable, memberId, educationId);
+
+		// 전체 데이터 수량 count 조회
+		Long total = getTechTubeListCount(keyword, educationId);
+
+		return new PageImpl<>(content, pageable, total != null ? total : 0);
+	}
+
+	private List<TechTubeResponse.ListInfo> getTechTubeList(String keyword, SearchEducationSort sort, Pageable pageable,
+		String memberId, Long educationId) {
+		JPAQuery<TechTubeResponse.ListInfo> query = jpaQueryFactory
 			.select(Projections.constructor(TechTubeResponse.ListInfo.class,
 				techTube.id,
 				member.nickname,
@@ -84,16 +94,33 @@ public class TechTubeRepositoryImpl implements TechTubeRepositoryCustom {
 			.where(getSearchCondition(keyword))
 			.orderBy(getSortCondition(sort))
 			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.fetch();
+			.limit(pageable.getPageSize());
 
-		Long total = jpaQueryFactory
+		//educationId 유무에 따라, 동적으로 Join 추가
+		addJoinByEducationCategory(query, educationId);
+
+		// 결과 fetch
+		return query.fetch();
+	}
+
+	private Long getTechTubeListCount(String keyword, Long educationId) {
+		JPAQuery<Long> countQuery = jpaQueryFactory
 			.select(techTube.count())
 			.from(techTube)
-			.where(getSearchCondition(keyword))
-			.fetchOne();
+			.where(getSearchCondition(keyword));
 
-		return new PageImpl<>(content, pageable, total != null ? total : 0);
+		//educationId 유무에 따라, 동적으로 Join 추가
+		addJoinByEducationCategory(countQuery, educationId);
+
+		return countQuery.fetchOne();
+	}
+
+	private <T> void addJoinByEducationCategory(JPAQuery<T> query, Long educationId) {
+		if (educationId != null) {
+			query.join(techTubeEducationCategory)
+				.on(techTube.id.eq(techTubeEducationCategory.techTube.id)
+					.and(techTubeEducationCategory.educationCategory.id.eq(educationId)));
+		}
 	}
 
 	/**
@@ -113,8 +140,6 @@ public class TechTubeRepositoryImpl implements TechTubeRepositoryCustom {
 
 	/**
 	 * 정렬 조건 생성
-	 * @param sort
-	 * @return
 	 */
 	private OrderSpecifier<?> getSortCondition(SearchEducationSort sort) {
 		return switch (sort) {

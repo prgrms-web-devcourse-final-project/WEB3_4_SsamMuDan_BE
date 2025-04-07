@@ -20,10 +20,11 @@ import ssammudan.cotree.domain.education.type.SearchEducationSort;
  */
 public interface TechTubeRepositoryCustom {
 
-	Page<TechTubeResponse.ListInfo> findAllTechTubesByKeyword(
+	Page<TechTubeResponse.ListInfo> findTechTubeList(
 		String keyword,
 		SearchEducationSort sort,
 		Pageable pageable,
-		String memberId);
+		String memberId,
+		Long educationId);
 
 }
