@@ -38,6 +38,7 @@ import ssammudan.cotree.model.member.member.entity.QMember;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-04-01     Baekgwa               Initial creation
+ * 2025-04-07     Baekgwa               Thumbnail 이미지 출력 정상화
  */
 @Repository
 @RequiredArgsConstructor
@@ -79,7 +80,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 					.from(like)
 					.where(like.community.id.eq(community.id)),
 				community.viewCount,
-				community.title,     // todo : 대표 이미지 그냥 필드로 가지고 있는게 간단할듯
+				community.thumbnailImage,
 				memberId != null ? JPAExpressions
 					.select(like.count())
 					.from(like)

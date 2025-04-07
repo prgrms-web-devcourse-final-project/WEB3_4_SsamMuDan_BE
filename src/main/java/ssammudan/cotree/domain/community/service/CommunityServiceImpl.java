@@ -1,9 +1,11 @@
 package ssammudan.cotree.domain.community.service;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-28     Baekgwa               Initial creation
  * 2025-04-04     Baekgwa               글 수정/삭제 기능 추가
+ * 2025-04-07     Baekgwa               Thumbnail 이미지 출력 정상화
  */
 @Service
 @RequiredArgsConstructor
@@ -105,11 +108,27 @@ public class CommunityServiceImpl implements CommunityService {
 		final String keyword,
 		final String memberId) {
 
+		// Board 데이터 조회
 		Page<CommunityResponse.BoardListDetail> findBoardList =
 			communityRepository.findBoardList(pageable, sort, category, keyword, memberId);
 
-		//todo : findBoardList 의 내용 중, Content 들, 글자수 제한 및 이미지 제거 필요.
-		return PageResponse.of(findBoardList);
+		// Content 내용 후처리
+		// 마크다운 이미지 형식 + 불필요한 띄워쓰기 공백 삭제 처리.
+		List<CommunityResponse.BoardListDetail> processedList = findBoardList.getContent().stream()
+			.map(board -> {
+				String processedContent = processMarkdownContent(board.content());
+				return CommunityResponse.BoardListDetail.modifyContent(board, processedContent);
+			})
+			.toList();
+
+		// 새로운 페이지 Response 객체 생성
+		Page<CommunityResponse.BoardListDetail> processedPage = new PageImpl<>(
+			processedList,
+			findBoardList.getPageable(),
+			findBoardList.getTotalElements()
+		);
+
+		return PageResponse.of(processedPage);
 	}
 
 	@Transactional(readOnly = true)
@@ -166,5 +185,23 @@ public class CommunityServiceImpl implements CommunityService {
 		if (!communityRepository.existsByMemberIdAndBoardId(memberId, boardId)) {
 			throw new GlobalException(ErrorCode.COMMUNITY_BOARD_OPERATION_FAIL_NOT_AUTHOR);
 		}
+	}
+
+	/**
+	 * 마크다운 콘텐츠에서 이미지 마크업을 제거
+	 */
+	private String processMarkdownContent(String content) {
+		if (content == null || content.isEmpty()) {
+			return "";
+		}
+
+		// 마크다운 이미지 패턴 (![대체텍스트](이미지URL) 형식)
+		String imagePattern = "!\\[[^\\]]*+\\]\\([^\\)]*+\\)";
+
+		// 마크다운 이미지 제거
+		String withoutImages = content.replaceAll(imagePattern, "");
+
+		// 불필요한 공백 및 연속된 줄바꿈 정리
+		return withoutImages.replaceAll("\\s+", " ").trim();
 	}
 }
