@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -56,9 +57,11 @@ public class Project extends BaseEntity {
 	private Member member;
 
 	@OneToMany(mappedBy = "project")
+	@OrderBy("techStack.id ASC")
 	private Set<ProjectTechStack> projectTechStacks;
 
 	@OneToMany(mappedBy = "project")
+	@OrderBy("developmentPosition.id ASC")
 	private Set<ProjectDevPosition> projectDevPositions;
 
 	@OneToMany(mappedBy = "project")
