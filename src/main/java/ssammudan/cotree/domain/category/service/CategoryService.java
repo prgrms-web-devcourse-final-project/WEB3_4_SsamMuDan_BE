@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.category.service;
 
 import java.util.List;
 
+import ssammudan.cotree.domain.category.dto.EducationCategoryResponse;
 import ssammudan.cotree.domain.category.dto.PositionResponse;
 import ssammudan.cotree.domain.category.dto.TechStackResponse;
 
@@ -15,10 +16,13 @@ import ssammudan.cotree.domain.category.dto.TechStackResponse;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     kwak               Initial creation
+ * 2025. 4. 7.     Baekgwa            교육 카테고리 조회 추가
  */
 public interface CategoryService {
 
 	List<TechStackResponse> findSkills();
 
 	List<PositionResponse> findPositions();
+
+	List<EducationCategoryResponse> findEducationCategoryList();
 }

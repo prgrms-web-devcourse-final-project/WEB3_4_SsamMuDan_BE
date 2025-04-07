@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.project.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -19,7 +20,7 @@ import ssammudan.cotree.model.project.project.entity.Project;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 3.     sangxxjin               Initial creation
  */
-@Builder(access = AccessLevel.PRIVATE)
+
 public record ProjectListResponse(
 	Long id,
 	String title,
@@ -28,29 +29,11 @@ public record ProjectListResponse(
 	int viewCount,
 	long likeCount,
 	int recruitmentCount,
+	boolean isOpen,
 	LocalDate startDate,
 	LocalDate endDate,
 	List<String> techStacksImageUrl,
 	String username,
 	String userProfileImageUrl
 ) {
-	public static ProjectListResponse from(Project project, List<String> techStacksImageUrl, long likeCount,
-		Member member,
-		int recruitmentCount) {
-		return ProjectListResponse.builder()
-			.id(project.getId())
-			.title(project.getTitle())
-			.description(project.getDescription().length() > 30 ? project.getDescription().substring(0, 30) + "..." :
-				project.getDescription())
-			.imageUrl(project.getProjectImageUrl())
-			.viewCount(project.getViewCount())
-			.likeCount(likeCount)
-			.recruitmentCount(recruitmentCount)
-			.startDate(project.getStartDate())
-			.endDate(project.getEndDate())
-			.techStacksImageUrl(techStacksImageUrl)
-			.username(member.getUsername())
-			.userProfileImageUrl(member.getProfileImageUrl())
-			.build();
-	}
 }

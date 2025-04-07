@@ -1,7 +1,7 @@
 package ssammudan.cotree.domain.education.techtube.controller;
 
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
@@ -34,11 +34,12 @@ import ssammudan.cotree.global.response.SuccessCode;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 4.     loadingKKamo21       Initial creation
+ * 25. 4. 7.     Baekgwa       		  techTube 목록 조회 refactor
  */
 @RestController
 @RequestMapping("/api/v1/education/techtube")
 @RequiredArgsConstructor
-@Schema(name = "TechTube Controller", description = "TechTube API")
+@Tag(name = "TechTube Controller", description = "TechTube API")
 public class TechTubeController {
 
 	private final TechTubeService techTubeService;
@@ -67,12 +68,16 @@ public class TechTubeController {
 		@RequestParam(required = false) String keyword,
 		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
 		@RequestParam(value = "size", required = false, defaultValue = "16") final int size,
-		@RequestParam(value = "sort", required = false, defaultValue = "LATEST") final SearchEducationSort sort
+		@RequestParam(value = "sort", required = false, defaultValue = "LATEST") final SearchEducationSort sort,
+		@RequestParam(value = "categoryId", required = false) final Long educationId,
+		@AuthenticationPrincipal CustomUser customUser
 	) {
-		PageResponse<TechTubeResponse.ListInfo> responseDto = techTubeService.findAllTechTubes(
-			keyword, PageRequest.of(page, size, Sort.Direction.DESC, sort.getValue())
-		);
+		String memberId = (customUser != null) ? customUser.getId() : null;
+		Pageable pageable = PageRequest.of(page, size);
+
+		PageResponse<TechTubeResponse.ListInfo> responseDto =
+			techTubeService.findAllTechTubes(keyword, sort, pageable, memberId, educationId);
+
 		return BaseResponse.success(SuccessCode.TECH_TUBE_LIST_FIND_SUCCESS, responseDto);
 	}
-
 }

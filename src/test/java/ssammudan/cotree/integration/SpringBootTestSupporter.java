@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.community.service.CommunityService;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
 import ssammudan.cotree.domain.education.techtube.service.TechTubeService;
+import ssammudan.cotree.domain.email.service.EmailService;
 import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.domain.review.service.TechEducationReviewService;
 import ssammudan.cotree.infra.s3.S3Uploader;
@@ -102,4 +103,6 @@ public abstract class SpringBootTestSupporter {
 	private S3Uploader s3Uploader;
 	@MockitoBean
 	private SmsService smsService;
+	@MockitoBean
+	private EmailService emailService;
 }

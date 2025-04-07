@@ -1,8 +1,5 @@
 package ssammudan.cotree.infra.s3;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +45,11 @@ public class S3Uploader {
 	 * return : 읽기 가능한 저장된 파일 url
 	 */
 	public S3UploadResult upload(String memberId, MultipartFile file, S3Directory directory) {
+
+		if (file.isEmpty()) {
+			throw new GlobalException(ErrorCode.INVALID_FILE);
+		}
+
 		String fileName = file.getOriginalFilename()
 			.replaceAll("[^a-zA-Z0-9ㄱ-ㅎ가-힣.-]", "_");
 		String key = fileKeyGenerator(memberId, fileName, directory);
@@ -56,10 +58,10 @@ public class S3Uploader {
 				.builder()
 				.bucket(bucketName)
 				.key(key)
-				.contentType(file.getContentType())
+				.contentType(resolveContentType(file))
 				.contentLength(file.getSize())
 				.build();
-			s3Client.putObject(objectRequest, RequestBody.fromBytes(file.getBytes()));
+			s3Client.putObject(objectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			throw new GlobalException(ErrorCode.FILE_UPLOAD_FAIL);
@@ -72,5 +74,27 @@ public class S3Uploader {
 		return directory.isMultiFile()
 			? directory.getPath() + memberId + "/" + System.currentTimeMillis() + "_" + fileName
 			: directory.getPath() + memberId + "/" + fileName;
+	}
+
+	/**
+	 * ContentType 확인 및 fallback 처리
+	 */
+	private String resolveContentType(MultipartFile file) {
+		String contentType = file.getContentType();
+		if (contentType == null || contentType.isBlank()) {
+			// 파일 확장자 기반 fall-back
+			String name = file.getOriginalFilename().toLowerCase();
+			if (name.endsWith(".mp4"))
+				return "video/mp4";
+			if (name.endsWith(".jpg") || name.endsWith(".jpeg"))
+				return "image/jpeg";
+			if (name.endsWith(".png"))
+				return "image/png";
+			if (name.endsWith(".pdf"))
+				return "application/pdf";
+			// 기타 기본값
+			return "application/octet-stream";
+		}
+		return contentType;
 	}
 }

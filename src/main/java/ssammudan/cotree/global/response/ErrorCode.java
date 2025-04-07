@@ -27,6 +27,7 @@ public enum ErrorCode {
 	TECH_EDUCATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "1005", "TechEducation 카테고리를 찾을 수 없습니다."),
 	TECH_EDUCATION_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "1006", "TechEducation 리뷰를 찾을 수 없습니다."),
 	TECH_EDUCATION_REVIEW_DUPLICATED(HttpStatus.BAD_REQUEST, "1007", "작성된 리뷰가 존재합니다."),
+	INVALID_EDUCATION_CATEGORY_ID(HttpStatus.BAD_REQUEST, "1008", "유효하지 않은 Education Category 입니다."),
 
 	//Payment: 2001 ~ 3000
 
@@ -36,6 +37,7 @@ public enum ErrorCode {
 
 	//Project: 4001 ~ 5000
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
+	PROJECT_FORBIDDEN(HttpStatus.FORBIDDEN, "4002", "해당 프로젝트의 작성자만 수정할 수 있습니다."),
 
 	//Community: 5001 ~ 6000
 	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
@@ -45,6 +47,7 @@ public enum ErrorCode {
 
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
+	INVALID_FILE(HttpStatus.BAD_REQUEST, "6002", "파일 업로드 실패. 잘못된 파일 입니다."),
 
 	//Comment: 7001 ~ 8000
 	POST_COMMENT_FAIL_COMMUNITY_NOTFOUND(HttpStatus.NOT_FOUND, "7001", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
@@ -67,6 +70,8 @@ public enum ErrorCode {
 	HANDLE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "9007", "요청이 거부되었습니다."),
 	METHOD_ARGUMENT_TYPE_MISS_MATCH(HttpStatus.BAD_REQUEST, "9008", "요청 파라미터 타입 불일치. API 문서 확인해주세요."),
 	SMS_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "9009", "SMS 가 전송 실패하였습니다."),
+	EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "9010", "이메일 전송에 실패했습니다."),
+	EMAIL_VERIFY_FAILED(HttpStatus.BAD_REQUEST, "9011", "이메일 인증번호가 유효하지 않습니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "9999", "서버 내부 오류 발생했습니다");
 
 	private final HttpStatus status;
