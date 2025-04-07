@@ -39,12 +39,8 @@ public class EmailController {
 	@PostMapping("/code")
 	@Operation(summary = "이메일 인증코드 전송", description = "이메일로 인증코드를 전송합니다.")
 	public BaseResponse<Void> sendCode(@Valid @RequestBody EmailRequest emailRequest, HttpServletRequest request) {
-		log.error("Request URI: " + request.getRequestURI());
-
 		String email = emailRequest.email();
 		emailService.sendCode(email);
-		log.error("Path Info: " + request.getPathInfo());
-		log.error("Servlet Path: " + request.getServletPath());
 		return BaseResponse.success(SuccessCode.EMAIL_CODE_SEND_SUCCESS);
 	}
 
