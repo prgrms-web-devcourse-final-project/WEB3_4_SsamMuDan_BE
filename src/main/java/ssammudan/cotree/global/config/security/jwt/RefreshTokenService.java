@@ -62,7 +62,7 @@ public class RefreshTokenService {
 			.compact();
 	}
 
-	public Claims getClaimsFromToken(String token) throws JwtException {
+	public Claims getClaimsFromToken(String token) throws JwtException, IllegalArgumentException {
 		return Jwts.parser()
 			.verifyWith(secretKey)
 			.build()
@@ -94,7 +94,7 @@ public class RefreshTokenService {
 		try {
 			Claims claims = getClaimsFromToken(token);
 			return !claims.getExpiration().before(new Date());
-		} catch (JwtException e) {
+		} catch (JwtException | IllegalArgumentException e) {
 			return false;
 		}
 	}

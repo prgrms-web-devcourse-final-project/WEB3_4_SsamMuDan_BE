@@ -9,10 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeRequest;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
+import ssammudan.cotree.domain.education.type.SearchEducationSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.common.like.repository.LikeRepository;
+import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
 import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
@@ -40,6 +42,7 @@ public class TechTubeServiceImpl implements TechTubeService {
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
 	private final LikeRepository likeRepository;
+	private final EducationCategoryRepository educationCategoryRepository;
 
 	/**
 	 * TechTube 신규 생성
@@ -119,10 +122,19 @@ public class TechTubeServiceImpl implements TechTubeService {
 	 * @return PageResponse TechTubeResponse ListInfo DTO
 	 */
 	@Override
-	public PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(final String keyword, final Pageable pageable) {
-		return PageResponse.of(
-			techTubeRepository.findAllTechTubesByKeyword(keyword, pageable).map(TechTubeResponse.ListInfo::from)
-		);
-	}
+	public PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(
+		final String keyword,
+		final SearchEducationSort sort,
+		final Pageable pageable,
+		final String memberId,
+		final Long educationId
+	) {
+		//education Id 유효성 검증
+		if (educationId != null && !educationCategoryRepository.existsById(educationId)) {
+			throw new GlobalException(ErrorCode.INVALID_EDUCATION_CATEGORY_ID);
+		}
 
+		return PageResponse.of(
+			techTubeRepository.findTechTubeList(keyword, sort, pageable, memberId, educationId));
+	}
 }

@@ -79,7 +79,8 @@ public class SmsService {
 		if (code == null || !code.equals(request.code())) {
 			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
 		}
-		redisTemplate.delete(request.receiverNumber());
+		// redisTemplate.delete(request.receiverNumber());
+		redisTemplate.expire(request.receiverNumber(), Duration.ofMinutes(10)); // 인증 코드 만료 시간 연장
 	}
 
 	private int generateRandomCode() {

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.category.dto.EducationCategoryResponse;
 import ssammudan.cotree.domain.category.dto.PositionResponse;
 import ssammudan.cotree.domain.category.dto.TechStackResponse;
 import ssammudan.cotree.domain.category.service.CategoryService;
@@ -25,6 +26,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     kwak               Initial creation
+ * 2025. 4. 7.     Baekgwa            교육 카테고리 조회 추가
  */
 @RestController
 @RequiredArgsConstructor
@@ -44,5 +46,11 @@ public class CategoryController {
 	@Operation(summary = "개발 직무 전체 조회", description = "개발 직무 전체를 조회합니다.")
 	public BaseResponse<List<PositionResponse>> findPositions() {
 		return BaseResponse.success(SuccessCode.POSITION_FIND_SUCCESS, categoryService.findPositions());
+	}
+
+	@GetMapping("/education")
+	@Operation(summary = "교육 카테고리 전체 조회", description = "교육 카테고리를 전체 조회합니다.")
+	public BaseResponse<List<EducationCategoryResponse>> findEducationCategoryList() {
+		return BaseResponse.success(SuccessCode.EDUCATION_CATEGORY_FIND_SUCCESS, categoryService.findEducationCategoryList());
 	}
 }

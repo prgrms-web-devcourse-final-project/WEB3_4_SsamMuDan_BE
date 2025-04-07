@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.ErrorCode;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -89,6 +92,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<BaseResponse<Void>> handleException(Exception e) {
+		log.error(e.getMessage());
 		final ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 		return ResponseEntity.status(errorCode.getStatus())
 			.body(BaseResponse.fail(errorCode));

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.category.CategoryTestHelper;
+import ssammudan.cotree.domain.email.service.EmailService;
 import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.infra.s3.S3Uploader;
 
@@ -50,6 +51,8 @@ class CategoryControllerTest {
 	private S3Uploader s3Uploader;
 	@MockitoBean
 	private SmsService smsService;
+	@MockitoBean
+	private EmailService emailService;
 
 	@BeforeEach
 	void setUp() {

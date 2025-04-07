@@ -99,11 +99,30 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 				)
 			));
 
+		Map<Long, List<Long>> tackStacksMap = jpaQueryFactory
+			.select(
+				resumeTechStack.resume.id,
+				techStack.id
+			)
+			.from(resumeTechStack)
+			.join(resumeTechStack.techStack, techStack)
+			.where(resumeTechStack.resume.id.in(resumeIds))
+			.fetch()
+			.stream()
+			.collect(Collectors.groupingBy(
+				tuple -> Optional.ofNullable(tuple.get(resumeTechStack.resume.id))
+					.orElseThrow(() -> new GlobalException(ErrorCode.NOR_FOUND_RESUME_ID)),
+				Collectors.mapping(
+					tuple -> tuple.get(techStack.id),
+					Collectors.toList()
+				)
+			));
+
 		// 최종적으로 담아 반환
 		List<ResumeResponse> resumeResponses = resumeTuples.stream()
 			.map(tuple -> {
 				Long resumeId = tuple.get(resume.id);
-				return toResumeResponse(tuple, positionsMap, resumeId);
+				return toResumeResponse(tuple, positionsMap, tackStacksMap, resumeId);
 			})
 			.collect(Collectors.toList());
 
@@ -119,11 +138,14 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 	}
 
 	// 결합도가 너무 강해 일단 여기 빼놓음
-	private ResumeResponse toResumeResponse(Tuple tuple, Map<Long, List<String>> positionsMap, Long resumeId) {
+	private ResumeResponse toResumeResponse(Tuple tuple, Map<Long, List<String>> positionsMap,
+		Map<Long, List<Long>> techStacksMap, Long resumeId) {
 		return ResumeResponse.builder()
+			.resumdId(resumeId)
 			.profileImage(tuple.get(resume.profileImage))
 			.isOpen(Boolean.TRUE.equals(tuple.get(resume.isOpen)))
 			.positions(positionsMap.getOrDefault(resumeId, Collections.emptyList()))
+			.tackStacksId(techStacksMap.getOrDefault(resumeId, Collections.emptyList()))
 			.year(tuple.get(resume.years))
 			.introduction(tuple.get(getStringTemplate()))
 			.createAt(tuple.get(resume.createdAt))
