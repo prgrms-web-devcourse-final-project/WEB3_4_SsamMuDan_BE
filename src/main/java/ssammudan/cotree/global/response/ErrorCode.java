@@ -27,6 +27,14 @@ public enum ErrorCode {
 	INVALID_EDUCATION_CATEGORY_ID(HttpStatus.BAD_REQUEST, "1008", "유효하지 않은 Education Category 입니다."),
 
 	//Payment: 2001 ~ 3000
+	PAYMENT_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "2001", "결제는 완료되었으나, 서버 처리에 실패했습니다."),
+	PAYMENT_VERIFICATION_FAILED(HttpStatus.BAD_REQUEST, "2002", "결제 검증에 실패했습니다."),
+	PAYMENT_ALREADY_PROCESSED(HttpStatus.CONFLICT, "2003", "이미 처리된 결제입니다."),
+	PAYMENT_EXPIRED_PREPAYMENT(HttpStatus.BAD_REQUEST, "2004", "결제 대기 시간이 만료되었습니다."),
+	PAYMENT_REQUEST_INVALID(HttpStatus.BAD_REQUEST, "2005", "결제 정보가 유효하지 않습니다."),
+	ORDER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "2006", "제품 카테고리를 찾을 수 없습니다."),
+	TOSS_API_ERROR(HttpStatus.BAD_GATEWAY, "2007", "토스 결제 서버에서 오류가 발생했습니다."),
+	TOSS_API_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "2008", "토스 결제 서버의 응답이 지연되고 있습니다."),
 
 	//Recruitment: 3001 ~ 4000
 	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다"),
