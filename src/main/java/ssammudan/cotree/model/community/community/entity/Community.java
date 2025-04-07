@@ -56,30 +56,36 @@ public class Community extends BaseEntity {
 	@Column(name = "view_count", nullable = false)
 	private Integer viewCount;
 
+	@Column(name = "thumbnail_image", columnDefinition = "TEXT")
+	private String thumbnailImage;
+
 	@Builder(access = AccessLevel.PRIVATE)
 	private Community(CommunityCategory communityCategory, Member member, String title, String content,
-			Integer viewCount) {
+		Integer viewCount, String thumbnailImage) {
 		this.communityCategory = communityCategory;
 		this.member = member;
 		this.title = title;
 		this.content = content;
 		this.viewCount = viewCount;
+		this.thumbnailImage = thumbnailImage;
 	}
 
 	public static Community createNewCommunityBoard(
-			CommunityCategory communityCategory,
-			Member member,
-			String title,
-			String content
+		CommunityCategory communityCategory,
+		Member member,
+		String title,
+		String content,
+		String thumbnailImage
 	) {
 		return Community
-				.builder()
-				.communityCategory(communityCategory)
-				.member(member)
-				.title(title)
-				.content(content)
-				.viewCount(0)
-				.build();
+			.builder()
+			.communityCategory(communityCategory)
+			.member(member)
+			.title(title)
+			.content(content)
+			.viewCount(0)
+			.thumbnailImage(thumbnailImage)
+			.build();
 	}
 
 	public void modifyCommunity(final String title, final String content) {
