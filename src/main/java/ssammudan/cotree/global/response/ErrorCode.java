@@ -33,6 +33,7 @@ public enum ErrorCode {
 
 	//Project: 4001 ~ 5000
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
+	PROJECT_FORBIDDEN(HttpStatus.FORBIDDEN, "4002", "해당 프로젝트의 작성자만 수정할 수 있습니다."),
 
 	//Community: 5001 ~ 6000
 	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
