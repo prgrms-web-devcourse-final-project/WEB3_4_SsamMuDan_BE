@@ -15,6 +15,9 @@ public enum ErrorCode {
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "0002", "회원을 찾을 수 없습니다."),
 	MEMBER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "0003", "인증정보가 일치하지 않습니다."),
 	MEMBER_SIGNUP_VERIFY_FAILED(HttpStatus.UNAUTHORIZED, "0004", "회원가입 인증번호가 일치하지 않습니다."),
+	MEMBER_SIGNUP_COOLDOWN(HttpStatus.BAD_REQUEST, "0005", "너무 많이 시도하였습니다. 잠시 후 재시도 해주세요"),
+	MEMBER_RECOVER_COOLDOWN(HttpStatus.BAD_REQUEST, "0006", "너무 많이 시도하였습니다. 잠시 후 재시도 해주세요"),
+	MEMBER_NAME_NOT_MATCH_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "0007", "이름과 전화번호가 일치하지 않습니다."),
 
 	//Education: 1001 ~ 2000
 	EDUCATION_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "1001", "학습 카테고리를 찾을 수 없습니다."),
