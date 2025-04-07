@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.project.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,14 @@ import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
-import ssammudan.cotree.model.common.like.repository.LikeRepository;
+import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.common.techstack.repository.TechStackRepository;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionRepository;
-import ssammudan.cotree.model.project.membership.repository.ProjectMembershipRepository;
-import ssammudan.cotree.model.project.membership.type.ProjectMembershipStatus;
+import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
 import ssammudan.cotree.model.project.project.repository.ProjectRepositoryImpl;
@@ -60,39 +60,22 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectRepository projectRepository;
 	private final ProjectDevPositionRepository projectDevPositionRepository;
 	private final S3Uploader s3Uploader;
-	private final LikeRepository likeRepository;
-	private final ProjectMembershipRepository projectMembershipRepository;
 	private final ProjectRepositoryImpl projectRepositoryImpl;
 
 	@Override
 	@Transactional
 	public ProjectCreateResponse create(@Valid ProjectCreateRequest request, MultipartFile projectImage,
 		String memberId) {
-
-		String savedImageUrl = Optional.ofNullable(projectImage)
-			.map(img -> s3Uploader.upload(memberId, img, S3Directory.PROJECT).getSaveUrl())
-			.orElse(null);
-
+		Member member = getMemberOrThrow(memberId);
+		String savedImageUrl = uploadImageIfPresent(projectImage, memberId);
 		List<TechStack> techStacks = getTechStackNames(request);
 		List<DevelopmentPosition> devPositions = getDevelopmentPositions(request);
 
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		Project project = createProjectEntity(member, request, savedImageUrl);
+		List<ProjectTechStack> projectTechStacks = createProjectTechStacks(project, techStacks);
+		List<ProjectDevPosition> projectDevPositions = createProjectDevPositions(project, devPositions, request);
 
-		Project project = Project.create(member, request, savedImageUrl);
-
-		List<ProjectTechStack> projectTechStacks = techStacks.stream()
-			.map(techStack -> ProjectTechStack.create(project, techStack))
-			.toList();
-
-		List<ProjectDevPosition> projectDevPositions = devPositions.stream()
-			.map(devPosition -> ProjectDevPosition.create(project, devPosition,
-				request.recruitmentPositions().get(devPosition.getId())))
-			.toList();
-
-		projectRepository.save(project);
-		projectTechStackRepository.saveAll(projectTechStacks);
-		projectDevPositionRepository.saveAll(projectDevPositions);
+		saveProjectWithRelations(project, projectTechStacks, projectDevPositions);
 
 		return ProjectCreateResponse.from(project);
 	}
@@ -143,13 +126,6 @@ public class ProjectServiceImpl implements ProjectService {
 			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
 	}
 
-	// 기술 스택 이름 조회
-	private List<String> getTechStackNames(Long projectId) {
-		return projectTechStackRepository.findByProjectId(projectId).stream()
-			.map(projectTechStack -> projectTechStack.getTechStack().getName())
-			.toList();
-	}
-
 	private List<TechStack> getTechStackNames(ProjectCreateRequest request) {
 		return techStackRepository.findByIds(request.techStackIds());
 	}
@@ -158,26 +134,66 @@ public class ProjectServiceImpl implements ProjectService {
 		return developmentPositionRepository.findByIds(request.recruitmentPositions().keySet());
 	}
 
-	// 좋아요 개수
-	private long getLikeCount(Long projectId) {
-		return likeRepository.countByProjectId(projectId);
+	private List<Map<String, Integer>> convertDevPositions(Set<ProjectDevPosition> devPositions) {
+		return devPositions.stream()
+			.map(devPos -> Map.of(devPos.getDevelopmentPosition().getName(), devPos.getAmount()))
+			.toList();
 	}
 
-	// 좋아요 누른 멤버 확인
-	private boolean isLikedByMember(Long projectId, String memberId) {
-		return memberId != null && likeRepository.existsByProjectIdAndMemberId(projectId, memberId);
+	private List<String> convertTechStacks(Set<ProjectTechStack> techStacks) {
+		return techStacks.stream()
+			.map(ts -> ts.getTechStack().getName())
+			.toList();
 	}
 
-	// 이미 참가한 프로젝트 여부 확인
-	private boolean isMemberParticipant(Long projectId, String memberId) {
+	private boolean isLikedByMember(Set<Like> likes, String memberId) {
 		return memberId != null &&
-			projectMembershipRepository.existsByProjectIdAndMemberIdAndProjectMembershipStatus(
-				projectId, memberId, ProjectMembershipStatus.JOINED
-			);
+			likes.stream().anyMatch(like -> like.getMember().getId().equals(memberId));
 	}
 
-	// 프로젝트 작성자 여부 확인
+	private boolean isMemberParticipant(Set<ProjectMembership> memberships, String memberId) {
+		return memberId != null &&
+			memberships.stream().anyMatch(m -> m.getMember().getId().equals(memberId));
+	}
+
 	private boolean isProjectOwner(Project project, String memberId) {
 		return project.getMember().getId().equals(memberId);
 	}
+
+	private Member getMemberOrThrow(String memberId) {
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+	}
+
+	private String uploadImageIfPresent(MultipartFile image, String memberId) {
+		return Optional.ofNullable(image)
+			.map(img -> s3Uploader.upload(memberId, img, S3Directory.PROJECT).getSaveUrl())
+			.orElse(null);
+	}
+
+	private Project createProjectEntity(Member member, ProjectCreateRequest request, String imageUrl) {
+		return Project.create(member, request, imageUrl);
+	}
+
+	private List<ProjectTechStack> createProjectTechStacks(Project project, List<TechStack> techStacks) {
+		return techStacks.stream()
+			.map(techStack -> ProjectTechStack.create(project, techStack))
+			.toList();
+	}
+
+	private List<ProjectDevPosition> createProjectDevPositions(Project project, List<DevelopmentPosition> devPositions,
+		ProjectCreateRequest request) {
+		return devPositions.stream()
+			.map(devPosition -> ProjectDevPosition.create(
+				project, devPosition, request.recruitmentPositions().get(devPosition.getId())))
+			.toList();
+	}
+
+	private void saveProjectWithRelations(Project project, List<ProjectTechStack> stacks,
+		List<ProjectDevPosition> devPositions) {
+		projectRepository.save(project);
+		projectTechStackRepository.saveAll(stacks);
+		projectDevPositionRepository.saveAll(devPositions);
+	}
+
 }
