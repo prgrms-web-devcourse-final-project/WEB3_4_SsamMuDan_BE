@@ -17,6 +17,7 @@ import ssammudan.cotree.domain.education.type.SearchEducationSort;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 30.    loadingKKamo21       Initial creation
  * 25. 4. 7.     Baekgwa       	 	  techtube 목록 조회 service method params 변경
+ * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
  */
 public interface TechTubeRepositoryCustom {
 
@@ -27,4 +28,7 @@ public interface TechTubeRepositoryCustom {
 		String memberId,
 		Long educationId);
 
+	TechTubeResponse.TechTubeDetail findTechTube(
+		Long techTubeId,
+		String memberId);
 }

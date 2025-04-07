@@ -18,14 +18,13 @@ import ssammudan.cotree.global.response.PageResponse;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 4.     loadingKKamo21       Initial creation
  * 25. 4. 7.     Baekgwa       		  목록 조회 method params 변경
+ * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
  */
 public interface TechTubeService {
 
 	Long createTechTube(String memberId, TechTubeRequest.Create requestDto);
 
-	TechTubeResponse.Detail findTechTubeById(Long id);
-
-	TechTubeResponse.Detail findTechTubeById(Long id, String memberId);
+	TechTubeResponse.TechTubeDetail findTechTubeDetail(Long techTubeId, String memberId);
 
 	PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(
 		String keyword,

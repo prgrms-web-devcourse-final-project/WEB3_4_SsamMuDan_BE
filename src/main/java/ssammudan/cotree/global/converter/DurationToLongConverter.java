@@ -15,16 +15,20 @@ import jakarta.persistence.Converter;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 30.    loadingKKamo21       Initial creation
+ * 25. 4. 7.     Baekgwa       		  사용하지 않아, deprecated 처리
  */
 @Converter(autoApply = true)
+@Deprecated(forRemoval = true)
 public class DurationToLongConverter implements AttributeConverter<Duration, Long> {
 
 	@Override
+	@Deprecated(forRemoval = true)
 	public Long convertToDatabaseColumn(Duration duration) {
 		return (duration != null) ? duration.getSeconds() : null;
 	}
 
 	@Override
+	@Deprecated(forRemoval = true)
 	public Duration convertToEntityAttribute(Long aLong) {
 		return (aLong != null) ? Duration.ofSeconds(aLong) : null;
 	}

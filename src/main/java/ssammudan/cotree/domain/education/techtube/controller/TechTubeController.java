@@ -2,9 +2,7 @@ package ssammudan.cotree.domain.education.techtube.controller;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
 import ssammudan.cotree.domain.education.techtube.service.TechTubeService;
@@ -35,6 +32,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 4.     loadingKKamo21       Initial creation
  * 25. 4. 7.     Baekgwa       		  techTube 목록 조회 refactor
+ * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
  */
 @RestController
 @RequestMapping("/api/v1/education/techtube")
@@ -44,21 +42,16 @@ public class TechTubeController {
 
 	private final TechTubeService techTubeService;
 
-	@GetMapping("/{id}/info")
+	@GetMapping("/{techTubeId}/info")
 	@Operation(summary = "TechTube 상세 조회", description = "ID를 통해 특정 TechTube를 조회")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<TechTubeResponse.Detail> getTechTubeById(
-		@PathVariable @Min(1) Long id,
-		@Nullable @AuthenticationPrincipal final UserDetails userDetails
+	public BaseResponse<TechTubeResponse.TechTubeDetail> getTechTubeById(
+		@PathVariable(name = "techTubeId") Long techTubeId,
+		@AuthenticationPrincipal final CustomUser customUser
 	) {
-		TechTubeResponse.Detail responseDto;
-		if (userDetails != null) {
-			String memberId = ((CustomUser)userDetails).getId();
-			responseDto = techTubeService.findTechTubeById(id, memberId);
-		} else {
-			responseDto = techTubeService.findTechTubeById(id);
-		}
-		return BaseResponse.success(SuccessCode.TECH_TUBE_READ_SUCCESS, responseDto);
+		String memberId = (customUser != null) ? customUser.getId() : null;
+		TechTubeResponse.TechTubeDetail content = techTubeService.findTechTubeDetail(techTubeId, memberId);
+		return BaseResponse.success(SuccessCode.TECH_TUBE_READ_SUCCESS, content);
 	}
 
 	@GetMapping
