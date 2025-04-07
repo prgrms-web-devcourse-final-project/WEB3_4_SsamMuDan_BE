@@ -22,7 +22,8 @@ public enum S3Directory {
 	PROJECT("project/team/", false),
 	EDUCATION_TECHBOOK_MAIN("education/techbook/main/", false),
 	EDUCATION_TECHBOOK_PREVIEW("education/techbook/preview/", false),
-	EDUCATION_TECHBOOK_THUNBNAIL("education/techbook/thumbnail/", false);
+	EDUCATION_TECHBOOK_THUNBNAIL("education/techbook/thumbnail/", false),
+	TECHSTACK("techstack/", false);
 
 	private final String path;
 	private final boolean isMultiFile;
