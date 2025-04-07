@@ -36,6 +36,12 @@ import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
 @Repository
 public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
+	private static final QProject PROJECT = QProject.project;
+	private static final QProjectTechStack PROJECT_TECH_STACK = QProjectTechStack.projectTechStack;
+	private static final QProjectDevPosition PROJECT_DEV_POSITION = QProjectDevPosition.projectDevPosition;
+	private static final QLike LIKE = QLike.like;
+	private static final QProjectMembership PROJECT_MEMBERSHIP = QProjectMembership.projectMembership;
+
 	private final JPAQueryFactory queryFactory;
 	private final ProjectQueryHelper projectQueryHelper;
 
@@ -46,15 +52,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	@Override
 	public Optional<Project> fetchProjectDetailById(Long projectId, String memberId) {
-		QProject project = QProject.project;
-		QProjectTechStack projectTechStack = QProjectTechStack.projectTechStack;
-		QProjectDevPosition projectDevPosition = QProjectDevPosition.projectDevPosition;
-		QLike like = QLike.like;
-		QProjectMembership projectMembership = QProjectMembership.projectMembership;
-
-		JPAQuery<Project> query = baseProjectJoinQuery(project, projectTechStack, projectDevPosition, like)
-			.leftJoin(project.projectMemberships, projectMembership).fetchJoin()
-			.where(project.id.eq(projectId))
+		JPAQuery<Project> query = baseProjectJoinQuery()
+			.leftJoin(PROJECT.projectMemberships, PROJECT_MEMBERSHIP).fetchJoin()
+			.where(PROJECT.id.eq(projectId))
 			.distinct();
 
 		Project result = query.fetchOne();
@@ -63,13 +63,8 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	@Override
 	public Optional<Project> fetchProjectDetailById(Long projectId) {
-		QProject project = QProject.project;
-		QProjectTechStack projectTechStack = QProjectTechStack.projectTechStack;
-		QProjectDevPosition projectDevPosition = QProjectDevPosition.projectDevPosition;
-		QLike like = QLike.like;
-
-		JPAQuery<Project> query = baseProjectJoinQuery(project, projectTechStack, projectDevPosition, like)
-			.where(project.id.eq(projectId))
+		JPAQuery<Project> query = baseProjectJoinQuery()
+			.where(PROJECT.id.eq(projectId))
 			.distinct();
 
 		Project result = query.fetchOne();
@@ -85,9 +80,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		List<Project> projects = fetchProjectsWithDetails(projectIds);
 		List<ProjectListResponse> content = projectQueryHelper.convertToDtoOrdered(projects, projectIds);
 
-		Long total = queryFactory.select(QProject.project.countDistinct())
-			.from(QProject.project)
-			.where(QProject.project.isOpen.isTrue())
+		Long total = queryFactory.select(PROJECT.countDistinct())
+			.from(PROJECT)
+			.where(PROJECT.isOpen.isTrue())
 			.fetchOne();
 
 		return new PageImpl<>(content, pageable, total != null ? total : 0);
@@ -109,19 +104,19 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		BooleanBuilder where = projectQueryHelper.buildFilterConditions(techStackIds, devPositionIds);
 
 		List<Long> filteredProjectIds = queryFactory
-			.select(QProject.project.id)
-			.from(QProject.project)
-			.leftJoin(QProject.project.projectTechStacks, QProjectTechStack.projectTechStack)
-			.leftJoin(QProject.project.projectDevPositions, QProjectDevPosition.projectDevPosition)
+			.select(PROJECT.id)
+			.from(PROJECT)
+			.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK)
+			.leftJoin(PROJECT.projectDevPositions, PROJECT_DEV_POSITION)
 			.where(where)
-			.groupBy(QProject.project.id)
+			.groupBy(PROJECT.id)
 			.having(
 				techStackIds != null && !techStackIds.isEmpty() ?
-					QProjectTechStack.projectTechStack.techStack.id.countDistinct().eq((long)techStackIds.size()) :
+					PROJECT_TECH_STACK.techStack.id.countDistinct().eq((long)techStackIds.size()) :
 					null,
 				devPositionIds != null && !devPositionIds.isEmpty() ?
-					QProjectDevPosition.projectDevPosition.developmentPosition.id.countDistinct()
-						.eq((long)devPositionIds.size()) : null
+					PROJECT_DEV_POSITION.developmentPosition.id.countDistinct().eq((long)devPositionIds.size()) :
+					null
 			)
 			.fetch();
 
@@ -138,42 +133,37 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		return new PageImpl<>(content, pageable, filteredProjectIds.size());
 	}
 
-	private JPAQuery<Project> baseProjectJoinQuery(
-		QProject project,
-		QProjectTechStack projectTechStack,
-		QProjectDevPosition projectDevPosition,
-		QLike like
-	) {
-		return queryFactory.selectFrom(project)
-			.leftJoin(project.projectTechStacks, projectTechStack).fetchJoin()
-			.leftJoin(projectTechStack.techStack).fetchJoin()
-			.leftJoin(project.projectDevPositions, projectDevPosition).fetchJoin()
-			.leftJoin(projectDevPosition.developmentPosition).fetchJoin()
-			.leftJoin(project.likes, like).fetchJoin()
-			.leftJoin(project.member).fetchJoin();
+	private JPAQuery<Project> baseProjectJoinQuery() {
+		return queryFactory.selectFrom(PROJECT)
+			.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK).fetchJoin()
+			.leftJoin(PROJECT_TECH_STACK.techStack).fetchJoin()
+			.leftJoin(PROJECT.projectDevPositions, PROJECT_DEV_POSITION).fetchJoin()
+			.leftJoin(PROJECT_DEV_POSITION.developmentPosition).fetchJoin()
+			.leftJoin(PROJECT.likes, LIKE).fetchJoin()
+			.leftJoin(PROJECT.member).fetchJoin();
 	}
 
 	private List<Long> getHotProjectIds(long offset, long limit) {
-		return queryFactory.select(QProject.project.id)
-			.from(QProject.project)
-			.leftJoin(QProject.project.likes, QLike.like)
-			.where(QProject.project.isOpen.isTrue())
-			.groupBy(QProject.project.id)
-			.orderBy(QProject.project.viewCount.desc(), QLike.like.id.count().desc())
+		return queryFactory.select(PROJECT.id)
+			.from(PROJECT)
+			.leftJoin(PROJECT.likes, LIKE)
+			.where(PROJECT.isOpen.isTrue())
+			.groupBy(PROJECT.id)
+			.orderBy(PROJECT.viewCount.desc(), LIKE.id.count().desc())
 			.offset(offset)
 			.limit(limit)
 			.fetch();
 	}
 
 	private List<Project> fetchProjectsWithDetails(List<Long> ids) {
-		return queryFactory.selectFrom(QProject.project)
-			.leftJoin(QProject.project.projectTechStacks, QProjectTechStack.projectTechStack).fetchJoin()
-			.leftJoin(QProjectTechStack.projectTechStack.techStack).fetchJoin()
-			.leftJoin(QProject.project.projectDevPositions, QProjectDevPosition.projectDevPosition).fetchJoin()
-			.leftJoin(QProjectDevPosition.projectDevPosition.developmentPosition).fetchJoin()
-			.leftJoin(QProject.project.likes, QLike.like).fetchJoin()
-			.leftJoin(QProject.project.member).fetchJoin()
-			.where(QProject.project.id.in(ids))
+		return queryFactory.selectFrom(PROJECT)
+			.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK).fetchJoin()
+			.leftJoin(PROJECT_TECH_STACK.techStack).fetchJoin()
+			.leftJoin(PROJECT.projectDevPositions, PROJECT_DEV_POSITION).fetchJoin()
+			.leftJoin(PROJECT_DEV_POSITION.developmentPosition).fetchJoin()
+			.leftJoin(PROJECT.likes, LIKE).fetchJoin()
+			.leftJoin(PROJECT.member).fetchJoin()
+			.where(PROJECT.id.in(ids))
 			.distinct()
 			.fetch();
 	}
