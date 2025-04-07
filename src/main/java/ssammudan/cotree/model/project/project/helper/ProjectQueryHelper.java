@@ -36,6 +36,7 @@ import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
 public class ProjectQueryHelper {
 
 	private final JPAQueryFactory queryFactory;
+	private static final String SORT_BY_LIKE = "like";
 
 	public BooleanBuilder buildFilterConditions(List<Long> techStackIds, List<Long> devPositionIds) {
 		BooleanBuilder where = new BooleanBuilder();
@@ -95,7 +96,7 @@ public class ProjectQueryHelper {
 			.where(QProject.project.id.in(ids))
 			.groupBy(QProject.project.id)
 			.orderBy(
-				"like".equalsIgnoreCase(sort)
+				SORT_BY_LIKE.equalsIgnoreCase(sort)
 					? QLike.like.id.count().desc()
 					: QProject.project.createdAt.desc()
 			)

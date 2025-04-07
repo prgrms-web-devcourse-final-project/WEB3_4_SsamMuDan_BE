@@ -38,7 +38,6 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
 	private final ProjectQueryHelper projectQueryHelper;
-	private static final String SORT_BY_LIKE = "like";
 
 	public ProjectRepositoryImpl(JPAQueryFactory queryFactory, ProjectQueryHelper projectQueryHelper) {
 		this.queryFactory = queryFactory;
