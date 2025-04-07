@@ -39,6 +39,7 @@ import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
 public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
+	private static final String SORT_BY_LIKE = "like";
 
 	public ProjectRepositoryImpl(EntityManager em) {
 		this.queryFactory = new JPAQueryFactory(em);
@@ -190,7 +191,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.where(QProject.project.id.in(ids))
 			.groupBy(QProject.project.id)
 			.orderBy(
-				"like".equalsIgnoreCase(sort)
+				SORT_BY_LIKE.equalsIgnoreCase(sort)
 					? QLike.like.id.count().desc()
 					: QProject.project.createdAt.desc()
 			)
