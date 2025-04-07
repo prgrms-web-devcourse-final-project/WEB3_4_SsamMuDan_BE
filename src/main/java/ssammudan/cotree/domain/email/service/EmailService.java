@@ -32,7 +32,7 @@ public class EmailService {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	public void sendSimpleMailMessage(String email, String subject, String text) {
+	private void sendSimpleMailMessage(String email, String subject, String text) {
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
 		try {
@@ -50,7 +50,7 @@ public class EmailService {
 
 	}
 
-	public void sendMimeMessage(String email, String subject, String title, String body) {
+	private void sendMimeMessage(String email, String subject, String title, String body) {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
 		try {
