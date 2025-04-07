@@ -1,5 +1,8 @@
 package ssammudan.cotree.model.payment.order.history.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
@@ -16,4 +19,11 @@ import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
  * 25. 3. 29.    loadingKKamo21       Initial creation
  */
 public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long>, OrderHistoryRepositoryCustom {
+
+	Optional<OrderHistory> findByOrderId(String orderId);
+
+	List<OrderHistory> findAllByCustomer_Id(String customerId);
+
+	boolean existsByOrderId(String orderId);
+
 }
