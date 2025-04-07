@@ -55,7 +55,7 @@ public class CommunityDataFactory {
 	 * 총 생성되는 수 : MemberList * CommunityCategory * count
 	 */
 	public List<Community> createAndSaveCommunity(List<Member> memberList,
-			List<CommunityCategory> communityCategoryList, final int count) {
+		List<CommunityCategory> communityCategoryList, final int count) {
 
 		if (count == 0) {
 			return List.of();
@@ -67,11 +67,12 @@ public class CommunityDataFactory {
 			for (Member member : memberList) {
 				for (CommunityCategory category : communityCategoryList) {
 					communityList.add(
-							Community.createNewCommunityBoard(
-									category,
-									member,
-									String.format("[%s카테고리]제목:%s멤버", category.getName(), member.getId()),
-									String.format("내용입니다. %s 카테고리 %s멤버의 글 입니다.", category.getName(), member.getId())));
+						Community.createNewCommunityBoard(
+							category,
+							member,
+							String.format("[%s카테고리]제목:%s멤버", category.getName(), member.getId()),
+							String.format("내용입니다. %s 카테고리 %s멤버의 글 입니다.", category.getName(), member.getId()),
+							null));
 				}
 			}
 		}

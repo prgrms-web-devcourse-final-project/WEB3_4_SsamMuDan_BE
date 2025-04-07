@@ -1,5 +1,8 @@
 package ssammudan.cotree.domain.community.service;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,14 +55,45 @@ public class CommunityServiceImpl implements CommunityService {
 		Member findMember = memberRepository.findById(userId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_MEMBER_NOTFOUND));
 
+		// content 로부터 thumbnail image 추출
+		String thumbnailImage = extractThumbnailByContent(createBoard.getContent());
+
 		// 새 글 저장
 		Community newCommunityBoard =
-			Community.createNewCommunityBoard(findCommunityCategory, findMember, createBoard.getTitle(),
-				createBoard.getContent());
+			Community.createNewCommunityBoard(
+				findCommunityCategory,
+				findMember,
+				createBoard.getTitle(),
+				createBoard.getContent(),
+				thumbnailImage);
 
 		//저장 후 응답
 		Community savedCommunity = communityRepository.save(newCommunityBoard);
 		return CommunityResponse.BoardCreate.of(savedCommunity.getId());
+	}
+
+	private String extractThumbnailByContent(String content) {
+		if (content == null || content.isBlank()) {
+			return null;
+		}
+
+		// 1. 마크다운 이미지 파싱: ![alt](url)
+		Pattern markdownImgPattern = Pattern.compile("!\\[[^\\]]*\\]\\(([^\\)]+)\\)");
+		Matcher markdownMatcher = markdownImgPattern.matcher(content);
+		if (markdownMatcher.find()) {
+			return markdownMatcher.group(1); // 이미지 URL
+		}
+
+		// 2. HTML <img src="..."> 파싱
+		// 마크다운 형식으로 받는데, 필요성에 대한 의문은 듬. 일딴 작성
+		Pattern htmlImgPattern = Pattern.compile("<img[^>]+src=[\"']([^\"'>]+)[\"']");
+		Matcher htmlMatcher = htmlImgPattern.matcher(content);
+		if (htmlMatcher.find()) {
+			return htmlMatcher.group(1); // 이미지 URL
+		}
+
+		// 이미지가 없을 경우
+		return null;
 	}
 
 	@Transactional(readOnly = true)
