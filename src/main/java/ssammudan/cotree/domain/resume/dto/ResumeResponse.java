@@ -18,9 +18,11 @@ import lombok.Builder;
  */
 @Builder
 public record ResumeResponse(
+	Long resumdId,
 	String profileImage,
 	boolean isOpen,
 	List<String> positions,
+	List<Long> tackStacksId,
 	Integer year,
 	String introduction,
 	LocalDateTime createAt
