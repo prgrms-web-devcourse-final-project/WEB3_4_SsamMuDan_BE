@@ -1,5 +1,6 @@
 package ssammudan.cotree.domain.upload.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,7 @@ public class FileUploadController {
 
 	private final S3Uploader s3Uploader;
 
-	@PostMapping("/upload")
+	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public BaseResponse<S3UploadResult> uploadFile(
 			@RequestParam("file") MultipartFile file,
 			@RequestParam("directory") S3Directory directory,

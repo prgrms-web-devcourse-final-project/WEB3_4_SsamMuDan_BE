@@ -42,6 +42,7 @@ public enum ErrorCode {
 
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
+	INVALID_FILE(HttpStatus.BAD_REQUEST, "6002", "파일 업로드 실패. 잘못된 파일 입니다."),
 
 	//Comment: 7001 ~ 8000
 	POST_COMMENT_FAIL_COMMUNITY_NOTFOUND(HttpStatus.NOT_FOUND, "7001", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),
