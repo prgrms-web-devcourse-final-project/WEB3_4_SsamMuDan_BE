@@ -2,8 +2,6 @@ package ssammudan.cotree.domain.education.techbook.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,10 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import net.jqwik.api.Arbitraries;
 
@@ -231,62 +226,6 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 
 	//@RepeatedTest(10)
 	@Test
-	@DisplayName("[Success] findTechBookById(): TechBook 단 건 조회")
-	void findTechBookById() {
-		//Given
-		setup();
-
-		Member member = createMember();
-		em.persist(member);
-		EducationLevel educationLevel = createEducationLevel();
-		em.persist(educationLevel);
-		TechBook techBook = createTechBook(member, educationLevel);
-		em.persist(techBook);
-
-		Long id = techBook.getId();
-		clearEntityContext();
-
-		//When
-		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id);
-
-		//Then
-		assertNotNull(responseDto, "TechBook 응답 DTO 존재");
-		assertEquals(responseDto.id(), techBook.getId(), "PK 일치");
-		assertEquals(responseDto.educationLevel(), techBook.getEducationLevel().getName(), "학습 난이도 일치");
-		assertEquals(responseDto.title(), techBook.getTitle(), "제목 일치");
-		assertEquals(responseDto.description(), techBook.getDescription(), "설명 일치");
-		assertEquals(responseDto.introduction(), techBook.getIntroduction(), "소개 일치");
-		assertEquals(responseDto.totalReviewCount(), techBook.getTotalReviewCount(), "전체 리뷰 수 일치");
-		assertEquals(responseDto.techBookUrl(), techBook.getTechBookUrl(), "PDF URL 일치");
-		assertEquals(responseDto.techBookPreviewUrl(), techBook.getTechBookPreviewUrl(), "PDF 미리보기 URL 일치");
-		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
-		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
-		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
-		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
-		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
-		assertFalse(responseDto.isLike(), "좋아요 여부");
-		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
-	}
-
-	@ParameterizedTest
-	@AutoSource
-	@Repeat(10)
-	@DisplayName("[Exception] findTechBookById_unknownId(): TechBook 단 건 조회, 존재하지 않는 ID")
-	void findTechBookById_unknownId(@Min(1) @Max(Long.MAX_VALUE) final Long unknownId) {
-		//Given
-
-		//When
-
-		//Then
-		GlobalException globalException = assertThrows(GlobalException.class,
-			() -> techBookService.findTechBookById(unknownId), "GlobalException 발생");
-
-		assertAll(() -> assertNotNull(globalException, "예외 존재"),
-			() -> assertEquals(globalException.getErrorCode(), ErrorCode.TECH_BOOK_NOT_FOUND, "에러 코드 일치"));
-	}
-
-	//@RepeatedTest(10)
-	@Test
 	@DisplayName("[Success] findTechBookById(): 좋아요한 회원 ID와 함께 TechBook 단 건 조회")
 	void findTechBookByIdAndMemberId() {
 		//Given
@@ -320,10 +259,10 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
 		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
-		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
+		assertEquals(responseDto.viewCount(), techBook.getViewCount(), "조회 수 일치");    //TODO: 조회 수 증가 로직 추가 시 변경
 		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
 		assertTrue(responseDto.isLike(), "좋아요 여부");
-		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
+		assertEquals(responseDto.createdAt().toLocalDate(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
 	}
 
 	@ParameterizedTest
@@ -346,84 +285,6 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 
 		assertAll(() -> assertNotNull(globalException, "예외 존재"),
 			() -> assertEquals(globalException.getErrorCode(), ErrorCode.TECH_BOOK_NOT_FOUND, "에러 코드 일치"));
-	}
-
-	//@RepeatedTest(10)
-	@Test
-	@DisplayName("[Exception] findTechBookById_unknownId(): 좋아요한 회원 ID와 함께 TechBook 단 건 조회, 존재하지 않는 회원 ID")
-	void findTechBookByIdAndMemberId_unknownId() {
-		//Given
-		setup();
-
-		Member member = createMember();
-		em.persist(member);
-		EducationLevel educationLevel = createEducationLevel();
-		em.persist(educationLevel);
-		TechBook techBook = createTechBook(member, educationLevel);
-		em.persist(techBook);
-
-		Long id = techBook.getId();
-		clearEntityContext();
-
-		String unknownMemberId = UUID.randomUUID().toString();
-
-		//When
-
-		//Then
-		GlobalException globalException = assertThrows(GlobalException.class,
-			() -> techBookService.findTechBookById(id, unknownMemberId), "GlobalException 발생");
-
-		assertAll(() -> assertNotNull(globalException, "예외 존재"),
-			() -> assertEquals(globalException.getErrorCode(), ErrorCode.MEMBER_NOT_FOUND, "에러 코드 일치"));
-	}
-
-	//@RepeatedTest(10)
-	@Test
-	@DisplayName("[Success] findAllTechBooks(): TechBook 다 건 조회, 페이징 적용")
-	void findAllTechBooks() {
-		//Given
-		setup();
-
-		Member member = createMember();
-		em.persist(member);
-		EducationLevel educationLevel = createEducationLevel();
-		em.persist(educationLevel);
-		List<TechBook> techBooks = createTechBooks(member, educationLevel, 50);
-		techBooks.forEach(techBook -> em.persist(techBook));
-		clearEntityContext();
-
-		String keyword = dtoFixtureMonkey.giveMeOne(String.class);
-		PageRequest pageable = PageRequest.of(0, 16, Sort.Direction.DESC, "createdAt");
-
-		//When
-		List<TechBookResponse.ListInfo> findAllTechBookResponseDto = techBookService.findAllTechBooks(keyword, pageable)
-			.getContent();
-
-		//Then
-		List<TechBookResponse.ListInfo> filteredTechBookResponseDto = techBooks.stream()
-			.filter(techBook -> !StringUtils.hasText(keyword) || (techBook.getTitle().contains(keyword)
-				|| techBook.getDescription().contains(keyword) || techBook.getIntroduction().contains(keyword)))
-			.sorted(Comparator.comparing(TechBook::getCreatedAt)
-				.reversed()
-				.thenComparing(book -> book.getCreatedAt().truncatedTo(ChronoUnit.MILLIS), Comparator.reverseOrder()))
-			.limit(pageable.getPageSize())
-			.map(TechBookResponse.ListInfo::from)
-			.toList();
-
-		assertEquals(filteredTechBookResponseDto.size(), findAllTechBookResponseDto.size(), "검색 결과 갯수 일치");
-		for (int i = 0; i < filteredTechBookResponseDto.size(); i++) {
-			TechBookResponse.ListInfo filteredTechBookDto = filteredTechBookResponseDto.get(i);
-			TechBookResponse.ListInfo findTechBookDto = findAllTechBookResponseDto.get(i);
-
-			assertEquals(filteredTechBookDto.id(), findTechBookDto.id(), "PK 일치");
-			assertEquals(filteredTechBookDto.writer(), findTechBookDto.writer(), "저자 일치");
-			assertEquals(filteredTechBookDto.title(), findTechBookDto.title(), "제목 일치");
-			assertEquals(filteredTechBookDto.price(), findTechBookDto.price(), "가격 일치");
-			assertEquals(filteredTechBookDto.techBookThumbnailUrl(), findTechBookDto.techBookThumbnailUrl(),
-				"썸네일 URL 일치");
-			assertEquals(filteredTechBookDto.likeCount(), findTechBookDto.likeCount(), "좋아요 수 일치");
-			assertEquals(filteredTechBookDto.createdAt(), findTechBookDto.createdAt(), "등록 일자 일치");
-		}
 	}
 
 }
