@@ -29,6 +29,8 @@ public interface ProjectService {
 
 	PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable);
 
+	List<ProjectListResponse> getHotProjectsForProject();
+
 	ProjectInfoResponse getProjectInfo(Long projectId, String memberId);
 
 	PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
@@ -36,4 +38,6 @@ public interface ProjectService {
 		String sort);
 
 	void updateRecruitmentStatus(Long projectId, String memberId);
+
+	void applyForProject(Long projectId, String memberId);
 }

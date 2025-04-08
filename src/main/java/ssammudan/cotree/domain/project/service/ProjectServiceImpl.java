@@ -82,6 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
 		return ProjectCreateResponse.from(project);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
 		Project project = getProjectByIdAndOptionalMemberId(projectId, memberId);
@@ -102,12 +103,14 @@ public class ProjectServiceImpl implements ProjectService {
 		);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
 		Page<ProjectListResponse> projects = projectRepository.findHotProjectsForMain(pageable);
 		return PageResponse.of(projects);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<ProjectListResponse> getHotProjectsForProject() {
 		//todo: 캐싱 작업
@@ -126,6 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
 		project.toggleIsOpen();
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort) {
