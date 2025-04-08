@@ -1,5 +1,8 @@
 package ssammudan.cotree.infra.payment;
 
+import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
+import ssammudan.cotree.infra.payment.dto.ApiPaymentResponse;
+
 /**
  * PackageName : ssammudan.cotree.infra.payment
  * FileName    : PaymentClient
@@ -12,4 +15,7 @@ package ssammudan.cotree.infra.payment;
  * 25. 4. 7.     loadingKKamo21       Initial creation
  */
 public interface PaymentClient {
+
+	ApiPaymentResponse confirmPayment(ApiPaymentRequest apiPaymentRequest);
+
 }
