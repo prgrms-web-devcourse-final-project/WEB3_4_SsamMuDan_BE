@@ -56,7 +56,7 @@ public class PrePaymentService {
 
 		PrePaymentValue value = PrePaymentValue.of(memberId, prePaymentInfo);
 
-		redisTemplate.opsForValue().set("prepay:%s".formatted(orderId), value, Duration.ofMinutes(MAX_RETENTION_TIME));
+		redisTemplate.opsForValue().set(getRedisKey(orderId), value, Duration.ofMinutes(MAX_RETENTION_TIME));
 
 		return prePaymentInfo;
 	}
@@ -72,6 +72,10 @@ public class PrePaymentService {
 			localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
 			UUID.randomUUID().toString().replace("-", "")
 		);
+	}
+
+	private String getRedisKey(final String orderId) {
+		return "payment:prepay:%s".formatted(orderId);
 	}
 
 }
