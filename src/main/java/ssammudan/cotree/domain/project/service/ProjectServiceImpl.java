@@ -65,6 +65,8 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectViewService projectViewService;
 	private final ProjectMembershipRepository projectMembershipRepository;
 
+	private static final int HOT_PROJECT_LIMIT = 2;
+
 	@Override
 	@Transactional
 	public ProjectCreateResponse create(@Valid ProjectCreateRequest request, MultipartFile projectImage,
@@ -115,7 +117,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(readOnly = true)
 	public List<ProjectListResponse> getHotProjectsForProject() {
 		//todo: 캐싱 작업
-		return projectRepository.findHotProjectsForProject(2);
+		return projectRepository.findHotProjectsForProject(HOT_PROJECT_LIMIT);
 	}
 
 	@Override
