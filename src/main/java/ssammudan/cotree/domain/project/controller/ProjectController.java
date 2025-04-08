@@ -123,5 +123,17 @@ public class ProjectController {
 		return BaseResponse.success(SuccessCode.PROJECT_STATUS_UPDATE_SUCCESS);
 	}
 
+	@PostMapping("/{projectId}/apply")
+	@Operation(summary = "프로젝트 참가 신청", description = "프로젝트에 참가 신청합니다.")
+	@ApiResponse(responseCode = "200", description = "참가 신청 성공")
+	public BaseResponse<Void> applyForProject(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		projectServiceImpl.applyForProject(projectId, memberId);
+		return BaseResponse.success(SuccessCode.PROJECT_APPLY_SUCCESS);
+	}
+
 }
 
