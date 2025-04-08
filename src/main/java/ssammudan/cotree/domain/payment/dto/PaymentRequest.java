@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import ssammudan.cotree.model.education.type.EducationType;
 
 /**
@@ -21,7 +20,7 @@ import ssammudan.cotree.model.education.type.EducationType;
 @Schema(description = "결제 요청 DTO")
 public class PaymentRequest {
 
-	@Schema(description = "결제 전 사전 정보 저장 요청 TO")
+	@Schema(description = "결제 전 사전 정보 저장 요청 DTO")
 	public record PrePayment(
 		@NotNull
 		@Schema(description = "TechEducation 타입: TECH_BOOK, TECH_TUBE", example = "TECH_BOOK")
@@ -35,20 +34,6 @@ public class PaymentRequest {
 		@NotBlank
 		@Schema(description = "구매 상품 이름")
 		String productName
-	) {
-	}
-
-	@Schema(description = "토스 결제 승인 요청 DTO")
-	public record TossPayments(
-		@NotBlank
-		@Schema(description = "토스에서 발급하는 결제 건에 대한 고유 식별자")
-		String paymentKey,
-		@NotNull @Min(0)
-		@Schema(description = "결제될 금액")
-		int amount,
-		@NotBlank @Size(min = 6, max = 64)
-		@Schema(description = "주문번호, 결제 요청에서 직접 생성한 영문 대소문자, 숫자, '-', '_'로 이루어진 6자 이상 64이하 문자열")
-		String orderId
 	) {
 	}
 
