@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.With;
 
 /**
  * PackageName : ssammudan.cotree.domain.community.dto
@@ -22,26 +23,11 @@ public class CommunityResponse {
 	private CommunityResponse() {
 	}
 
+	@With
 	@Builder(access = AccessLevel.PRIVATE)
 	public record BoardListDetail(Long id, String title, String author, LocalDateTime createdAt, String content,
 								  Long commentCount, Long likeCount, Integer viewCount, String imageUrl,
-								  Boolean isLike, Boolean isNew) {
-
-		public static BoardListDetail modifyContent(BoardListDetail original, String newContent) {
-			return BoardListDetail.builder()
-				.id(original.id())
-				.title(original.title())
-				.author(original.author())
-				.createdAt(original.createdAt())
-				.content(newContent)
-				.commentCount(original.commentCount())
-				.likeCount(original.likeCount())
-				.viewCount(original.viewCount())
-				.imageUrl(original.imageUrl())
-				.isLike(original.isLike())
-				.isNew(original.isNew())
-				.build();
-		}
+								  Boolean isLike, Boolean isNew, String profileImage) {
 	}
 
 	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
