@@ -2,7 +2,6 @@ package ssammudan.cotree.domain.review.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -393,12 +392,12 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 			TechEducationReviewResponse.Detail sortedReviewDto = sortedTechEducationReviewResponseDto.get(i);
 			TechEducationReviewResponse.Detail findReviewDto = findAllTechEducationReviewResopnseDto.get(i);
 
-			assertEquals(sortedReviewDto.id(), findReviewDto.id(), "PK 일치");
-			assertEquals(sortedReviewDto.techEducationType(), findReviewDto.techEducationType(), "교육 컨텐츠 타입 일치");
-			assertEquals(sortedReviewDto.itemId(), findReviewDto.itemId(), "교육 컨텐츠 ID 일치");
-			assertEquals(sortedReviewDto.reviewer(), findReviewDto.reviewer(), "리뷰 작성자 일치");
-			assertEquals(sortedReviewDto.rating(), findReviewDto.rating(), "리뷰 점수 일치");
-			assertEquals(sortedReviewDto.content(), findReviewDto.content(), "리뷰 내용 일치");
+			assertEquals(sortedReviewDto.getId(), findReviewDto.getId(), "PK 일치");
+			assertEquals(sortedReviewDto.getTechEducationType(), findReviewDto.getTechEducationType(), "교육 컨텐츠 타입 일치");
+			assertEquals(sortedReviewDto.getItemId(), findReviewDto.getItemId(), "교육 컨텐츠 ID 일치");
+			assertEquals(sortedReviewDto.getReviewer(), findReviewDto.getReviewer(), "리뷰 작성자 일치");
+			assertEquals(sortedReviewDto.getRating(), findReviewDto.getRating(), "리뷰 점수 일치");
+			assertEquals(sortedReviewDto.getContent(), findReviewDto.getContent(), "리뷰 내용 일치");
 		}
 	}
 
