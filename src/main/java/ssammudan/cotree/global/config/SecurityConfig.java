@@ -25,7 +25,6 @@ import ssammudan.cotree.global.config.security.filter.JwtAuthenticationFilter;
 import ssammudan.cotree.global.config.security.oauth.OAuth2UserService;
 import ssammudan.cotree.global.config.security.oauth.handler.OAuth2FailureHandler;
 import ssammudan.cotree.global.config.security.oauth.handler.OAuth2SuccessHandler;
-import ssammudan.cotree.infra.frontend.FrontendConfig;
 
 @Configuration
 @EnableWebSecurity
