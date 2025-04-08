@@ -2,7 +2,6 @@ package ssammudan.cotree.domain.project.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -32,6 +31,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionRepository;
 import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
+import ssammudan.cotree.model.project.membership.repository.ProjectMembershipRepository;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
 import ssammudan.cotree.model.project.project.repository.ProjectRepositoryImpl;
@@ -43,7 +43,7 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * FileName    : ProjectService
  * Author      : sangxxjin
  * Date        : 2025. 4. 2.
- * Description : 
+ * Description : ProjectService
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -63,6 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private final S3Uploader s3Uploader;
 	private final ProjectRepositoryImpl projectRepositoryImpl;
 	private final ProjectViewService projectViewService;
+	private final ProjectMembershipRepository projectMembershipRepository;
 
 	@Override
 	@Transactional
@@ -135,6 +136,20 @@ public class ProjectServiceImpl implements ProjectService {
 		Page<ProjectListResponse> projects = projectRepositoryImpl.findByFilters(pageable, techStackIds,
 			devPositionIds, sort);
 		return PageResponse.of(projects);
+	}
+
+	@Override
+	@Transactional
+	public void applyForProject(Long projectId, String memberId) {
+		Project project = getProjectOrThrow(projectId);
+		if (Boolean.FALSE.equals(project.getIsOpen()))
+			throw new GlobalException(ErrorCode.PROJECT_NOT_OPEN);
+		if (isProjectOwner(project, memberId))
+			throw new GlobalException(ErrorCode.PROJECT_OWNER_CANNOT_JOIN);
+		if (isMemberAlreadyApplied(projectId, memberId))
+			throw new GlobalException(ErrorCode.PROJECT_MEMBER_ALREADY_EXISTS);
+		ProjectMembership projectMembership = ProjectMembership.builderForApply(project, getMemberOrThrow(memberId));
+		projectMembershipRepository.save(projectMembership);
 	}
 
 	private Project getProjectByIdAndOptionalMemberId(Long projectId, String memberId) {
@@ -219,6 +234,10 @@ public class ProjectServiceImpl implements ProjectService {
 	private Project getProjectOrThrow(Long projectId) {
 		return projectRepository.findById(projectId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+	}
+
+	private boolean isMemberAlreadyApplied(Long projectId, String memberId) {
+		return projectMembershipRepository.existsByProjectIdAndMemberId(projectId, memberId);
 	}
 
 }
