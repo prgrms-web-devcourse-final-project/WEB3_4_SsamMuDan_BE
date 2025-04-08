@@ -1,7 +1,5 @@
 package ssammudan.cotree.domain.education.techtube.service;
 
-import java.time.Duration;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +11,6 @@ import ssammudan.cotree.domain.education.type.SearchEducationSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
-import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
@@ -32,6 +29,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 4.     loadingKKamo21       Initial creation
+ * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
  */
 @Service
 @Transactional(readOnly = true)
@@ -41,7 +39,6 @@ public class TechTubeServiceImpl implements TechTubeService {
 	private final TechTubeRepository techTubeRepository;
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
-	private final LikeRepository likeRepository;
 	private final EducationCategoryRepository educationCategoryRepository;
 
 	/**
@@ -70,7 +67,7 @@ public class TechTubeServiceImpl implements TechTubeService {
 			requestDto.description(),
 			requestDto.introduction(),
 			requestDto.techTubeUrl(),
-			Duration.ofSeconds(requestDto.techTubeDurationSeconds()),
+			requestDto.techTubeDurationSeconds(),
 			requestDto.techTubeThumbnailUrl(),
 			requestDto.price()
 		);
@@ -78,40 +75,26 @@ public class TechTubeServiceImpl implements TechTubeService {
 		return techTubeRepository.save(techTube).getId();
 	}
 
-	/**
-	 * TechTube 단 건 조회
-	 *
-	 * @param id       - PK
-	 * @param memberId - 회원 ID
-	 * @return TechTubeResponse Detail DTO
-	 */
+	@Transactional(readOnly = true)
 	@Override
-	public TechTubeResponse.Detail findTechTubeById(final Long id, final String memberId) {
-		//Member 존재 여부 확인
-		if (!memberRepository.existsById(memberId)) {
-			throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
+	public TechTubeResponse.TechTubeDetail findTechTubeDetail(Long techTubeId, String memberId) {
+		// TechTube 유무 검증
+		// 단건 조회는, 조회 시 없는 데이터는 조회할 필요가 없음.
+		if (!techTubeRepository.existsById(techTubeId)) {
+			throw new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND);
 		}
 
-		TechTube techTube = techTubeRepository.findById(id)
-			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND));
-		//TODO: Member-Like 연관관계에 따라 수정 가능
-		boolean isLike = likeRepository.existsByMember_IdAndTechTube_Id(memberId, id);
-		techTube.increaseViewCount();
-		return TechTubeResponse.Detail.from(techTube, isLike);
-	}
+		// TechTube 상세 정보 검색
+		TechTubeResponse.TechTubeDetail content = techTubeRepository.findTechTube(techTubeId, memberId);
 
-	/**
-	 * TechTube 단 건 조회
-	 *
-	 * @param id - PK
-	 * @return TechTubeResponse Detail DTO
-	 */
-	@Override
-	public TechTubeResponse.Detail findTechTubeById(final Long id) {
-		TechTube techTube = techTubeRepository.findById(id)
-			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND));
-		techTube.increaseViewCount();
-		return TechTubeResponse.Detail.from(techTube);
+		// 회원의 구매 상태에 따라, 응답 변경 (url 제거)
+		if (Boolean.FALSE.equals(content.isPaymentDone())) {
+			content = content.withTechTubeUrl(null);
+		}
+
+		// todo: view Count 증가
+
+		return content;
 	}
 
 	/**
