@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.category.dto.CommunityCategoryResponse;
 import ssammudan.cotree.domain.category.dto.EducationCategoryResponse;
 import ssammudan.cotree.domain.category.dto.PositionResponse;
 import ssammudan.cotree.domain.category.dto.TechStackResponse;
@@ -27,6 +28,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     kwak               Initial creation
  * 2025. 4. 7.     Baekgwa            교육 카테고리 조회 추가
+ * 2025. 4. 8.     Baekgwa            커뮤니티 글 카테고리 조회 추가
  */
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +53,14 @@ public class CategoryController {
 	@GetMapping("/education")
 	@Operation(summary = "교육 카테고리 전체 조회", description = "교육 카테고리를 전체 조회합니다.")
 	public BaseResponse<List<EducationCategoryResponse>> findEducationCategoryList() {
-		return BaseResponse.success(SuccessCode.EDUCATION_CATEGORY_FIND_SUCCESS, categoryService.findEducationCategoryList());
+		return BaseResponse.success(SuccessCode.EDUCATION_CATEGORY_FIND_SUCCESS,
+			categoryService.findEducationCategoryList());
+	}
+
+	@GetMapping("/community")
+	@Operation(summary = "커뮤니티 글 카테고리 전체 조회", description = "커뮤니티의 글의 전체 카테고리를 조회 합니다.")
+	public BaseResponse<List<CommunityCategoryResponse>> findCommunityCategoryList() {
+		return BaseResponse.success(SuccessCode.COMMUNITY_CATEGORY_FIND_SUCCESS,
+			categoryService.findCommunityCategoryList());
 	}
 }
