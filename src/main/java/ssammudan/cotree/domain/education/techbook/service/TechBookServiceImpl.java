@@ -11,6 +11,7 @@ import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.common.like.repository.LikeRepository;
+import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
@@ -39,6 +40,7 @@ public class TechBookServiceImpl implements TechBookService {
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
 	private final LikeRepository likeRepository;
+	private final EducationCategoryRepository educationCategoryRepository;
 
 	/**
 	 * TechBook 신규 생성
@@ -78,50 +80,37 @@ public class TechBookServiceImpl implements TechBookService {
 	/**
 	 * TechBook 단 건 조회
 	 *
-	 * @param id - PK
-	 * @return TechBookResponse Detail DTO
-	 */
-	@Override
-	public TechBookResponse.Detail findTechBookById(final Long id) {
-		TechBook techBook = techBookRepository.findById(id)
-			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
-		techBook.increseViewCount();
-		return TechBookResponse.Detail.from(techBook);
-	}
-
-	/**
-	 * TechBook 단 건 조회
-	 *
 	 * @param id       - PK
 	 * @param memberId - 회원 ID
 	 * @return TechBookResponse Detail DTO
 	 */
 	@Override
 	public TechBookResponse.Detail findTechBookById(final Long id, final String memberId) {
-		//Member 존재 여부 확인
-		if (!memberRepository.existsById(memberId)) {
-			throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
+		if (!techBookRepository.existsById(id)) {
+			throw new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND);
 		}
-
-		TechBook techBook = techBookRepository.findById(id)
-			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
-		//TODO: Member-Like 연관관계에 따라 수정 가능
-		boolean isLike = likeRepository.existsByMember_IdAndTechBook_Id(memberId, id);
-		techBook.increseViewCount();
-		return TechBookResponse.Detail.from(techBook, isLike);
+		//TODO: 조회 수 증가
+		return techBookRepository.findTechBook(id, memberId);
 	}
 
 	/**
 	 * TechBook 다 건 조회
 	 *
-	 * @param keyword  - 검색어
-	 * @param pageable - 페이징 객체
+	 * @param keyword     - 검색어
+	 * @param memberId    - 회원 ID
+	 * @param educationId - 교육 카테고리 ID
+	 * @param pageable    - 페이징 객체
 	 * @return PageResponse TechBookResponse ListInfo DTO
 	 */
 	@Override
-	public PageResponse<TechBookResponse.ListInfo> findAllTechBooks(final String keyword, final Pageable pageable) {
+	public PageResponse<TechBookResponse.ListInfo> findAllTechBooks(
+		final String keyword, final String memberId, final Long educationId, final Pageable pageable
+	) {
+		if (educationId != null && !educationCategoryRepository.existsById(educationId)) {
+			throw new GlobalException(ErrorCode.INVALID_EDUCATION_CATEGORY_ID);
+		}
 		return PageResponse.of(
-			techBookRepository.findAllTechBooksByKeyword(keyword, pageable).map(TechBookResponse.ListInfo::from)
+			techBookRepository.findTechBooks(keyword, memberId, educationId, pageable)
 		);
 	}
 
