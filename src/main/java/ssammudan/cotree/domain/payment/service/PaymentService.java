@@ -1,8 +1,12 @@
 package ssammudan.cotree.domain.payment.service;
 
+import java.time.LocalDateTime;
+
 import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PaymentResponse;
-import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
+import ssammudan.cotree.domain.payment.dto.PrePaymentValue;
+import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
+import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
 
 /**
  * PackageName : ssammudan.cotree.domain.payment.service
@@ -17,8 +21,18 @@ import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
  */
 public interface PaymentService {
 
-	PaymentResponse.PrePaymentInfo savePrePayment(PaymentRequest.PrePayment requestDto, String memberId);
+	PaymentResponse.PrePaymentInfo savePrePayment(
+		String orderId,
+		String redisKey,
+		LocalDateTime savedAt,
+		PaymentRequest.PrePayment request,
+		String memberId
+	);
 
-	PaymentResponse.Detail confirmPayment(ApiPaymentRequest requestDto, String memberId);
+	PrePaymentValue verifyPayment(String redisKey, TossPaymentRequest request, String memberId);
+
+	PaymentResponse.Detail confirmPaymentRequest(
+		String redisKey, TossPaymentRequest request, OrderHistory orderHistory
+	);
 
 }

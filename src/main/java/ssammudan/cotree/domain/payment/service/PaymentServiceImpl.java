@@ -1,11 +1,12 @@
 package ssammudan.cotree.domain.payment.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
+import java.util.Objects;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +17,8 @@ import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
 import ssammudan.cotree.domain.payment.dto.TossPaymentResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
-import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
+import ssammudan.cotree.infra.payment.PaymentClient;
 import ssammudan.cotree.infra.payment.toss.TossPaymentClient;
-import ssammudan.cotree.model.member.member.entity.Member;
-import ssammudan.cotree.model.member.member.repository.MemberRepository;
-import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
-import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRepository;
 import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
 import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
@@ -41,112 +38,120 @@ import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-	private final MemberRepository memberRepository;
-	private final OrderCategoryRepository orderCategoryRepository;
+	private static final long MAX_RETENTION_TIME = 10;    //서버 내 결제 정보 저장 유지 시간
 
-	private final PrePaymentService prePaymentService;
-	private final PaymentVerificationService paymentVerificationService;
+	private final RedisTemplate<String, Object> redisTemplate;
+	private final PaymentClient paymentClient;
 	private final TossPaymentClient tossPaymentClient;
-	private final OrderHistoryService orderHistoryService;
 
 	/**
 	 * 사전 결제 정보 Redis에 저장
 	 *
-	 * @param requestDto - 결제 사전 정보 요청 DTO
-	 * @param memberId   - 회원 ID
+	 * @param orderId  - 주문번호
+	 * @param redisKey - Redis 키
+	 * @param savedAt  - 저장 시각
+	 * @param request  - PaymentResponse.PrePaymentInfo DTO
+	 * @param memberId - 회원 ID
 	 * @return PaymentResponse PrePaymentInfo DTO
 	 */
 	@Override
 	public PaymentResponse.PrePaymentInfo savePrePayment(
-		final PaymentRequest.PrePayment requestDto, final String memberId
+		final String orderId,
+		final String redisKey,
+		final LocalDateTime savedAt,
+		final PaymentRequest.PrePayment request,
+		final String memberId
 	) {
-		if (!memberRepository.existsById(memberId)) {
-			throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
-		}
+		PaymentResponse.PrePaymentInfo prePaymentInfo = PaymentResponse.PrePaymentInfo.of(
+			orderId,
+			request.productName(),
+			request.amount(),
+			request.techEducationType(),
+			request.itemId(),
+			savedAt.plusMinutes(MAX_RETENTION_TIME)
+		);
 
-		String orderId = generateOrderId(LocalDateTime.now());
-		String redisKey = getRedisKey(orderId);
+		PrePaymentValue value = PrePaymentValue.of(memberId, prePaymentInfo);
 
-		return prePaymentService.savePrePayment(orderId, redisKey, requestDto, memberId);
+		redisTemplate.opsForValue().set(redisKey, value, Duration.ofMillis(MAX_RETENTION_TIME));
+
+		return prePaymentInfo;
 	}
 
 	/**
-	 * 결제 승인 API 요청
+	 * 사전 저장 결제 정보 검증
 	 *
-	 * @param requestDto - 결제 정보 요청 DTO
-	 * @param memberId   - 회원 ID
+	 * @param request  - 토스페이먼츠 결제 요청 DTO
+	 * @param memberId - 회원 ID
+	 * @return 검증 완료 객체
+	 */
+	@Override
+	public PrePaymentValue verifyPayment(
+		final String redisKey, final TossPaymentRequest request, final String memberId
+	) {
+		PrePaymentValue value = (PrePaymentValue)redisTemplate.opsForValue().get(redisKey);
+
+		if (value == null) {
+			throw new GlobalException(ErrorCode.PAYMENT_EXPIRED_PREPAYMENT);
+		}
+
+		if (!Objects.equals(value.memberId(), memberId)
+			|| !Objects.equals(value.info().orderId(), request.getOrderId())
+			|| value.info().amount() != request.getAmount()) {
+			throw new GlobalException(ErrorCode.PAYMENT_REQUEST_INVALID);
+		}
+
+		return value;
+	}
+
+	/**
+	 * 결제 승인 API 호출
+	 *
+	 * @param redisKey     - Redis 키
+	 * @param request      - 토스 결제 정보 요청 DTO
+	 * @param orderHistory - OrderHistory 엔티티
 	 * @return PaymentResponse Detail DTO
 	 */
-	@Transactional
 	@Override
-	public PaymentResponse.Detail confirmPayment(
-		final ApiPaymentRequest requestDto, final String memberId
+	public PaymentResponse.Detail confirmPaymentRequest(
+		final String redisKey, final TossPaymentRequest request, final OrderHistory orderHistory
 	) {
-		TossPaymentRequest tossPaymentRequest = (TossPaymentRequest)requestDto;
-
-		//회원 존재 여부 확인
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-
-		String orderId = getRedisKey(tossPaymentRequest.getOrderId());
-
-		//사전 저장된 결제 정보 검증
-		PrePaymentValue verifiedValue = paymentVerificationService.verify(orderId, tossPaymentRequest, memberId);
-
-		OrderCategory orderCategory = orderCategoryRepository.findById(verifiedValue.info().educationType().getId())
-			.orElseThrow(() -> new GlobalException(ErrorCode.ORDER_CATEGORY_NOT_FOUND));
-
-		OrderHistory orderHistory = orderHistoryService.createOrderHistory(
-			member, orderCategory, tossPaymentRequest.getPaymentKey(), verifiedValue
-		);
-
 		try {
-			//토스페이먼츠 결제 승인 API 호출
 			TossPaymentResponse tossPaymentResponse = (TossPaymentResponse)tossPaymentClient.confirmPayment(
-				tossPaymentRequest
+				request
 			);
 			orderHistory.modifyStatus(PaymentStatus.SUCCESS);
 
-			//사전 저장된 결제 정보 삭제
-			paymentVerificationService.deletePrePayment(orderId);
-
-			return PaymentResponse.Detail.from(tossPaymentResponse);
+			return PaymentResponse.Detail.from(tossPaymentResponse, PaymentStatus.SUCCESS);
 		} catch (GlobalException e) {
 			if (e.getErrorCode() == ErrorCode.TOSS_API_ERROR) {
-				log.error("토스 API 에러", e.getMessage());
+				log.error("Toss API Error", e.getMessage());
 			} else if (e.getErrorCode() == ErrorCode.TOSS_API_TIMEOUT) {
-				log.error("토스 API 응답 시간 초과", e.getMessage());
+				log.error("Toss API Timeout", e.getMessage());
 			}
 			orderHistory.modifyStatus(PaymentStatus.FAILED);
-			throw new GlobalException(ErrorCode.TOSS_API_TIMEOUT);
 		} catch (Exception e) {
-			log.error("알 수 없는 에러", e);
+			log.error("Unexpected error calling Toss API", e);
 			orderHistory.modifyStatus(PaymentStatus.FAILED);
-			throw new GlobalException(ErrorCode.PAYMENT_PROCESSING_FAILED);
+		} finally {
+			try {
+				deletePrePayment(redisKey);
+			} catch (Exception e) {
+				log.warn("Failed to delete Redis pre-payment info. key: {}", redisKey, e);
+			}
 		}
-	}
 
-	/**
-	 * 주문번호(orderId) 생성
-	 *
-	 * @param localDateTime - 주문 생성 시각
-	 * @return 주문번호
-	 */
-	private String generateOrderId(final LocalDateTime localDateTime) {
-		return "Order_%s_%s".formatted(
-			localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-			UUID.randomUUID().toString().replace("-", "")
+		return PaymentResponse.Detail.of(
+			orderHistory.getOrderId(),
+			orderHistory.getProductName(),
+			orderHistory.getPrice(),
+			LocalDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
+			PaymentStatus.FAILED
 		);
 	}
 
-	/**
-	 * 결제 정보 저장용 Redis 키 생성
-	 *
-	 * @param orderId - 주문번호
-	 * @return Redis 키
-	 */
-	private String getRedisKey(final String orderId) {
-		return "payment:prepay:%s".formatted(orderId);
+	private void deletePrePayment(final String redisKey) {
+		redisTemplate.delete(redisKey);
 	}
 
 }

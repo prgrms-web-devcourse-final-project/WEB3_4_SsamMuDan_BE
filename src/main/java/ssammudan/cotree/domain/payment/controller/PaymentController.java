@@ -16,10 +16,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ssammudan.cotree.domain.order.facade.OrderFacade;
 import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PaymentResponse;
 import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
-import ssammudan.cotree.domain.payment.service.PaymentService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.SuccessCode;
@@ -42,7 +42,7 @@ import ssammudan.cotree.global.response.SuccessCode;
 @Tag(name = "Payment Controller", description = "Payment API")
 public class PaymentController {
 
-	private final PaymentService paymentService;
+	private final OrderFacade orderFacade;
 
 	@PostMapping("/prepare")
 	@Operation(summary = "결제 전 결제 정보 저장 및 주문번호 발급", description = "결제 전 주문 정보를 저장하고 주문번호를 발급")
@@ -51,7 +51,7 @@ public class PaymentController {
 		@RequestBody @Valid final PaymentRequest.PrePayment requestDto,
 		@AuthenticationPrincipal final UserDetails userDetails
 	) {
-		PaymentResponse.PrePaymentInfo resopnseDt = paymentService.savePrePayment(
+		PaymentResponse.PrePaymentInfo resopnseDt = orderFacade.savePrePayment(
 			requestDto, ((CustomUser)userDetails).getId()
 		);
 		return BaseResponse.success(SuccessCode.PRE_PAYMENT_SAVE_SUCCESS, resopnseDt);
@@ -59,14 +59,14 @@ public class PaymentController {
 
 	@GetMapping("/confirm")
 	@Operation(summary = "결제 승인 API 호출", description = "결제 API로부터 받은 정보로 서버에서 결제 정보 검증 후 결제 승인 API 호출")
-	@ApiResponse(responseCode = "200", description = "결제 성공")
+	@ApiResponse(responseCode = "200", description = "결제 승인 호출 성공")
 	public BaseResponse<PaymentResponse.Detail> confirmPayment(
 		@RequestParam("orderId") String orderId,
 		@RequestParam("paymentKey") String paymentKey,
 		@RequestParam("amount") @Min(0) int amount,
 		@AuthenticationPrincipal final UserDetails userDetails
 	) {
-		PaymentResponse.Detail responseDto = paymentService.confirmPayment(
+		PaymentResponse.Detail responseDto = orderFacade.confirmPayment(
 			TossPaymentRequest.of(paymentKey, amount, orderId), ((CustomUser)userDetails).getId()
 		);
 		return BaseResponse.success(SuccessCode.TOSS_PAYMENT_SUCCESS, responseDto);

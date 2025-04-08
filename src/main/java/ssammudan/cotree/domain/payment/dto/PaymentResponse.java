@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import ssammudan.cotree.model.education.type.EducationType;
+import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
 /**
  * PackageName : ssammudan.cotree.domain.payment.dto
@@ -58,14 +59,33 @@ public class PaymentResponse {
 		@Schema(description = "결제 금액")
 		int amount,
 		@Schema(description = "결제 완료 시간")
-		String completedAt
+		String completedAt,
+		@Schema(description = "결제 상태")
+		PaymentStatus paymentStatus
 	) {
-		public static Detail from(final TossPaymentResponse response) {
+		public static Detail from(final TossPaymentResponse response, final PaymentStatus paymentStatus) {
 			return new Detail(
 				response.getOrderId(),
 				response.getOrderName(),
 				response.getTotalAmount().intValue(),
-				response.getApprovedAt()
+				response.getApprovedAt(),
+				paymentStatus
+			);
+		}
+
+		public static Detail of(
+			final String orderId,
+			final String productName,
+			final int amount,
+			final String completedAt,
+			final PaymentStatus paymentStatus
+		) {
+			return new Detail(
+				orderId,
+				productName,
+				amount,
+				completedAt,
+				paymentStatus
 			);
 		}
 	}
