@@ -135,7 +135,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 					Ops.EQ,
 					community.member.id,
 					Expressions.constant(memberId)
-				) : Expressions.constant(Boolean.FALSE)
+				) : Expressions.constant(Boolean.FALSE),
+				member.profileImageUrl
 			))
 			.from(community)
 			.join(member).on(community.member.id.eq(member.id))

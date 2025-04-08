@@ -17,6 +17,7 @@ import lombok.With;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-31     Baekgwa               Initial creation
  * 2025-04-07     Baekgwa               Thumbnail 이미지 출력 정상화
+ * 2025-04-08     Baekgwa               목록, 상세 조회 시, 작성자의 프로필 이미지 return 추가
  */
 public class CommunityResponse {
 
@@ -31,7 +32,7 @@ public class CommunityResponse {
 	}
 
 	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
-							  Integer viewCount, Boolean isLike, Boolean isOwner) {
+							  Integer viewCount, Boolean isLike, Boolean isOwner, String profileImage) {
 	}
 
 	public record BoardModify(Long boardId) {
