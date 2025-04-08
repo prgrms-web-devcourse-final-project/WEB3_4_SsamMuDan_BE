@@ -3,6 +3,8 @@ package ssammudan.cotree.domain.resume.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
@@ -22,7 +24,7 @@ import ssammudan.cotree.global.response.PageResponse;
  * 2025. 3. 28.     kwak               Initial creation
  */
 public interface ResumeService {
-	ResumeCreateResponse register(ResumeCreateRequest request, String memberId);
+	ResumeCreateResponse register(ResumeCreateRequest request, String memberId, MultipartFile resumeImage);
 
 	ResumeDetailResponse detail(Long id);
 

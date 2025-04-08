@@ -83,7 +83,6 @@ class ResumeServiceImplTest {
 		Set<Long> techStackIds2 = Set.of(4L, 5L, 6L);
 
 		BasicInfo basicInfo = BasicInfo.builder()
-			.profileImage("1.jpg")
 			.email("test@example.com")
 			.years(1)
 			.introduction("안녕하세요 쌈무단입니다.")
@@ -134,7 +133,7 @@ class ResumeServiceImplTest {
 			.build();
 
 		//when
-		ResumeCreateResponse response = resumeService.register(resumeCreateRequest, memberId);
+		ResumeCreateResponse response = resumeService.register(resumeCreateRequest, memberId, null);
 
 		//then
 		Resume savedResume = resumeRepository.findById(response.resumeId()).orElse(null);
@@ -143,7 +142,7 @@ class ResumeServiceImplTest {
 		assertThat(response.resumeId()).isEqualTo(savedResume.getId());
 
 		assertThat(savedResume.getMember().getId()).isEqualTo(memberId);
-		assertThat(savedResume.getProfileImage()).isEqualTo(basicInfo.profileImage());
+		assertThat(savedResume.getProfileImage()).isEqualTo(null);
 		assertThat(savedResume.getEmail()).isEqualTo(basicInfo.email());
 		assertThat(savedResume.getYears()).isEqualTo(basicInfo.years());
 		assertThat(savedResume.getIntroduction()).isEqualTo(basicInfo.introduction());

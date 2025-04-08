@@ -30,6 +30,8 @@ public enum SuccessCode {
 	TECH_EDUCATION_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "201", "리뷰 등록을 성공했습니다."),
 
 	//Payment
+	PRE_PAYMENT_SAVE_SUCCESS(HttpStatus.OK, "200", "사전 결제 정보 저장을 완료했습니다."),
+	TOSS_PAYMENT_SUCCESS(HttpStatus.OK, "200", "토스 결제가 승인되었습니다."),
 
 	//Recruitment
 	RESUME_CREATE_SUCCESS(HttpStatus.CREATED, "201", "이력서 작성을 성공하였습니다."),
