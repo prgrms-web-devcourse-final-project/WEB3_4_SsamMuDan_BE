@@ -1,5 +1,9 @@
 package ssammudan.cotree.domain.payment.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +63,11 @@ public class PaymentServiceImpl implements PaymentService {
 		if (!memberRepository.existsById(memberId)) {
 			throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
 		}
-		return prePaymentService.savePrePayment(requestDto, memberId);
+
+		String orderId = generateOrderId(LocalDateTime.now());
+		String redisKey = getRedisKey(orderId);
+
+		return prePaymentService.savePrePayment(orderId, redisKey, requestDto, memberId);
 	}
 
 	/**
@@ -76,10 +84,14 @@ public class PaymentServiceImpl implements PaymentService {
 	) {
 		TossPaymentRequest tossPaymentRequest = (TossPaymentRequest)requestDto;
 
+		//회원 존재 여부 확인
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
-		PrePaymentValue verifiedValue = paymentVerificationService.verify(tossPaymentRequest, memberId);
+		String orderId = getRedisKey(tossPaymentRequest.getOrderId());
+
+		//사전 저장된 결제 정보 검증
+		PrePaymentValue verifiedValue = paymentVerificationService.verify(orderId, tossPaymentRequest, memberId);
 
 		OrderCategory orderCategory = orderCategoryRepository.findById(verifiedValue.info().educationType().getId())
 			.orElseThrow(() -> new GlobalException(ErrorCode.ORDER_CATEGORY_NOT_FOUND));
@@ -89,12 +101,14 @@ public class PaymentServiceImpl implements PaymentService {
 		);
 
 		try {
+			//토스페이먼츠 결제 승인 API 호출
 			TossPaymentResponse tossPaymentResponse = (TossPaymentResponse)tossPaymentClient.confirmPayment(
 				tossPaymentRequest
 			);
 			orderHistory.modifyStatus(PaymentStatus.SUCCESS);
 
-			paymentVerificationService.deletePrePayment(tossPaymentRequest);
+			//사전 저장된 결제 정보 삭제
+			paymentVerificationService.deletePrePayment(orderId);
 
 			return PaymentResponse.Detail.from(tossPaymentResponse);
 		} catch (GlobalException e) {
@@ -110,6 +124,29 @@ public class PaymentServiceImpl implements PaymentService {
 			orderHistory.modifyStatus(PaymentStatus.FAILED);
 			throw new GlobalException(ErrorCode.PAYMENT_PROCESSING_FAILED);
 		}
+	}
+
+	/**
+	 * 주문번호(orderId) 생성
+	 *
+	 * @param localDateTime - 주문 생성 시각
+	 * @return 주문번호
+	 */
+	private String generateOrderId(final LocalDateTime localDateTime) {
+		return "Order_%s_%s".formatted(
+			localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
+			UUID.randomUUID().toString().replace("-", "")
+		);
+	}
+
+	/**
+	 * 결제 정보 저장용 Redis 키 생성
+	 *
+	 * @param orderId - 주문번호
+	 * @return Redis 키
+	 */
+	private String getRedisKey(final String orderId) {
+		return "payment:prepay:%s".formatted(orderId);
 	}
 
 }

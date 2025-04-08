@@ -2,8 +2,6 @@ package ssammudan.cotree.domain.payment.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -40,10 +38,9 @@ public class PrePaymentService {
 	 * @return 결제 사전 정보 응답 DTO
 	 */
 	PaymentResponse.PrePaymentInfo savePrePayment(
-		final PaymentRequest.PrePayment requestDto, final String memberId
+		final String orderId, final String redisKey, final PaymentRequest.PrePayment requestDto, final String memberId
 	) {
 		LocalDateTime now = LocalDateTime.now();
-		String orderId = generateOrderId(now);
 
 		PaymentResponse.PrePaymentInfo prePaymentInfo = PaymentResponse.PrePaymentInfo.of(
 			orderId,
@@ -56,26 +53,9 @@ public class PrePaymentService {
 
 		PrePaymentValue value = PrePaymentValue.of(memberId, prePaymentInfo);
 
-		redisTemplate.opsForValue().set(getRedisKey(orderId), value, Duration.ofMinutes(MAX_RETENTION_TIME));
+		redisTemplate.opsForValue().set(redisKey, value, Duration.ofMinutes(MAX_RETENTION_TIME));
 
 		return prePaymentInfo;
-	}
-
-	/**
-	 * 주문번호(orderId) 생성
-	 *
-	 * @param localDateTime - 주문 생성 시각
-	 * @return 주문번호
-	 */
-	private String generateOrderId(final LocalDateTime localDateTime) {
-		return "Order_%s_%s".formatted(
-			localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-			UUID.randomUUID().toString().replace("-", "")
-		);
-	}
-
-	private String getRedisKey(final String orderId) {
-		return "payment:prepay:%s".formatted(orderId);
 	}
 
 }

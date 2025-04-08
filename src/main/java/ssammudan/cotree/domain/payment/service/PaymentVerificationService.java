@@ -35,8 +35,8 @@ public class PaymentVerificationService {
 	 * @param memberId   - 회원 ID
 	 * @return 검증 완료 객체
 	 */
-	PrePaymentValue verify(final TossPaymentRequest requestDto, final String memberId) {
-		PrePaymentValue value = (PrePaymentValue)redisTemplate.opsForValue().get(getRedisKey(requestDto.getOrderId()));
+	PrePaymentValue verify(final String redisKey, final TossPaymentRequest requestDto, final String memberId) {
+		PrePaymentValue value = (PrePaymentValue)redisTemplate.opsForValue().get(redisKey);
 
 		if (value == null) {
 			throw new GlobalException(ErrorCode.PAYMENT_EXPIRED_PREPAYMENT);
@@ -51,12 +51,8 @@ public class PaymentVerificationService {
 		return value;
 	}
 
-	void deletePrePayment(final TossPaymentRequest requestDto) {
-		redisTemplate.delete(getRedisKey(requestDto.getOrderId()));
-	}
-
-	private String getRedisKey(final String orderId) {
-		return "payment:prepay:%s".formatted(orderId);
+	void deletePrePayment(final String redisKey) {
+		redisTemplate.delete(redisKey);
 	}
 
 }
