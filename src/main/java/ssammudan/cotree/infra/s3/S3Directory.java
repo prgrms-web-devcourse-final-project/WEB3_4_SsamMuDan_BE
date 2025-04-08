@@ -33,7 +33,6 @@ public enum S3Directory {
 	EDUCATION_TECHTUBE_THUMBNAIL("education/techtube/thumbnail/", false),
 
 	TECHSTACK("techstack/", false);
-
 	private final String path;
 	private final boolean isMultiFile;
 }

@@ -32,7 +32,7 @@ import ssammudan.cotree.model.recruitment.resume.techstack.entity.ResumeTechStac
  * FileName    : Resume
  * Author      : Baekgwa
  * Date        : 2025-03-29
- * Description : 
+ * Description :
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ public class Resume extends BaseEntity {
 	@Column(name = "email", nullable = false, length = 255)
 	private String email;
 
-	@Column(name = "profile_image", nullable = false, length = 255)
+	@Column(name = "profile_image", length = 255)
 	private String profileImage;
 
 	@Column(name = "introduction", nullable = false, columnDefinition = "TEXT")
@@ -82,12 +82,13 @@ public class Resume extends BaseEntity {
 
 	public static Resume create(
 			ResumeCreateRequest request, Member member,
-			List<TechStack> techStacks, List<DevelopmentPosition> developmentPositions
+			List<TechStack> techStacks, List<DevelopmentPosition> developmentPositions,
+			String savedUrl
 	) {
 		Resume resume = Resume.builder()
 				.member(member)
 				.email(request.basicInfo().email())
-				.profileImage(request.basicInfo().profileImage())
+				.profileImage(savedUrl)
 				.introduction(request.basicInfo().introduction())
 				.years(request.basicInfo().years())
 				.isOpen(true)
