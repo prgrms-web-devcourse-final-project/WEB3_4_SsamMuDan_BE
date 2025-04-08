@@ -32,10 +32,7 @@ public enum S3Directory {
 	EDUCATION_TECHTUBE_MAIN("education/techtube/main/", false),
 	EDUCATION_TECHTUBE_THUMBNAIL("education/techtube/thumbnail/", false),
 
-	TECHSTACK("techstack/", false),
-
-	RECRUITMENT_RESUME_IMAGE("recruitment/resume/image/", false);
-
+	TECHSTACK("techstack/", false);
 	private final String path;
 	private final boolean isMultiFile;
 }

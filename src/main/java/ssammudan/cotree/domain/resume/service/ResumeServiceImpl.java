@@ -80,7 +80,7 @@ public class ResumeServiceImpl implements ResumeService {
 
 		//s3 서비스 이용해 업로드 -> saveUrl 받아와서 엔티티에 저장
 		String savedUrl = Optional.ofNullable(resumeImage)
-			.map(img -> s3Uploader.upload(memberId, resumeImage, S3Directory.RECRUITMENT_RESUME_IMAGE).getSaveUrl())
+			.map(img -> s3Uploader.upload(memberId, resumeImage, S3Directory.USER_RESUME).getSaveUrl())
 			.orElse(null);
 
 		Resume resume = Resume.create(request, member, basicTechStacks, developmentPositions, savedUrl);
