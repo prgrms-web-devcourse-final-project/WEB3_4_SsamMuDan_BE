@@ -88,7 +88,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 						.and(like.member.id.eq(memberId)))
 					.exists()
 					: Expressions.constant(Boolean.FALSE),
-				Expressions.booleanTemplate("{0} >= {1}", community.createdAt, oneDayAgo)
+				Expressions.booleanTemplate("{0} >= {1}", community.createdAt, oneDayAgo),
+				member.profileImageUrl
 			))
 			.from(community)
 			.join(member).on(community.member.id.eq(member.id))
