@@ -26,3 +26,5 @@ custom:
     refreshToken:
       secret: "test_fghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789"
       expirationSeconds: "#{30 * 24 * 60 * 60}" # 30 days
+
+TOSS_API_SECRET_KEY: "test_fghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789"

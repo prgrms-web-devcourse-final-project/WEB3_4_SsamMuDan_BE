@@ -24,7 +24,7 @@ import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
+import ssammudan.cotree.model.education.type.EducationType;
 
 /**
  * PackageName : ssammudan.cotree.domain.review.review.controller
@@ -60,7 +60,7 @@ public class TechEducationReviewController {
 	@Operation(summary = "TechEduction(TechTube or TechBook) 리뷰 목록 조회", description = "TechEductionType(TECH_TUBE, TECH_BOOK)과 ID(TechTube PK or TechBook PK)를 사용해서 리뷰 목록 조회")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<PageResponse<TechEducationReviewResponse.Detail>> getTechEducationReviews(
-		@RequestParam final TechEducationReviewType reviewType,
+		@RequestParam final EducationType reviewType,
 		@RequestParam final Long itemId,
 		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
 		@RequestParam(value = "size", required = false, defaultValue = "10") final int size,
