@@ -1,6 +1,5 @@
 package ssammudan.cotree.domain.community.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +16,7 @@ import ssammudan.cotree.domain.community.dto.valid.CommunityTitle;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-28     Baekgwa               Initial creation
+ * 2025-04-08     Baekgwa               커뮤니티 글 작성 시, community category 입력 형식 변경. 기존 : String / 변경 : Long id
  */
 public class CommunityRequest {
 
@@ -26,8 +26,7 @@ public class CommunityRequest {
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class CreateBoard {
-		@NotBlank(message = "글 카테고리는 필수값 입니다.")
-		private String category;
+		private Long communityCategoryId;
 
 		@CommunityTitle
 		private String title;
@@ -35,8 +34,8 @@ public class CommunityRequest {
 		@CommunityContent
 		private String content;
 
-		public CreateBoard(String category, String title, String content) {
-			this.category = category;
+		public CreateBoard(Long communityCategoryId, String title, String content) {
+			this.communityCategoryId = communityCategoryId;
 			this.title = title;
 			this.content = content;
 		}

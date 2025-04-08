@@ -67,6 +67,7 @@ public enum SuccessCode {
 	//Common: 9001 ~ 9999
 	TECH_STACK_FIND_SUCCESS(HttpStatus.OK, "200", "기술 스택 조회 성공"),
 	EDUCATION_CATEGORY_FIND_SUCCESS(HttpStatus.OK, "200", "교육 카테고리 조회 성공"),
+	COMMUNITY_CATEGORY_FIND_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 카테고리 조회 성공"),
 	POSITION_FIND_SUCCESS(HttpStatus.OK, "200", "개발 직무 조회 성공");
 
 	private final HttpStatus status;

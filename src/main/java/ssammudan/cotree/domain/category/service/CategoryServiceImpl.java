@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.category.dto.CommunityCategoryResponse;
 import ssammudan.cotree.domain.category.dto.EducationCategoryResponse;
 import ssammudan.cotree.domain.category.dto.PositionResponse;
 import ssammudan.cotree.domain.category.dto.TechStackResponse;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.techstack.repository.TechStackRepository;
+import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 
 /**
@@ -25,6 +27,7 @@ import ssammudan.cotree.model.education.category.repository.EducationCategoryRep
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 2.     kwak               Initial creation
  * 2025. 4. 7.     Baekgwa            교육 카테고리 조회 추가
+ * 2025. 4. 8.     Baekgwa            커뮤니티 글 카테고리 조회 추가
  */
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
 	private final TechStackRepository techStackRepository;
 	private final DevelopmentPositionRepository developmentPositionRepository;
 	private final EducationCategoryRepository educationCategoryRepository;
+	private final CommunityCategoryRepository communityCategoryRepository;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -45,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<PositionResponse> findPositions() {
 		return developmentPositionRepository.findAll().stream()
 			.map(developmentPosition ->
@@ -54,11 +58,21 @@ public class CategoryServiceImpl implements CategoryService {
 			.toList();
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public List<EducationCategoryResponse> findEducationCategoryList() {
 		return educationCategoryRepository.findAll()
 			.stream().map(EducationCategoryResponse::of)
 			.sorted(Comparator.comparing(EducationCategoryResponse::id))
+			.toList();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<CommunityCategoryResponse> findCommunityCategoryList() {
+		return communityCategoryRepository.findAll()
+			.stream().map(CommunityCategoryResponse::of)
+			.sorted(Comparator.comparing(CommunityCategoryResponse::id))
 			.toList();
 	}
 }

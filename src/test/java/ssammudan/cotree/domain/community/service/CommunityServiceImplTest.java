@@ -26,6 +26,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-31     Baekgwa               Initial creation
+ * 2025-04-08     Baekgwa               커뮤니티 글 작성 시, community category 입력 형식 변경. 기존 : String / 변경 : Long id
  */
 @Transactional
 class CommunityServiceImplTest extends SpringBootTestSupporter {
@@ -36,29 +37,29 @@ class CommunityServiceImplTest extends SpringBootTestSupporter {
 		// given
 		List<CommunityCategory> savedCommunityCategoryList = communityFactory.createAndSaveCommunityCategory(10);
 		CommunityCategory savedCommunityCategory = savedCommunityCategoryList.getFirst();
-		String communityCategoryName = savedCommunityCategory.getName();
+		Long communityCategoryId = savedCommunityCategory.getId();
 
 		String newTitle = "새글 제목";
 		String newContent = """
-				# 새글 제목
+			# 새글 제목
 
-				이것은 **마크다운(Markdown)** 형식으로 작성된 글입니다.
+			이것은 **마크다운(Markdown)** 형식으로 작성된 글입니다.
 
-				## 주요 내용
-				- 첫 번째 리스트 아이템
-				- 두 번째 리스트 아이템
-				- 세 번째 리스트 아이템
+			## 주요 내용
+			- 첫 번째 리스트 아이템
+			- 두 번째 리스트 아이템
+			- 세 번째 리스트 아이템
 
-				### 코드 블록
-				```java
-				public static void main(String[] args) {
-				    System.out.println("Hello, Markdown!");
-				}
-				```
-				""";
+			### 코드 블록
+			```java
+			public static void main(String[] args) {
+			    System.out.println("Hello, Markdown!");
+			}
+			```
+			""";
 
 		CommunityRequest.CreateBoard createBoard =
-				new CommunityRequest.CreateBoard(communityCategoryName, newTitle, newContent);
+			new CommunityRequest.CreateBoard(communityCategoryId, newTitle, newContent);
 
 		List<Member> savedMemberList = memberDataFactory.createAndSaveMember(10);
 		Member savedMember = savedMemberList.getFirst();
@@ -73,8 +74,8 @@ class CommunityServiceImplTest extends SpringBootTestSupporter {
 		assertThat(findList).hasSize(1);
 		Community findData = findList.getFirst();
 		assertThat(findData)
-				.extracting("title", "content", "viewCount")
-				.containsExactly(newTitle, newContent, 0);
+			.extracting("title", "content", "viewCount")
+			.containsExactly(newTitle, newContent, 0);
 	}
 
 	@DisplayName("커뮤니티 새글 작성. 등록된 커뮤니티 카테고리가 아니라면, 오류를 발생한다.")
@@ -83,36 +84,36 @@ class CommunityServiceImplTest extends SpringBootTestSupporter {
 		// given
 		String newTitle = "새글 제목";
 		String newContent = """
-				# 새글 제목
+			# 새글 제목
 
-				이것은 **마크다운(Markdown)** 형식으로 작성된 글입니다.
+			이것은 **마크다운(Markdown)** 형식으로 작성된 글입니다.
 
-				## 주요 내용
-				- 첫 번째 리스트 아이템
-				- 두 번째 리스트 아이템
-				- 세 번째 리스트 아이템
+			## 주요 내용
+			- 첫 번째 리스트 아이템
+			- 두 번째 리스트 아이템
+			- 세 번째 리스트 아이템
 
-				### 코드 블록
-				```java
-				public static void main(String[] args) {
-				    System.out.println("Hello, Markdown!");
-				}
-				```
-				""";
+			### 코드 블록
+			```java
+			public static void main(String[] args) {
+			    System.out.println("Hello, Markdown!");
+			}
+			```
+			""";
 
 		CommunityRequest.CreateBoard createBoard =
-				new CommunityRequest.CreateBoard("Unknown Category", newTitle, newContent);
+			new CommunityRequest.CreateBoard(0L, newTitle, newContent);
 
 		List<Member> savedMemberList = memberDataFactory.createAndSaveMember(10);
-		Member savedMember = savedMemberList.getFirst();
+		String memberId = savedMemberList.getFirst().getId();
 		em.flush();
 		em.clear();
 
 		// when // then
-		assertThatThrownBy(() -> communityService.createNewBoard(createBoard, savedMember.getId()))
-				.isInstanceOf(GlobalException.class)
-				.extracting("errorCode")
-				.isEqualTo(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID);
+		assertThatThrownBy(() -> communityService.createNewBoard(createBoard, memberId))
+			.isInstanceOf(GlobalException.class)
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID);
 	}
 
 	@DisplayName("커뮤니티 새글 작성. 로그인 아이디 정보가 이상하다면, 오류를 발생한다.")
@@ -121,37 +122,37 @@ class CommunityServiceImplTest extends SpringBootTestSupporter {
 		// given
 		List<CommunityCategory> savedCommunityCategoryList = communityFactory.createAndSaveCommunityCategory(10);
 		CommunityCategory savedCommunityCategory = savedCommunityCategoryList.getFirst();
-		String communityCategoryName = savedCommunityCategory.getName();
+		Long communityCategoryId = savedCommunityCategory.getId();
 
 		String newTitle = "새글 제목";
 		String newContent = """
-				# 새글 제목
+			# 새글 제목
 
-				이것은 **마크다운(Markdown)** 형식으로 작성된 글입니다.
+			이것은 **마크다운(Markdown)** 형식으로 작성된 글입니다.
 
-				## 주요 내용
-				- 첫 번째 리스트 아이템
-				- 두 번째 리스트 아이템
-				- 세 번째 리스트 아이템
+			## 주요 내용
+			- 첫 번째 리스트 아이템
+			- 두 번째 리스트 아이템
+			- 세 번째 리스트 아이템
 
-				### 코드 블록
-				```java
-				public static void main(String[] args) {
-				    System.out.println("Hello, Markdown!");
-				}
-				```
-				""";
+			### 코드 블록
+			```java
+			public static void main(String[] args) {
+			    System.out.println("Hello, Markdown!");
+			}
+			```
+			""";
 
 		CommunityRequest.CreateBoard createBoard =
-				new CommunityRequest.CreateBoard(communityCategoryName, newTitle, newContent);
+			new CommunityRequest.CreateBoard(communityCategoryId, newTitle, newContent);
 
 		em.flush();
 		em.clear();
 
 		// when // then
 		assertThatThrownBy(() -> communityService.createNewBoard(createBoard, "Unknown Member Id"))
-				.isInstanceOf(GlobalException.class)
-				.extracting("errorCode")
-				.isEqualTo(ErrorCode.COMMUNITY_MEMBER_NOTFOUND);
+			.isInstanceOf(GlobalException.class)
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.COMMUNITY_MEMBER_NOTFOUND);
 	}
 }

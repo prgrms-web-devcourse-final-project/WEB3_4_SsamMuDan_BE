@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.With;
 
 /**
  * PackageName : ssammudan.cotree.domain.community.dto
@@ -16,36 +17,22 @@ import lombok.Builder;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-31     Baekgwa               Initial creation
  * 2025-04-07     Baekgwa               Thumbnail 이미지 출력 정상화
+ * 2025-04-08     Baekgwa               목록, 상세 조회 시, 작성자의 프로필 이미지 return 추가
  */
 public class CommunityResponse {
 
 	private CommunityResponse() {
 	}
 
+	@With
 	@Builder(access = AccessLevel.PRIVATE)
 	public record BoardListDetail(Long id, String title, String author, LocalDateTime createdAt, String content,
 								  Long commentCount, Long likeCount, Integer viewCount, String imageUrl,
-								  Boolean isLike, Boolean isNew) {
-
-		public static BoardListDetail modifyContent(BoardListDetail original, String newContent) {
-			return BoardListDetail.builder()
-				.id(original.id())
-				.title(original.title())
-				.author(original.author())
-				.createdAt(original.createdAt())
-				.content(newContent)
-				.commentCount(original.commentCount())
-				.likeCount(original.likeCount())
-				.viewCount(original.viewCount())
-				.imageUrl(original.imageUrl())
-				.isLike(original.isLike())
-				.isNew(original.isNew())
-				.build();
-		}
+								  Boolean isLike, Boolean isNew, String profileImage) {
 	}
 
 	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
-							  Integer viewCount, Boolean isLike, Boolean isOwner) {
+							  Integer viewCount, Boolean isLike, Boolean isOwner, String profileImage) {
 	}
 
 	public record BoardModify(Long boardId) {

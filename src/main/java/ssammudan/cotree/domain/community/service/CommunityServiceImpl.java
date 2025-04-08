@@ -37,6 +37,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * 2025-03-28     Baekgwa               Initial creation
  * 2025-04-04     Baekgwa               글 수정/삭제 기능 추가
  * 2025-04-07     Baekgwa               Thumbnail 이미지 출력 정상화
+ * 2025-04-08     Baekgwa               커뮤니티 글 작성 시, community category 입력 형식 변경. 기존 : String / 변경 : Long id
  */
 @Service
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class CommunityServiceImpl implements CommunityService {
 	public CommunityResponse.BoardCreate createNewBoard(
 		final CommunityRequest.CreateBoard createBoard, final String userId) {
 		// 카테고리 조회 및 유효성 확인
-		CommunityCategory findCommunityCategory = communityCategoryRepository.findByName(createBoard.getCategory())
+		CommunityCategory findCommunityCategory = communityCategoryRepository.findById(createBoard.getCommunityCategoryId())
 			.orElseThrow(() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_CATEGORY_INVALID));
 
 		// userId 로 회원 정보 검색
@@ -115,10 +116,7 @@ public class CommunityServiceImpl implements CommunityService {
 		// Content 내용 후처리
 		// 마크다운 이미지 형식 + 불필요한 띄워쓰기 공백 삭제 처리.
 		List<CommunityResponse.BoardListDetail> processedList = findBoardList.getContent().stream()
-			.map(board -> {
-				String processedContent = processMarkdownContent(board.content());
-				return CommunityResponse.BoardListDetail.modifyContent(board, processedContent);
-			})
+			.map(board -> board.withContent(processMarkdownContent(board.content())))
 			.toList();
 
 		// 새로운 페이지 Response 객체 생성
