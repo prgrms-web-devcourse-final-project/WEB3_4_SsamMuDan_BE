@@ -12,5 +12,5 @@ package ssammudan.cotree.infra.payment.constant;
  * 25. 4. 7.     loadingKKamo21       Initial creation
  */
 public abstract class PaymentConstant {
-	public static final String TOSS_PAYMENTS_BASE_URL = "https://api.tosspayments.com/v1/payments/confirm";
+	public static final String TOSS_PAYMENTS_CONFIRM_BASE_URL = "https://api.tosspayments.com/v1/payments/confirm";
 }

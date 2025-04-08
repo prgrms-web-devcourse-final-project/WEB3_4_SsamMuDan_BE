@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.payment.service;
 
 import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PaymentResponse;
+import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
 
 /**
  * PackageName : ssammudan.cotree.domain.payment.service
@@ -18,6 +19,6 @@ public interface PaymentService {
 
 	PaymentResponse.PrePaymentInfo savePrePayment(PaymentRequest.PrePayment requestDto, String memberId);
 
-	PaymentResponse.Detail confirmPayment(PaymentRequest.TossPayments requestDto, String memberId);
+	PaymentResponse.Detail confirmPayment(ApiPaymentRequest requestDto, String memberId);
 
 }

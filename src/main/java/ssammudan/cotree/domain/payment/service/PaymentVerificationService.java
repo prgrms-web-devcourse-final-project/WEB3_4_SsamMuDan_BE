@@ -6,8 +6,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PrePaymentValue;
+import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 
@@ -35,8 +35,8 @@ public class PaymentVerificationService {
 	 * @param memberId   - 회원 ID
 	 * @return 검증 완료 객체
 	 */
-	PrePaymentValue verify(final PaymentRequest.TossPayments requestDto, final String memberId) {
-		String redisKey = "prepay:%s".formatted(requestDto.orderId());
+	PrePaymentValue verify(final TossPaymentRequest requestDto, final String memberId) {
+		String redisKey = "prepay:%s".formatted(requestDto.getOrderId());
 		PrePaymentValue value = (PrePaymentValue)redisTemplate.opsForValue().get(redisKey);
 
 		if (value == null) {
@@ -44,8 +44,8 @@ public class PaymentVerificationService {
 		}
 
 		if (!value.memberId().equals(memberId)
-			|| !Objects.equals(value.info().orderId(), requestDto.orderId())
-			|| value.info().amount() != requestDto.amount()) {
+			|| !Objects.equals(value.info().orderId(), requestDto.getOrderId())
+			|| value.info().amount() != requestDto.getAmount()) {
 			throw new GlobalException(ErrorCode.PAYMENT_REQUEST_INVALID);
 		}
 

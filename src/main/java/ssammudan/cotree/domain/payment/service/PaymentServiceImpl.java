@@ -2,16 +2,18 @@ package ssammudan.cotree.domain.payment.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PaymentResponse;
 import ssammudan.cotree.domain.payment.dto.PrePaymentValue;
+import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
+import ssammudan.cotree.domain.payment.dto.TossPaymentResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
-import ssammudan.cotree.infra.payment.toss.TossPaymentsClient;
+import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
+import ssammudan.cotree.infra.payment.toss.TossPaymentClient;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
@@ -40,7 +42,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	private final PrePaymentService prePaymentService;
 	private final PaymentVerificationService paymentVerificationService;
-	private final TossPaymentsClient tossPaymentsClient;
+	private final TossPaymentClient tossPaymentClient;
 	private final OrderHistoryService orderHistoryService;
 
 	/**
@@ -70,34 +72,34 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	@Override
 	public PaymentResponse.Detail confirmPayment(
-		final PaymentRequest.TossPayments requestDto, final String memberId
+		final ApiPaymentRequest requestDto, final String memberId
 	) {
+		TossPaymentRequest tossPaymentRequest = (TossPaymentRequest)requestDto;
+
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
-		PrePaymentValue verifiedValue = paymentVerificationService.verify(requestDto, memberId);
+		PrePaymentValue verifiedValue = paymentVerificationService.verify(tossPaymentRequest, memberId);
 
 		OrderCategory orderCategory = orderCategoryRepository.findById(verifiedValue.info().educationType().getId())
 			.orElseThrow(() -> new GlobalException(ErrorCode.ORDER_CATEGORY_NOT_FOUND));
 
 		OrderHistory orderHistory = orderHistoryService.createOrderHistory(
-			member, orderCategory, requestDto.paymentKey(), verifiedValue
+			member, orderCategory, tossPaymentRequest.getPaymentKey(), verifiedValue
 		);
 
 		try {
-			PaymentResponse.TossPayments tossPayments = tossPaymentsClient.confirmPayment(requestDto);
+			TossPaymentResponse tossPaymentResponse = (TossPaymentResponse)tossPaymentClient.confirmPayment(
+				tossPaymentRequest
+			);
 			orderHistory.modifyStatus(PaymentStatus.SUCCESS);
-			return PaymentResponse.Detail.from(tossPayments);
+			return PaymentResponse.Detail.from(tossPaymentResponse);
 		} catch (GlobalException e) {
 			if (e.getErrorCode() == ErrorCode.TOSS_API_ERROR) {
 				log.error("토스 API 에러", e.getMessage());
-			} else {
-				log.error("알 수 없는 에러", e);
+			} else if (e.getErrorCode() == ErrorCode.TOSS_API_TIMEOUT) {
+				log.error("토스 API 응답 시간 초과", e.getMessage());
 			}
-			orderHistory.modifyStatus(PaymentStatus.FAILED);
-			throw new GlobalException(ErrorCode.TOSS_API_TIMEOUT);
-		} catch (WebClientRequestException e) {
-			log.error("통신 실패 또는 타임아웃", e);
 			orderHistory.modifyStatus(PaymentStatus.FAILED);
 			throw new GlobalException(ErrorCode.TOSS_API_TIMEOUT);
 		} catch (Exception e) {

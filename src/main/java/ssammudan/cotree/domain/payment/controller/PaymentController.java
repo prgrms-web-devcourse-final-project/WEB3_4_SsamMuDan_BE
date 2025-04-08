@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PaymentResponse;
+import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
 import ssammudan.cotree.domain.payment.service.PaymentService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
@@ -58,7 +59,7 @@ public class PaymentController {
 		@AuthenticationPrincipal final UserDetails userDetails
 	) {
 		PaymentResponse.Detail responseDto = paymentService.confirmPayment(
-			new PaymentRequest.TossPayments(paymentKey, amount, orderId), ((CustomUser)userDetails).getId()
+			TossPaymentRequest.of(paymentKey, amount, orderId), ((CustomUser)userDetails).getId()
 		);
 		return BaseResponse.success(SuccessCode.TOSS_PAYMENT_SUCCESS, responseDto);
 	}
