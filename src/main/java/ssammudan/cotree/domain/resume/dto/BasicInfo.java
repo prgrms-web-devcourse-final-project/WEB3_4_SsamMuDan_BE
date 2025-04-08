@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.resume.dto;
 
 import java.util.Set;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -23,7 +24,7 @@ import lombok.Builder;
  */
 @Builder
 public record BasicInfo(
-	@NotBlank(message = "프로필 이미지 URL은 필수입니다.")
+	@Nullable
 	String profileImage,
 
 	@NotBlank(message = "이메일은 필수입니다.")
