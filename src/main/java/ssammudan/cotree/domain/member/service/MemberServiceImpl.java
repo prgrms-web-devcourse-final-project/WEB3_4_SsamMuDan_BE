@@ -1,19 +1,25 @@
 package ssammudan.cotree.domain.member.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ssammudan.cotree.domain.member.dto.MemberOrderResponse;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
+import ssammudan.cotree.domain.member.type.OrderProductCategoryType;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 
@@ -85,5 +91,14 @@ public class MemberServiceImpl implements MemberService {
 		Member member = memberRepository.findById(id)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 		return new MemberInfoResponse(member);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public PageResponse<MemberOrderResponse> getOrderList(int page, int size, OrderProductCategoryType type,
+		String id) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<MemberOrderResponse> orderList = memberRepository.getOrderList(pageable, type, id);
+		return PageResponse.of(orderList);
 	}
 }
