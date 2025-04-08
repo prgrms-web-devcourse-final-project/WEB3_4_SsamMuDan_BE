@@ -30,7 +30,7 @@ import ssammudan.cotree.global.response.ErrorCode;
 public class EmailService {
 	private final JavaMailSender javaMailSender;
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 
 	private void sendSimpleMailMessage(String email, String subject, String text) {
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -101,15 +101,15 @@ public class EmailService {
 		sendMimeMessage(email, subject, title, body);
 
 		// Redis에 인증 코드 저장
-		redisTemplate.opsForValue().set(email, code, Duration.ofMinutes(3));
+		redisTemplate.opsForValue().set("signup:email:%s".formatted(email), code, Duration.ofMinutes(3));
 	}
 
 	public void verifyCode(String email, String code) {
-		String redisCode = (String)redisTemplate.opsForValue().get(email);
+		String redisCode = redisTemplate.opsForValue().get("signup:email:%s".formatted(email));
 
 		if (redisCode == null || !redisCode.equals(code)) {
 			throw new GlobalException(ErrorCode.EMAIL_VERIFY_FAILED);
 		}
-		redisTemplate.expire(email, Duration.ofMinutes(10)); // 인증 코드 만료 시간 연장(10분)
+		redisTemplate.expire("signup:email:%s".formatted(email), Duration.ofMinutes(10)); // 인증 코드 만료 시간 연장(10분)
 	}
 }

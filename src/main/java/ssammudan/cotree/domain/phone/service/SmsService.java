@@ -99,7 +99,9 @@ public class SmsService {
 		if (code == null || !code.equals(request.code())) {
 			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
 		}
-		redisTemplate.delete(SIGNUP_KEY.formatted(request.receiverNumber()));
+		redisTemplate.expire(SIGNUP_KEY.formatted(request.receiverNumber()),
+			Duration.ofMinutes(10)); // 인증 코드 만료 시간 연장(10분)
+		//redisTemplate.delete(SIGNUP_KEY.formatted(request.receiverNumber()));
 	}
 
 	public void recoverLoginId(MemberRecoverSmsRequest request) {
