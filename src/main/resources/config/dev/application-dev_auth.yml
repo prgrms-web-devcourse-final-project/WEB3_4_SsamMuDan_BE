@@ -60,3 +60,7 @@ custom:
     refreshToken:
       secret: ${JWT_REFRESH_TOKEN_SECRET}
       expirationSeconds: "#{30 * 24 * 60 * 60}" # 30 days
+
+api:
+  toss:
+    secret-key: ${TOSS_API_SECRET_KEY}
