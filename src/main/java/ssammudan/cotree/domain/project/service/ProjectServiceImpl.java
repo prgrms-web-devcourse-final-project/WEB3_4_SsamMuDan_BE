@@ -120,8 +120,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional
 	public void updateRecruitmentStatus(Long projectId, String memberId) {
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+		Project project = getProjectOrThrow(projectId);
 
 		if (!isProjectOwner(project, memberId)) {
 			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY);
@@ -215,6 +214,11 @@ public class ProjectServiceImpl implements ProjectService {
 		projectRepository.save(project);
 		projectTechStackRepository.saveAll(stacks);
 		projectDevPositionRepository.saveAll(devPositions);
+	}
+
+	private Project getProjectOrThrow(Long projectId) {
+		return projectRepository.findById(projectId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
 	}
 
 }
