@@ -56,7 +56,7 @@ public class PaymentVerificationService {
 	}
 
 	private String getRedisKey(final String orderId) {
-		return "prepay:%s".formatted(orderId);
+		return "payment:prepay:%s".formatted(orderId);
 	}
 
 }
