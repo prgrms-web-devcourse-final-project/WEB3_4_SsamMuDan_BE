@@ -2,12 +2,14 @@ package ssammudan.cotree.domain.resume.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
@@ -24,6 +26,8 @@ import ssammudan.cotree.domain.resume.dto.query.TechStackInfo;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.infra.s3.S3Directory;
+import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
@@ -60,11 +64,12 @@ public class ResumeServiceImpl implements ResumeService {
 	private final PortfolioRepository portfolioRepository;
 	private final MemberRepository memberRepository;
 	private final ResumeViewCountBuffer resumeViewCountBuffer;
+	private final S3Uploader s3Uploader;
 
 	//todo 추후에 insert 작업 batchUpdate() 로 교체해서 테스트 전후 차이 비교 예정
 	@Transactional
 	@Override
-	public ResumeCreateResponse register(ResumeCreateRequest request, String memberId) {
+	public ResumeCreateResponse register(ResumeCreateRequest request, String memberId, MultipartFile resumeImage) {
 		// 기본정보에서 기술스택과 개발직무 get, resume 저장
 		List<TechStack> basicTechStacks = techStackRepository.findByIds(request.basicInfo().techStackIds());
 		List<DevelopmentPosition> developmentPositions = developmentPositionRepository
@@ -73,7 +78,12 @@ public class ResumeServiceImpl implements ResumeService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
-		Resume resume = Resume.create(request, member, basicTechStacks, developmentPositions);
+		//s3 서비스 이용해 업로드 -> saveUrl 받아와서 엔티티에 저장
+		String savedUrl = Optional.ofNullable(resumeImage)
+			.map(img -> s3Uploader.upload(memberId, resumeImage, S3Directory.USER_RESUME).getSaveUrl())
+			.orElse(null);
+
+		Resume resume = Resume.create(request, member, basicTechStacks, developmentPositions, savedUrl);
 		Resume savedResume = resumeRepository.save(resume);
 
 		// 커리어에서 기술스택 get, career 저장

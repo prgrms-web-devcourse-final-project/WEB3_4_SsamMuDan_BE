@@ -34,9 +34,9 @@ import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.global.response.SuccessCode;
 import ssammudan.cotree.integration.WebMvcTestSupporter;
+import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
-import ssammudan.cotree.model.review.reviewtype.type.TechEducationReviewType;
 
 /**
  * PackageName : ssammudan.cotree.domain.review.controller
@@ -77,7 +77,7 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 		//Given
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
-			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
+			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.sample();
 		String requestBody = objectMapper.writeValueAsString(requestDto);
@@ -116,7 +116,7 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 
 		TechEducationReviewRequest.Read requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Read.class
-			).set("techEducationType", TechEducationReviewType.TECH_TUBE)
+			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("itemId", itemId)
 			.sample();
 

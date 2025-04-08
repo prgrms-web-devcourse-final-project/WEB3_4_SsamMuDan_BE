@@ -10,6 +10,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+
 /**
  * PackageName : ssammudan.cotree.global.config
  * FileName    : RedisConfig
@@ -19,11 +23,15 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
- * 25. 4. 1.     hc               Initial creation
+ * 25. 4. 1.     hc               	  Initial creation
+ * 25. 4. 7.     loadingKKamo21       GenericJackson2JsonRedisSerializer에 ObjectMapper 주입
  */
 @Configuration
 @EnableCaching // Redis 캐싱 사용 시 필요
+@RequiredArgsConstructor
 public class RedisConfig {
+
+	private final ObjectMapper objectMapper;
 
 	@Value("${spring.redis.host}")
 	private String redisHost;
@@ -49,7 +57,7 @@ public class RedisConfig {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+		template.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
 		return template;
 	}
 }

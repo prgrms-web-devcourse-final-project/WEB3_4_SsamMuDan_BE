@@ -18,13 +18,14 @@ import lombok.Builder;
  */
 @Builder
 public record ResumeResponse(
-	Long resumdId,
+	Long resumeId,
 	String profileImage,
 	boolean isOpen,
 	List<String> positions,
 	List<Long> tackStacksId,
 	Integer year,
 	String introduction,
+	Integer viewCount,
 	LocalDateTime createAt
 ) {
 }
