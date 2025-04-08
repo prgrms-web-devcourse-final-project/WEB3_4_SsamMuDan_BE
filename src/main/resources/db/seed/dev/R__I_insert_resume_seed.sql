@@ -1,5 +1,5 @@
 INSERT INTO resume (id, member_id, email, profile_image, introduction, years, is_open, view_count, created_at,
-                    updated_at)
+                    modified_at)
 VALUES (1, '1', 'test1@email.com', 'https://loremflickr.com/320/240',
         '저는 개발을 사랑하는 개발자입니다.', 5, 1, 121, '2025-04-03 14:20:10', '2025-04-03 14:20:10'),
        (2, '1', 'test2@email.com', 'https://randomuser.me/api/portraits/men/1.jpg',
