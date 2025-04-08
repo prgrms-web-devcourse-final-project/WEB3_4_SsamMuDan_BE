@@ -45,7 +45,7 @@ import ssammudan.cotree.global.response.SuccessCode;
 @RestController
 @RequestMapping("/api/v1/project/team")
 @RequiredArgsConstructor
-@Tag(name = "Project Controller", description = "프로젝트 생성 API")
+@Tag(name = "Project Controller", description = "프로젝트 관련 API")
 public class ProjectController {
 	private final ProjectServiceImpl projectServiceImpl;
 
@@ -104,13 +104,12 @@ public class ProjectController {
 		@RequestParam(value = "size", defaultValue = "12", required = false) int size,
 		@RequestParam(value = "sort", defaultValue = "createdAt", required = false) String sort,
 		@RequestParam(value = "techStack", required = false) List<Long> techStackIds,
-		@RequestParam(value = "jobPosition", required = false) List<Long> devPositionIds
+		@RequestParam(value = "devPosition", required = false) List<Long> devPositionIds
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS,
 			projectServiceImpl.getProjects(pageable, techStackIds, devPositionIds, sort));
 	}
-
 
 	@PatchMapping("/{projectId}/status")
 	@Operation(summary = "프로젝트 모집 상태 변경", description = "프로젝트의 모집 상태(모집 중/모집 완료)를 변경합니다.")
