@@ -82,12 +82,13 @@ public class Resume extends BaseEntity {
 
 	public static Resume create(
 			ResumeCreateRequest request, Member member,
-			List<TechStack> techStacks, List<DevelopmentPosition> developmentPositions
+			List<TechStack> techStacks, List<DevelopmentPosition> developmentPositions,
+			String savedUrl
 	) {
 		Resume resume = Resume.builder()
 				.member(member)
 				.email(request.basicInfo().email())
-				.profileImage(request.basicInfo().profileImage())
+				.profileImage(savedUrl)
 				.introduction(request.basicInfo().introduction())
 				.years(request.basicInfo().years())
 				.isOpen(true)
