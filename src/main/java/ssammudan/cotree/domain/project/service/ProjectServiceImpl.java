@@ -69,7 +69,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectCreateResponse create(@Valid ProjectCreateRequest request, MultipartFile projectImage,
 		String memberId) {
 		Member member = getMemberOrThrow(memberId);
-		String savedImageUrl = uploadImageIfPresent(projectImage, memberId);
+		String savedImageUrl = uploadImage(projectImage, memberId);
 		List<TechStack> techStacks = getTechStackNames(request);
 		List<DevelopmentPosition> devPositions = getDevelopmentPositions(request);
 
@@ -182,10 +182,10 @@ public class ProjectServiceImpl implements ProjectService {
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
-	private String uploadImageIfPresent(MultipartFile image, String memberId) {
-		return Optional.ofNullable(image)
-			.map(img -> s3Uploader.upload(memberId, img, S3Directory.PROJECT).getSaveUrl())
-			.orElse(null);
+	private String uploadImage(MultipartFile image, String memberId) {
+		if (image == null)
+			return null;
+		return s3Uploader.upload(memberId, image, S3Directory.PROJECT).getSaveUrl();
 	}
 
 	private Project createProjectEntity(Member member, ProjectCreateRequest request, String imageUrl) {
