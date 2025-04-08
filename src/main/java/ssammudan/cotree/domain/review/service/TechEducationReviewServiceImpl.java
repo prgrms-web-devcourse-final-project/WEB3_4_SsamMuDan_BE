@@ -107,10 +107,9 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	public PageResponse<TechEducationReviewResponse.Detail> findAllTechEducationReviews(
 		final TechEducationReviewRequest.Read requestDto, final Pageable pageable
 	) {
-		return PageResponse.of(techEducationReviewRepository.findAllTechEducationReviews(
-			EducationType.getTechEducationTypeId(
-				requestDto.techEducationType()), requestDto.itemId(), pageable
-		).map(TechEducationReviewResponse.Detail::from));
+		return PageResponse.of(techEducationReviewRepository.findReviews(
+			EducationType.getTechEducationTypeId(requestDto.techEducationType()), requestDto.itemId(), pageable
+		));
 	}
 
 }
