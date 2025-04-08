@@ -93,6 +93,9 @@ public class PaymentServiceImpl implements PaymentService {
 				tossPaymentRequest
 			);
 			orderHistory.modifyStatus(PaymentStatus.SUCCESS);
+
+			paymentVerificationService.deletePrePayment(tossPaymentRequest);
+
 			return PaymentResponse.Detail.from(tossPaymentResponse);
 		} catch (GlobalException e) {
 			if (e.getErrorCode() == ErrorCode.TOSS_API_ERROR) {
