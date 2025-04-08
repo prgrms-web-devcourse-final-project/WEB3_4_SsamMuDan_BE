@@ -1,5 +1,6 @@
 package ssammudan.cotree.model.education.techtube.techtube.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -21,9 +23,13 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
 import ssammudan.cotree.domain.education.type.SearchEducationSort;
 import ssammudan.cotree.model.common.like.entity.QLike;
+import ssammudan.cotree.model.education.category.entity.QEducationCategory;
+import ssammudan.cotree.model.education.level.entity.QEducationLevel;
 import ssammudan.cotree.model.education.techtube.category.entity.QTechTubeEducationCategory;
 import ssammudan.cotree.model.education.techtube.techtube.entity.QTechTube;
 import ssammudan.cotree.model.member.member.entity.QMember;
+import ssammudan.cotree.model.payment.order.category.entity.QOrderCategory;
+import ssammudan.cotree.model.payment.order.history.entity.QOrderHistory;
 
 /**
  * PackageName : ssammudan.cotree.model.education.techtube.techtube.repository
@@ -36,6 +42,7 @@ import ssammudan.cotree.model.member.member.entity.QMember;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 30.    loadingKKamo21       Initial creation
  * 25. 4. 7.     Baekgwa       		  로직 리팩토링 및, 회원의 좋아요 상태 추가.
+ * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
  */
 @Repository
 @RequiredArgsConstructor
@@ -47,6 +54,10 @@ public class TechTubeRepositoryImpl implements TechTubeRepositoryCustom {
 	private static final QLike like = QLike.like;
 	private static final QTechTubeEducationCategory techTubeEducationCategory =
 		QTechTubeEducationCategory.techTubeEducationCategory;
+	private static final QEducationLevel educationLevel = QEducationLevel.educationLevel;
+	private static final QEducationCategory educationCategory = QEducationCategory.educationCategory;
+	private static final QOrderHistory orderHistory = QOrderHistory.orderHistory;
+	private static final QOrderCategory orderCategory = QOrderCategory.orderCategory;
 
 	/**
 	 * 전체 TechTube 목록 조회
@@ -65,6 +76,71 @@ public class TechTubeRepositoryImpl implements TechTubeRepositoryCustom {
 		Long total = getTechTubeListCount(keyword, educationId);
 
 		return new PageImpl<>(content, pageable, total != null ? total : 0);
+	}
+
+	@Override
+	public TechTubeResponse.TechTubeDetail findTechTube(final Long techTubeId, final String memberId) {
+		TechTubeResponse.TechTubeDetail content = jpaQueryFactory
+			.select(Projections.constructor(TechTubeResponse.TechTubeDetail.class,
+				member.nickname,
+				educationLevel.name,
+				Expressions.constant(new ArrayList<String>()),
+				techTube.title,
+				techTube.description,
+				techTube.introduction,
+				Expressions.numberOperation(Double.class, Ops.DIV,
+					techTube.totalRating.castToNum(Double.class),
+					Expressions.numberTemplate(Double.class, "CASE WHEN {0} = 0 THEN 1.0 ELSE {0} END",
+						techTube.totalReviewCount)),
+				techTube.totalReviewCount,
+				techTube.techTubeUrl,
+				techTube.techTubeDuration,
+				techTube.techTubeThumbnailUrl,
+				techTube.price,
+				techTube.viewCount,
+				JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.techTube.id.eq(techTubeId)),
+				memberId != null ? JPAExpressions
+					.select(like.count())
+					.from(like)
+					.where(like.techTube.id.eq(techTube.id)
+						.and(like.member.id.eq(memberId)))
+					.exists()
+					: Expressions.constant(Boolean.FALSE),
+				techTube.createdAt,
+				memberId != null ? JPAExpressions
+					.select(orderHistory.count())
+					.from(orderHistory)
+					.join(orderCategory).on(orderHistory.orderCategory.id.eq(orderCategory.id))
+					.where(
+						orderHistory.customer.id.eq(memberId)
+							.and(orderHistory.productId.eq(techTubeId))
+							.and(orderCategory.name.eq("TechTube"))
+					)
+					.exists()
+					: Expressions.constant(Boolean.FALSE)
+			))
+			.from(techTube)
+			.join(member).on(techTube.writer.id.eq(member.id))
+			.join(educationLevel).on(techTube.educationLevel.id.eq(educationLevel.id))
+			.where(techTube.id.eq(techTubeId))
+			.fetchOne();
+
+		if (content != null) {
+			// 카테고리 목록 별도 조회
+			List<String> findCategoryList = jpaQueryFactory
+				.select(educationCategory.name)
+				.from(techTubeEducationCategory)
+				.join(educationCategory).on(techTubeEducationCategory.educationCategory.id.eq(educationCategory.id))
+				.where(techTubeEducationCategory.techTube.id.eq(techTubeId))
+				.fetch();
+
+			content.addEducationCategoryList(findCategoryList);
+		}
+
+		return content;
 	}
 
 	private List<TechTubeResponse.ListInfo> getTechTubeList(String keyword, SearchEducationSort sort, Pageable pageable,

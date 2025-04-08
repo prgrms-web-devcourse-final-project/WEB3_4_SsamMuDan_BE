@@ -22,7 +22,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ssammudan.cotree.global.converter.DurationToLongConverter;
 import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
@@ -39,6 +38,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 29.    loadingKKamo21       Initial creation
+ * 25. 4. 7.     Baekgwa       		  Duration -> Long 으로 변경
  */
 @Entity
 @Table(name = "tech_tube")
@@ -94,8 +94,7 @@ public class TechTube extends BaseEntity {
 	private String techTubeUrl;    //TechTube 영상 URL
 
 	@Column(name = "tech_tube_duration")
-	@Convert(converter = DurationToLongConverter.class)
-	private Duration techTubeDuration;    //TechTube 영상 재생 시간
+	private Long techTubeDuration;    //TechTube 영상 재생 시간
 
 	@Column(name = "tech_tube_thumbnail_url", nullable = false)
 	private String techTubeThumbnailUrl;    //TechTube 썸네일 URL
@@ -121,7 +120,7 @@ public class TechTube extends BaseEntity {
 		final String description,
 		final String introduction,
 		final String techTubeUrl,
-		final Duration techTubeDuration,
+		final Long techTubeDuration,
 		final String techTubeThumbnailUrl,
 		final Integer price
 	) {
@@ -183,7 +182,7 @@ public class TechTube extends BaseEntity {
 		final String newDescription,
 		final String newIntroduction,
 		final String newTechTubeUrl,
-		final Duration newTechTubeDuration,
+		final Long newTechTubeDuration,
 		final String newTechTubeThumbnailUrl,
 		final Integer newPrice
 	) {

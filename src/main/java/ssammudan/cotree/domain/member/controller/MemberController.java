@@ -18,6 +18,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsRequest;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsResponse;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsVerifyRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
@@ -81,7 +84,7 @@ public class MemberController {
 		Member member = memberService.signIn(signinRequest);
 		CustomUser signInMember = new CustomUser(member, null);
 		signInMember.setLogin();
-		
+
 		String accessToken = accessTokenService.generateToken(signInMember);
 		long accessTokenExpirationSeconds = accessTokenService.getExpirationSeconds(); //accessTokenExpiration.getTime() - new Date().getTime();
 
@@ -99,7 +102,7 @@ public class MemberController {
 	public BaseResponse<Void> signOut(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = getValueInCookie("refresh_token", request);
 		long remainingTime = refreshTokenService.getClaimsFromToken(refreshToken)
-			.getExpiration().getTime() - new Date().getTime();
+								 .getExpiration().getTime() - new Date().getTime();
 
 		tokenBlacklistService.addToBlacklist(refreshToken, remainingTime);
 
@@ -109,17 +112,32 @@ public class MemberController {
 	}
 
 	@PostMapping("/signup/phone")
-	@Operation(summary = "회원가입 전화번호 인증 코드 전송", description = "입력하신 전화번호로 인증 코드를 전송합니다")
+	@Operation(summary = "회원가입 전화번호 인증 코드 전송", description = "회원가입 전화번호 인증 코드를 전송합니다")
 	public BaseResponse<Void> sendSignupCode(@Valid @RequestBody MemberSignupSmsRequest request) {
-		smsService.sendSignupMsg(request);
+		smsService.sendSignupCode(request);
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_SEND_SUCCESS);
 	}
 
 	@PostMapping("/signup/phone/verify")
-	@Operation(summary = "회원가입 전화번호 인증 확인", description = "인증번호를 확인합니다.")
+	@Operation(summary = "회원가입 전화번호 인증 확인", description = "화원가입 전화번호 인증번호를 확인합니다.")
 	public BaseResponse<Void> verifySignupCode(@Valid @RequestBody MemberSignupSmsVerifyRequest request) {
 		smsService.verifySignupCode(request);
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_VERIFY_SUCCESS);
+	}
+
+	@PostMapping("/recovery/loginId")
+	@Operation(summary = "로그인 아이디 찾기 전화번호 인증 코드전송", description = "로그인 아이디 찾기 인증번호를 전송합니다.")
+	public BaseResponse<Void> recoveryLoginId(@Valid @RequestBody MemberRecoverSmsRequest request) {
+		smsService.recoverLoginId(request);
+		return BaseResponse.success(SuccessCode.MEMBER_RECOVER_CODE_SEND_SUCCESS);
+	}
+
+	@PostMapping("/recovery/loginId/verify")
+	@Operation(summary = "로그인 아이디 찾기 전화번호 인증 확인", description = "로그인 아이디 찾기 인증번호를 확인합니다.")
+	public BaseResponse<MemberRecoverSmsResponse> verifyLoginId(
+		@Valid @RequestBody MemberRecoverSmsVerifyRequest request) {
+		return BaseResponse.success(SuccessCode.MEMBER_RECOVER_CODE_VERIFY_SUCCESS,
+			smsService.verifyRecoverLoginId(request));
 	}
 
 	private String getValueInCookie(String value, HttpServletRequest request) {
@@ -143,5 +161,4 @@ public class MemberController {
 			.build();
 		response.addHeader("Set-Cookie", cookie.toString());
 	}
-
 }

@@ -180,7 +180,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 			.instantiate(Instantiator.factoryMethod("create"))
 			.set("writer", member)
 			.set("educationLevel", educationLevel)
-			.set("techTubeDuration", Arbitraries.longs().greaterOrEqual(0).map(Duration::ofSeconds))
+			.set("techTubeDuration", Arbitraries.longs().greaterOrEqual(0))
 			.set("price", Arbitraries.integers().greaterOrEqual(0))
 			.sample();
 	}
