@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import ssammudan.cotree.model.member.member.entity.Member;
 
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, String>, MemberRepositoryCustom {
 	Optional<Member> findByUsername(String username);
 
 	Optional<Member> findByEmail(String email);
