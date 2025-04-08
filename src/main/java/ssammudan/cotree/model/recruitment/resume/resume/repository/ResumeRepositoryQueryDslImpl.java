@@ -26,7 +26,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
-import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
+import ssammudan.cotree.domain.resume.type.SearchResumeSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 
