@@ -2,13 +2,13 @@ INSERT INTO resume (id, member_id, email, profile_image, introduction, years, is
                     modified_at)
 VALUES (1, '1', 'test1@email.com', 'https://loremflickr.com/320/240',
         '저는 개발을 사랑하는 개발자입니다.', 5, 1, 121, '2025-04-03 14:20:10', '2025-04-03 14:20:10'),
-       (2, '1', 'test2@email.com', 'https://randomuser.me/api/portraits/men/1.jpg',
+       (2, '2', 'test2@email.com', 'https://randomuser.me/api/portraits/men/1.jpg',
         '백엔드 개발자로서 새로운 도전을 즐깁니다.', 0, 1, 95, '2025-04-03 14:21:15', '2025-04-03 14:21:15'),
-       (3, '1', 'test3@email.com', 'https://randomuser.me/api/portraits/women/2.jpg',
+       (3, '3', 'test3@email.com', 'https://randomuser.me/api/portraits/women/2.jpg',
         '데이터 분석과 AI에 관심이 많습니다.', 10, 1, 110, '2025-04-03 14:22:30', '2025-04-03 14:22:30'),
-       (4, '1', 'test4@email.com', 'https://randomuser.me/api/portraits/men/3.jpg',
+       (4, '4', 'test4@email.com', 'https://randomuser.me/api/portraits/men/3.jpg',
         '프론트엔드와 UI/UX 디자인을 연구하고 있습니다.', 3, 0, 85, '2025-04-03 14:23:40', '2025-04-03 14:23:40'),
-       (5, '1', 'test5@email.com', 'https://randomuser.me/api/portraits/women/4.jpg',
+       (5, '5', 'test5@email.com', 'https://randomuser.me/api/portraits/women/4.jpg',
         '최고의 코드를 작성하는 것이 목표입니다.', 10, 1, 230, '2025-04-03 14:24:55', '2025-04-03 14:24:55');
 
 INSERT INTO resume_techStack (id, resume_id, tech_stack_id)
