@@ -30,6 +30,8 @@ public class TechEducationReviewResponse {
 		long itemId,    //Item ID: TechBook ID, TechTube ID
 		@Schema(description = "TechEducation 리뷰 작성자", example = "홍길동")
 		String reviewer,    //리뷰 작성자 닉네임
+		@Schema(description = "TechEducation 리뷰 작성자 프로필 이미지 URL")
+		String profileImageUrl,    //리뷰 작성자 프로필 이미지
 		@Schema(description = "TechEducation 리뷰 평점", example = "5")
 		int rating,    //리뷰 평점
 		@Schema(description = "TechEducation 리뷰 내용", example = "스프링 부트의 다양한 기능을 활용하는 방법을 배울 수 있었습니다.")
@@ -43,6 +45,7 @@ public class TechEducationReviewResponse {
 				EducationType.getTechEducationType(techEducationReview.getTechEducationType().getId()),
 				techEducationReview.getItemId(),
 				techEducationReview.getReviewer().getNickname(),
+				techEducationReview.getReviewer().getProfileImageUrl(),
 				techEducationReview.getRating(),
 				techEducationReview.getContent(),
 				techEducationReview.getCreatedAt().toLocalDate()
