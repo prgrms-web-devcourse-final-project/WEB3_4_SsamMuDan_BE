@@ -116,10 +116,7 @@ public class CommunityServiceImpl implements CommunityService {
 		// Content 내용 후처리
 		// 마크다운 이미지 형식 + 불필요한 띄워쓰기 공백 삭제 처리.
 		List<CommunityResponse.BoardListDetail> processedList = findBoardList.getContent().stream()
-			.map(board -> {
-				String processedContent = processMarkdownContent(board.content());
-				return CommunityResponse.BoardListDetail.modifyContent(board, processedContent);
-			})
+			.map(board -> board.withContent(processMarkdownContent(board.content())))
 			.toList();
 
 		// 새로운 페이지 Response 객체 생성
