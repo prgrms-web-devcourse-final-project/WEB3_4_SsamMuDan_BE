@@ -124,7 +124,7 @@ public class ProjectServiceImpl implements ProjectService {
 			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
 
 		if (!isProjectOwner(project, memberId)) {
-			throw new GlobalException(ErrorCode.PROJECT_FORBIDDEN);
+			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY);
 		}
 		project.toggleIsOpen();
 	}
