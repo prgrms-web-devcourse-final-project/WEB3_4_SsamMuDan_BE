@@ -60,6 +60,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 				resume.isOpen,
 				resume.years,
 				getStringTemplate(),
+				resume.viewCount,
 				resume.createdAt
 			)
 			.from(resume)
@@ -98,8 +99,8 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 					Collectors.toList()
 				)
 			));
-
-		Map<Long, List<Long>> tackStacksMap = jpaQueryFactory
+		// 각 resume ID 에 대한 techStacks 조회
+		Map<Long, List<Long>> techStacksMap = jpaQueryFactory
 			.select(
 				resumeTechStack.resume.id,
 				techStack.id
@@ -122,7 +123,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 		List<ResumeResponse> resumeResponses = resumeTuples.stream()
 			.map(tuple -> {
 				Long resumeId = tuple.get(resume.id);
-				return toResumeResponse(tuple, positionsMap, tackStacksMap, resumeId);
+				return toResumeResponse(tuple, positionsMap, techStacksMap, resumeId);
 			})
 			.collect(Collectors.toList());
 
@@ -141,13 +142,14 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 	private ResumeResponse toResumeResponse(Tuple tuple, Map<Long, List<String>> positionsMap,
 		Map<Long, List<Long>> techStacksMap, Long resumeId) {
 		return ResumeResponse.builder()
-			.resumdId(resumeId)
+			.resumeId(resumeId)
 			.profileImage(tuple.get(resume.profileImage))
 			.isOpen(Boolean.TRUE.equals(tuple.get(resume.isOpen)))
 			.positions(positionsMap.getOrDefault(resumeId, Collections.emptyList()))
 			.tackStacksId(techStacksMap.getOrDefault(resumeId, Collections.emptyList()))
 			.year(tuple.get(resume.years))
 			.introduction(tuple.get(getStringTemplate()))
+			.viewCount(tuple.get(resume.viewCount))
 			.createAt(tuple.get(resume.createdAt))
 			.build();
 	}
