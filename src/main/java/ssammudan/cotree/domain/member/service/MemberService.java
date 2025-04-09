@@ -11,9 +11,11 @@ public interface MemberService {
 
 	Member signIn(MemberSigninRequest request);
 
-	Member updateMember(Member memberId, MemberInfoRequest request);
+	Member updateMember(String memberId, MemberInfoRequest request);
 
 	Member findById(String memberId);
 
 	MemberInfoResponse getMemberInfo(String id);
+
+	void updatePassword(String memberId, String password);
 }

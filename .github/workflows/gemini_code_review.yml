@@ -1,0 +1,101 @@
+name: Gemini Code Review
+
+on:
+  pull_request:
+    branches:
+      - dev
+    types: [ opened ]
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+
+      - name: Install GoogleGenerativeAI
+        run: |
+          npm install @google/generative-ai
+
+      - name: Get git diff for PR
+        run: |
+          git fetch origin "${{ github.event.pull_request.base.ref }}"
+          git fetch origin "${{ github.event.pull_request.head.ref }}"
+          git diff "origin/${{ github.event.pull_request.base.ref }}"..."origin/${{ github.event.pull_request.head.ref }}" > diff.txt
+
+      - name: Run Gemini Review
+        id: gemini_review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const diff_output = fs.readFileSync("diff.txt", "utf8");
+
+            const { GoogleGenerativeAI } = require("@google/generative-ai");
+            const genAI = new GoogleGenerativeAI("${{ secrets.GEMINI_API_KEY }}");
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+            const prompt = `
+              You are a senior backend software engineer.
+            
+              Your task is to perform a **high-level code review** based on the provided git diff.
+              Although you should analyze the code **class-by-class or file-by-file**,
+              you must still point out important issues within the internal logic of each class.
+            
+              Please focus on the following aspects:
+              - Class and function responsibilities (e.g., SRP violations, overly large methods)
+              - Structure and separation of concerns
+              - Maintainability and performance (e.g., tight coupling, redundant logic)
+              - Security implications (e.g., missing input validation, exposure of sensitive data)
+              - Internal implementation issues (e.g., missing null checks, unclear variable names)
+            
+              **Ignore** the following:
+              - Unnecessary code comments
+              - Styling or formatting issues (e.g., spaces, indentation)
+            
+              **Requirements**:
+              - Write your review in **Korean**
+              - Use **Markdown** format
+              - Clearly mention class or method names where applicable
+              - Do **not** include any intro or outro — just the review content
+            
+            Below is the git diff:
+            
+              <git diff>
+              ${diff_output}
+              </git diff>
+              `;
+            
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+            
+            fs.writeFileSync("review_result.txt", text);
+            console.log("Review results saved!");
+
+      - name: Comment on Pull Request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const body = fs.readFileSync("review_result.txt", "utf8");
+            
+            const pr_number = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pr_number,
+              body
+            });

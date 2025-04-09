@@ -1,119 +1,190 @@
-// package ssammudan.cotree.domain.member.service;
-//
-// import static org.assertj.core.api.Assertions.*;
-//
-// import org.junit.jupiter.api.DisplayName;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-//
-// import jakarta.transaction.Transactional;
-// import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
-// import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
-// import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
-// import ssammudan.cotree.integration.SpringBootTestSupporter;
-// import ssammudan.cotree.model.member.member.entity.Member;
-// import ssammudan.cotree.model.member.member.repository.MemberRepository;
-//
-// /**
-//  * PackageName : ssammudan.cotree.domain.member.service
-//  * FileName    : MemberServiceTest
-//  * Author      : hc
-//  * Date        : 25. 4. 2.
-//  * Description :
-//  * =====================================================================================================================
-//  * DATE          AUTHOR               NOTE
-//  * ---------------------------------------------------------------------------------------------------------------------
-//  * 25. 4. 2.     hc               Initial creation
-//  */
-// @Transactional
-// class MemberServiceTest extends SpringBootTestSupporter {
-// 	@Autowired
-// 	MemberService memberService;
-// 	@Autowired
-// 	private MemberRepository memberRepository;
-//
-// 	@Test
-// 	@DisplayName("회원가입")
-// 	void signUp() {
-// 		// given
-// 		MemberSignupRequest testMemberSignupRequest = new MemberSignupRequest(
-// 			"testEmail123@mail.com",
-// 			"password123",
-// 			"testName",
-// 			"testNickName",
-// 			"01012345678"
-// 		);
-//
-// 		// when
-// 		Member member = memberService.signUp(testMemberSignupRequest);
-//
-// 		// then
-// 		Member savedMember = memberRepository.findByUsername("testName").get();
-//
-// 		assertThat(member.getId()).isEqualTo(savedMember.getId());
-// 		assertThat(member.getUsername()).isEqualTo(savedMember.getUsername());
-// 		assertThat(member.getEmail()).isEqualTo(savedMember.getEmail());
-// 		assertThat(member.getNickname()).isEqualTo(savedMember.getNickname());
-// 		assertThat(member.getPhoneNumber()).isEqualTo(savedMember.getPhoneNumber());
-// 	}
-//
-// 	@Test
-// 	@DisplayName("로그인 Success")
-// 	void signIn() {
-// 		// given
-// 		MemberSignupRequest testMemberSignupRequest = new MemberSignupRequest(
-// 			"testEmail123@mail.com",
-// 			"password123",
-// 			"testName",
-// 			"testNickName",
-// 			"01012345678"
-// 		);
-// 		Member signUpMember = memberService.signUp(testMemberSignupRequest);
-//
-// 		MemberSigninRequest testMemberSigninRequest = new MemberSigninRequest(
-// 			"testEmail123@mail.com",
-// 			"password123"
-// 		);
-//
-// 		// when
-// 		Member signInMember = memberService.signIn(testMemberSigninRequest);
-//
-// 		// then
-// 		Member savedMember = memberRepository.findByUsername("testName").get();
-//
-// 		assertThat(signInMember.getId()).isEqualTo(savedMember.getId());
-// 		assertThat(signInMember.getUsername()).isEqualTo(savedMember.getUsername());
-// 		assertThat(signInMember.getEmail()).isEqualTo(savedMember.getEmail());
-// 		assertThat(signInMember.getNickname()).isEqualTo(savedMember.getNickname());
-// 		assertThat(signInMember.getPhoneNumber()).isEqualTo(savedMember.getPhoneNumber());
-// 	}
-//
-// 	@Test
-// 	@DisplayName("회원 정보 수정")
-// 	@Transactional
-// 	void updateMember() {
-// 		// given
-// 		MemberSignupRequest testMemberSignupRequest = new MemberSignupRequest(
-// 			"testEmail123@mail.com",
-// 			"password123",
-// 			"testName",
-// 			"testNickName",
-// 			"01012345678"
-// 		);
-// 		Member member = memberService.signUp(testMemberSignupRequest);
-//
-// 		MemberInfoRequest testMemberInfoRequest = new MemberInfoRequest(
-// 			"name",
-// 			"nickname",
-// 			"profileImageUrl"
-// 		);
-//
-// 		// when
-// 		Member updatedMember = memberService.updateMember(member, testMemberInfoRequest);
-//
-// 		// then
-// 		assertThat(updatedMember.getNickname()).isEqualTo(testMemberInfoRequest.username());
-// 		assertThat(updatedMember.getPhoneNumber()).isEqualTo(testMemberInfoRequest.nickname());
-// 		assertThat(updatedMember.getProfileImageUrl()).isEqualTo(testMemberInfoRequest.profileImageUrl());
-// 	}
-// }
+package ssammudan.cotree.domain.member.service;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
+import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
+import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
+import ssammudan.cotree.global.error.GlobalException;
+import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.repository.MemberRepository;
+import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.member.member.type.MemberStatus;
+
+/**
+ * PackageName : ssammudan.cotree.domain.member.service
+ * FileName    : MemberServiceTest
+ * Author      : hc
+ * Date        : 25. 4. 2.
+ * Description :
+ * =====================================================================================================================
+ * DATE          AUTHOR               NOTE
+ * ---------------------------------------------------------------------------------------------------------------------
+ * 25. 4. 2.     hc               Initial creation
+ */
+@ExtendWith({MockitoExtension.class})
+class MemberServiceTest {
+	@InjectMocks
+	private MemberServiceImpl memberService;
+
+	@Mock
+	private MemberRepository memberRepository;
+
+	@Mock
+	private PasswordEncoder passwordEncoder;
+
+	private Member mockMember;
+
+	@BeforeEach
+	void setUp() {
+		mockMember = new Member(
+			"id", "email", "username", "nickname", "password", "phoneNumber",
+			"profile", MemberRole.USER, MemberStatus.ACTIVE);
+	}
+
+	@Test
+	@DisplayName("회원 정보 찾기")
+	void findById() {
+		// given
+		when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(mockMember));
+
+		// when
+		Member findMember = memberService.findById(mockMember.getId());
+
+		// then
+		assertThat(findMember.getId()).isEqualTo(mockMember.getId());
+		assertThat(findMember.getEmail()).isEqualTo(mockMember.getEmail());
+		assertThat(findMember.getUsername()).isEqualTo(mockMember.getUsername());
+		assertThat(findMember.getNickname()).isEqualTo(mockMember.getNickname());
+		assertThat(findMember.getPhoneNumber()).isEqualTo(mockMember.getPhoneNumber());
+		assertThat(findMember.getProfileImageUrl()).isEqualTo(mockMember.getProfileImageUrl());
+		assertThat(findMember.getRole()).isEqualTo(mockMember.getRole());
+		assertThat(findMember.getMemberStatus()).isEqualTo(mockMember.getMemberStatus());
+	}
+
+	@Test
+	@DisplayName("회원이 존재하지 않으면 예외 발생")
+	void findByIdFail() {
+		// given
+		when(memberRepository.findById(any()))
+			.thenReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> memberService.findById("not_exist_id"))
+			.isInstanceOf(GlobalException.class)
+			.hasMessageContaining("회원을 찾을 수 없습니다.");
+	}
+
+	@Test
+	@DisplayName("회원 정보 수정")
+	void updateMember() {
+		// given
+		when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(mockMember));
+		// when(memberRepository.save(any())).thenReturn(mockMember);
+		MemberInfoRequest memberInfoRequest = new MemberInfoRequest("username1", "nickname1", "profile1");
+
+		// when
+		Member updateMember = memberService.updateMember(mockMember.getId(), memberInfoRequest);
+
+		// then
+		verify(memberRepository, times(1)).findById(mockMember.getId());
+		assertThat(updateMember.getUsername()).isEqualTo(memberInfoRequest.username());
+		assertThat(updateMember.getNickname()).isEqualTo(memberInfoRequest.nickname());
+		assertThat(updateMember.getProfileImageUrl()).isEqualTo(memberInfoRequest.profileImageUrl());
+	}
+
+	@Test
+	@DisplayName("회원 정보 수정 시 회원이 존재하지 않으면 예외 발생")
+	void updateMemberFail() {
+		// given
+		when(memberRepository.findById(any()))
+			.thenReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> memberService.updateMember("not_exist_id",
+			new MemberInfoRequest("username1", "nickname1", "profile1")))
+			.isInstanceOf(GlobalException.class)
+			.hasMessageContaining("회원을 찾을 수 없습니다.");
+	}
+
+	@Test
+	@DisplayName("로그인")
+	void signIn() {
+		// given
+		when(memberRepository.findByEmail(any())).thenReturn(Optional.ofNullable(mockMember));
+		when(passwordEncoder.matches("rawPassword", "password")).thenReturn(true);
+		MemberSigninRequest memberSigninRequest = new MemberSigninRequest(mockMember.getEmail(),
+			"rawPassword");
+
+		// when
+		Member findMember = memberService.signIn(memberSigninRequest);
+
+		// then
+		assertThat(findMember.getId()).isEqualTo(mockMember.getId());
+		assertThat(findMember.getEmail()).isEqualTo(mockMember.getEmail());
+		assertThat(findMember.getUsername()).isEqualTo(mockMember.getUsername());
+		assertThat(findMember.getNickname()).isEqualTo(mockMember.getNickname());
+		assertThat(findMember.getPhoneNumber()).isEqualTo(mockMember.getPhoneNumber());
+		assertThat(findMember.getProfileImageUrl()).isEqualTo(mockMember.getProfileImageUrl());
+		assertThat(findMember.getRole()).isEqualTo(mockMember.getRole());
+		assertThat(findMember.getMemberStatus()).isEqualTo(mockMember.getMemberStatus());
+	}
+
+	@Test
+	@DisplayName("로그인 시 회원이 존재하지 않으면 예외 발생")
+	void signInFail() {
+		// given
+		when(memberRepository.findByEmail(any()))
+			.thenReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> memberService.signIn(new MemberSigninRequest("not_exist_email", "rawPassword")))
+			.isInstanceOf(GlobalException.class)
+			.hasMessageContaining("인증정보가 일치하지 않습니다.");
+	}
+
+	@Test
+	@DisplayName("로그인 시 비밀번호가 일치하지 않으면 예외 발생")
+	void signInFail2() {
+		// given
+		when(memberRepository.findByEmail(any())).thenReturn(Optional.ofNullable(mockMember));
+		when(passwordEncoder.matches("rawPassword", "password")).thenReturn(false);
+		MemberSigninRequest memberSigninRequest = new MemberSigninRequest(mockMember.getEmail(),
+			"rawPassword");
+
+		// when & then
+		assertThatThrownBy(() -> memberService.signIn(memberSigninRequest))
+			.isInstanceOf(GlobalException.class)
+			.hasMessageContaining("인증정보가 일치하지 않습니다.");
+	}
+
+	@Test
+	@DisplayName("회원 정보 조회")
+	void getMemberInfo() {
+		// given
+		when(memberRepository.findById(any())).thenReturn(Optional.ofNullable(mockMember));
+
+		// when
+		MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(mockMember.getId());
+
+		// then
+		assertThat(memberInfoResponse).isNotNull();
+		assertThat(memberInfoResponse.email()).isEqualTo(mockMember.getEmail());
+		assertThat(memberInfoResponse.username()).isEqualTo(mockMember.getUsername());
+		assertThat(memberInfoResponse.nickname()).isEqualTo(mockMember.getNickname());
+		assertThat(memberInfoResponse.role()).isEqualTo(mockMember.getRole());
+		assertThat(memberInfoResponse.createdAt()).isEqualTo(mockMember.getCreatedAt());
+	}
+}
