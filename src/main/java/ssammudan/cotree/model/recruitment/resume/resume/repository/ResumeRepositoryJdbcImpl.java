@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 1.     kwak               Initial creation
+ * 2025. 4. 9.     Baekgwa             ViewCount 증가 `ViewCountStore`, `ViewCountScheduler` 에서 통합 관리 진행
  */
 @RequiredArgsConstructor
 public class ResumeRepositoryJdbcImpl implements ResumeRepositoryJdbc {
@@ -29,6 +30,7 @@ public class ResumeRepositoryJdbcImpl implements ResumeRepositoryJdbc {
 	private static final String UPDATE_VIEW_COUNT_SQL = "UPDATE resume SET view_count = view_count + ? WHERE id = ?";
 	private static final int MAX_BATCH_SIZE = 300;
 
+	@Deprecated(since = "2025-04-09", forRemoval = true)
 	@Override
 	public void bulkUpdateViewCount(Map<Long, Integer> viewCountData) {
 

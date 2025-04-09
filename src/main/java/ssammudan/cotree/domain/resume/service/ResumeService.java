@@ -22,12 +22,14 @@ import ssammudan.cotree.global.response.PageResponse;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 28.     kwak               Initial creation
+ * 2025. 4. 9.     Baekgwa             ViewCount 증가 `ViewCountStore`, `ViewCountScheduler` 에서 통합 관리 진행
  */
 public interface ResumeService {
 	ResumeCreateResponse register(ResumeCreateRequest request, String memberId, MultipartFile resumeImage);
 
 	ResumeDetailResponse detail(Long id);
 
+	@Deprecated(since = "2025-04-09", forRemoval = true)
 	void bulkViewCount(Map<Long, Integer> viewCountData);
 
 	PageResponse<ResumeResponse> getResumeList(int page, int size, List<Long> positionIds, List<Long> skillIds, Integer startYear, Integer endYear, SearchResumeSort sort);
