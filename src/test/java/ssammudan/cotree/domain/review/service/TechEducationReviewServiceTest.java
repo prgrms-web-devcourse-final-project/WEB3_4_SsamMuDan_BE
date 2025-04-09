@@ -30,6 +30,9 @@ import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
+import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
+import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
+import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
 
@@ -73,6 +76,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		em.createNativeQuery("TRUNCATE TABLE techEducation_review RESTART IDENTITY").executeUpdate();
 		em.createNativeQuery("TRUNCATE TABLE tech_book RESTART IDENTITY").executeUpdate();
 		em.createNativeQuery("TRUNCATE TABLE tech_tube RESTART IDENTITY").executeUpdate();
+		em.createNativeQuery("TRUNCATE TABLE order_history RESTART IDENTITY").executeUpdate();
 
 		em.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();    //H2 DB 외래키 제약 설정
 	}
@@ -156,14 +160,6 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 			.sample();
 	}
 
-	private TechEducationType createTechEducationType() {
-		return entityFixtureMonkey.giveMeBuilder(
-				TechEducationType.class)
-			.instantiate(Instantiator.factoryMethod("create"))
-			.set("name", "TechTube")
-			.sample();
-	}
-
 	private TechBook createTechBook(final Member member, final EducationLevel educationLevel) {
 		return entityFixtureMonkey.giveMeBuilder(TechBook.class)
 			.instantiate(Instantiator.factoryMethod("create"))
@@ -213,6 +209,40 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		return reviews;
 	}
 
+	private OrderHistory createOrderHistory(
+		final OrderCategory orderCategory, final Member customer, final Long productId, final PaymentStatus status
+	) {
+		return entityFixtureMonkey.giveMeBuilder(OrderHistory.class)
+			.setNull("id")
+			.set("orderCategory", orderCategory)
+			.set("customer", customer)
+			.set("orderId", Arbitraries.strings().ofMinLength(1).ofMaxLength(255))
+			.set("paymentKey", Arbitraries.strings().ofMinLength(1).ofMaxLength(255))
+			.set("status", status)
+			.set("productId", productId)
+			.set("productName", Arbitraries.strings().ofMaxLength(1).ofMaxLength(255))
+			.set("price", Arbitraries.integers().greaterOrEqual(0))
+			.sample();
+	}
+
+	private TechEducationType createTechEducationType(final Long id, final String name) {
+		em.createNativeQuery("INSERT INTO techEducation_type (id, name) VALUES (?, ?)")
+			.setParameter(1, id)
+			.setParameter(2, name)
+			.executeUpdate();
+		clearEntityContext();
+		return em.find(TechEducationType.class, id);
+	}
+
+	private OrderCategory createOrderCategory(final Long id, final String name) {
+		em.createNativeQuery("INSERT INTO order_category (id, name) VALUES (?, ?)")
+			.setParameter(1, id)
+			.setParameter(2, name)
+			.executeUpdate();
+		clearEntityContext();
+		return em.find(OrderCategory.class, id);
+	}
+
 	private void sleep(final long millis) {
 		try {
 			Thread.sleep(millis);
@@ -237,8 +267,12 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		Member reviewer = createMember();
 		em.persist(reviewer);
-		TechEducationType techEducationType = createTechEducationType();
-		em.persist(techEducationType);
+		TechEducationType techEducationType = createTechEducationType(1L, "TechTube");
+		OrderCategory orderCategory = createOrderCategory(1L, techEducationType.getName());
+		OrderHistory orderHistory = createOrderHistory(
+			orderCategory, reviewer, techTube.getId(), PaymentStatus.SUCCESS
+		);
+		em.persist(orderHistory);
 		clearEntityContext();
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
@@ -280,8 +314,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		setup();
 
 		String unknownMemberId = UUID.randomUUID().toString();
-		TechEducationType techEducationType = createTechEducationType();
-		em.persist(techEducationType);
+		TechEducationType techEducationType = createTechEducationType(1L, "TechTube");
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
@@ -310,14 +343,27 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		//Given
 		setup();
 
-		Long itemId = 1L;
+		Member creator = createMember();
+		em.persist(creator);
+		EducationLevel educationLevel = createEducationLevel();
+		em.persist(educationLevel);
+		TechTube techTube = createTechTube(creator, educationLevel);
+		em.persist(techTube);
 
-		Member member = createMember();
-		em.persist(member);
-		TechEducationType techEducationType = createTechEducationType();
-		em.persist(techEducationType);
-		TechEducationReview techEducationReview = createTechEducationReview(member, techEducationType, itemId);
+		Long itemId = techTube.getId();
+
+		Member reviewer = createMember();
+		em.persist(reviewer);
+		TechEducationType techEducationType = createTechEducationType(1L, "TechTube");
+		TechEducationReview techEducationReview = createTechEducationReview(reviewer, techEducationType, itemId);
 		em.persist(techEducationReview);
+		OrderCategory orderCategory = createOrderCategory(1L, techEducationType.getName());
+		em.persist(orderCategory);
+		OrderHistory orderHistory = createOrderHistory(
+			orderCategory, reviewer, itemId, PaymentStatus.SUCCESS
+		);
+		em.persist(orderHistory);
+		clearEntityContext();
 
 		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
 				TechEducationReviewRequest.Create.class
@@ -330,7 +376,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 
 		//Then
 		GlobalException globalException = assertThrows(GlobalException.class,
-			() -> techEducationReviewService.createTechEducationReview(member.getId(), requestDto));
+			() -> techEducationReviewService.createTechEducationReview(reviewer.getId(), requestDto));
 
 		assertAll(
 			() -> assertNotNull(globalException, "예외 존재"),
@@ -354,8 +400,7 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		});
 		EducationLevel educationLevel = createEducationLevel();
 		em.persist(educationLevel);
-		TechEducationType techEducationType = createTechEducationType();
-		em.persist(techEducationType);
+		TechEducationType techEducationType = createTechEducationType(1L, "TechTube");
 		TechTube techTube = createTechTube(creator, educationLevel);
 		em.persist(techTube);
 		List<TechEducationReview> reviews = createTechEducationReviews(reviewers, techEducationType, techTube.getId());
