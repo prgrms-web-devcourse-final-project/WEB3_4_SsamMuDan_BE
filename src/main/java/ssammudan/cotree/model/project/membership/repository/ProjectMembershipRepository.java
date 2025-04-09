@@ -16,7 +16,8 @@ import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
  * 2025-03-29     Baekgwa               Initial creation
  * 2025-04-08     sangxxjin             참가신청 기록 확인
  */
-public interface ProjectMembershipRepository extends JpaRepository<ProjectMembership, Long> {
+public interface ProjectMembershipRepository
+	extends JpaRepository<ProjectMembership, Long>, ProjectMembershipRepositoryCustom {
 
 	boolean existsByProjectIdAndMemberId(Long projectId, String memberId);
 }

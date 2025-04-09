@@ -50,6 +50,7 @@ import ssammudan.cotree.global.response.SuccessCode;
 @Tag(name = "Project Controller", description = "프로젝트 관련 API")
 public class ProjectController {
 	private final ProjectServiceImpl projectServiceImpl;
+	private final MembershipServiceImpl membershipServiceImpl;
 
 	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "프로젝트 생성", description = "새로운 프로젝트를 생성합니다.")
@@ -133,8 +134,20 @@ public class ProjectController {
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
-		projectServiceImpl.applyForProject(projectId, memberId);
+		membershipServiceImpl.applyForProject(projectId, memberId);
 		return BaseResponse.success(SuccessCode.PROJECT_APPLY_SUCCESS);
+	}
+
+	@GetMapping("/{projectId}/membership")
+	@Operation(summary = "프로젝트 참가자 전체 목록 조회", description = "프로젝트에 참가자 전체 유저들을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "프로젝트 참가자 목록 조회 성공")
+	public BaseResponse<List<MembershipResponse>> getProjectMemberships(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		return BaseResponse.success(SuccessCode.PROJECT_MEMBERSHIP_LIST_RETRIEVED,
+			membershipServiceImpl.getMemberships(projectId, memberId));
 	}
 
 }
