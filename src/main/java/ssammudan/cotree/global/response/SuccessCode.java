@@ -20,6 +20,7 @@ public enum SuccessCode {
 	MEMBER_SIGNUP_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "회원가입 전화번호 인증 성공"),
 	MEMBER_RECOVER_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 인증번호 발송 성공"),
 	MEMBER_RECOVER_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 전화번호 인증 성공"),
+	MEMBER_ORDER_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "회원의 구매 목록 조회를 성공하였습니다."),
 	MEMBER_PASSWORD_UPDATE_SUCCESS(HttpStatus.OK, "200", "비밀번호 변경 성공"),
 
 	//Education

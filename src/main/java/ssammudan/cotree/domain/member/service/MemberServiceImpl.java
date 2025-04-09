@@ -1,6 +1,9 @@
 package ssammudan.cotree.domain.member.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,15 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ssammudan.cotree.domain.member.dto.MemberOrderResponse;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
+import ssammudan.cotree.domain.member.type.OrderProductCategoryType;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRepository;
 
 @Slf4j
 @Service
@@ -27,6 +34,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final OrderCategoryRepository orderCategoryRepository;
 
 	@Override
 	public Member signUp(MemberSignupRequest signupRequest) {
@@ -69,6 +77,7 @@ public class MemberServiceImpl implements MemberService {
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
 			throw new GlobalException(ErrorCode.MEMBER_UNAUTHORIZED);
 		}
+
 		return member;
 	}
 
@@ -90,6 +99,22 @@ public class MemberServiceImpl implements MemberService {
 	public MemberInfoResponse getMemberInfo(String id) {
 		Member member = findById(id);
 		return new MemberInfoResponse(member);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public PageResponse<MemberOrderResponse> getOrderList(int page, int size, OrderProductCategoryType type,
+		String id) {
+
+		// FK 관계 없으므로 무결성 검증 로직 진행
+		if (!orderCategoryRepository.existsById(type.getId())) {
+			throw new GlobalException(ErrorCode.ORDER_CATEGORY_NOT_FOUND);
+		}
+
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<MemberOrderResponse> orderList = memberRepository.getOrderList(pageable, type, id);
+		return PageResponse.of(orderList);
 	}
 
 	@Override

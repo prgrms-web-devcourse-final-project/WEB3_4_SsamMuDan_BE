@@ -9,7 +9,7 @@ import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
-import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
+import ssammudan.cotree.domain.resume.type.SearchResumeSort;
 import ssammudan.cotree.global.response.PageResponse;
 
 /**
