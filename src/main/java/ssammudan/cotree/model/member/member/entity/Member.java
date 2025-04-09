@@ -73,8 +73,8 @@ public class Member extends BaseEntity {
 	}
 
 	public Member update(MemberInfoRequest request) {
-		this.nickname = request.username();
-		this.phoneNumber = request.nickname();
+		this.username = request.username();
+		this.nickname = request.nickname();
 		this.profileImageUrl = request.profileImageUrl();
 		return this;
 	}

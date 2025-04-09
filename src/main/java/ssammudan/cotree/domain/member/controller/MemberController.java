@@ -64,8 +64,7 @@ public class MemberController {
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
-		Member member = memberService.findById(memberId);
-		memberService.updateMember(member, request);
+		memberService.updateMember(memberId, request);
 
 		return BaseResponse.success(SuccessCode.MEMBER_INFO_UPDATE_SUCCESS);
 	}
@@ -102,7 +101,7 @@ public class MemberController {
 	public BaseResponse<Void> signOut(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = getValueInCookie("refresh_token", request);
 		long remainingTime = refreshTokenService.getClaimsFromToken(refreshToken)
-								 .getExpiration().getTime() - new Date().getTime();
+			.getExpiration().getTime() - new Date().getTime();
 
 		tokenBlacklistService.addToBlacklist(refreshToken, remainingTime);
 

@@ -71,7 +71,10 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	@Transactional
-	public Member updateMember(Member member, MemberInfoRequest memberInfoRequest) {
+	public Member updateMember(String memberId, MemberInfoRequest memberInfoRequest) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+
 		return member.update(memberInfoRequest);
 	}
 
