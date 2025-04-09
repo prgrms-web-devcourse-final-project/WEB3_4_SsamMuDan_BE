@@ -15,7 +15,9 @@ import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRep
 import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
+import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRepository;
 import ssammudan.cotree.model.payment.order.history.repository.OrderHistoryRepository;
+import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
@@ -43,6 +45,7 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	private final TechTubeRepository techTubeRepository;
 	private final TechBookRepository techBookRepository;
 	private final OrderHistoryRepository orderHistoryRepository;
+	private final OrderCategoryRepository orderCategoryRepository;
 
 	/**
 	 * TechEducationReview 신규 생성
@@ -63,8 +66,8 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 		); //TechTube = 1 or TechBook = 2
 
 		//해당 리뷰 작성자가 구매한 제품이 맞는지 확인
-		if (!orderHistoryRepository.existsByCustomer_IdAndOrderCategory_IdAndProductId(
-			memberId, reviewTypeId, requestDto.itemId()
+		if (!orderHistoryRepository.existsByCustomer_IdAndOrderCategory_IdAndProductIdAndStatus(
+			memberId, reviewTypeId, requestDto.itemId(), PaymentStatus.SUCCESS
 		)) {
 			throw new GlobalException(ErrorCode.NO_PERMISSION_TO_WRITE_REVIEW);
 		}
