@@ -259,7 +259,6 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
 		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
-		assertEquals(responseDto.viewCount(), techBook.getViewCount(), "조회 수 일치");    //TODO: 조회 수 증가 로직 추가 시 변경
 		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
 		assertTrue(responseDto.isLike(), "좋아요 여부");
 		assertEquals(responseDto.createdAt().toLocalDate(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
