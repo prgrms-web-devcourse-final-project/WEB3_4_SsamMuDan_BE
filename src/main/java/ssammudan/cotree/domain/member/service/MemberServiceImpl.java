@@ -89,4 +89,19 @@ public class MemberServiceImpl implements MemberService {
 		Member member = findById(id);
 		return new MemberInfoResponse(member);
 	}
+
+	@Override
+	public void updatePassword(String memberId, String password) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+
+		String redisEmailCode = redisTemplate.opsForValue()
+			.get("signup:email:%s".formatted(member.getEmail()));
+		if (redisEmailCode == null) {
+			throw new GlobalException(ErrorCode.EMAIL_VERIFY_FAILED);
+		}
+		redisTemplate.delete("signup:email:%s".formatted(member.getEmail()));
+
+		member.updatePassword(passwordEncoder.encode(password));
+	}
 }
