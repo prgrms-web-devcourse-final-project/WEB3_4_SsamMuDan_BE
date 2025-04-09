@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ssammudan.cotree.infra.frontend.FrontendConfig;
+import ssammudan.cotree.global.config.FrontendConfig;
 
 /**
  * PackageName : ssammudan.cotree.global.config.security.oauth.handler

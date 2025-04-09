@@ -2,6 +2,8 @@ package ssammudan.cotree.domain.community.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.With;
@@ -31,8 +33,18 @@ public class CommunityResponse {
 								  Boolean isLike, Boolean isNew, String profileImage) {
 	}
 
-	public record BoardDetail(String title, String author, LocalDateTime createdAt, String content, Long likeCount,
-							  Integer viewCount, Boolean isLike, Boolean isOwner, String profileImage) {
+	public record BoardDetail(
+		@JsonIgnore Long id,
+		String title,
+		String author,
+		LocalDateTime createdAt,
+		String content,
+		Long likeCount,
+		Integer viewCount,
+		Boolean isLike,
+		Boolean isOwner,
+		String profileImage
+	) {
 	}
 
 	public record BoardModify(Long boardId) {

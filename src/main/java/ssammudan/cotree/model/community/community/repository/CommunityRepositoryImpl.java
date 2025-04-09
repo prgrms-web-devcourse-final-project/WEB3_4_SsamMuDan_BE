@@ -115,6 +115,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 	public Optional<CommunityResponse.BoardDetail> findBoard(final Long boardId, final String memberId) {
 		return Optional.ofNullable(jpaQueryFactory
 			.select(Projections.constructor(CommunityResponse.BoardDetail.class,
+				community.id,
 				community.title,
 				member.nickname,
 				community.createdAt,

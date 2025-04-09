@@ -10,10 +10,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.global.config.FrontendConfig;
 import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
 import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
-import ssammudan.cotree.infra.frontend.FrontendConfig;
 
 /**
  * PackageName : ssammudan.cotree.global.config

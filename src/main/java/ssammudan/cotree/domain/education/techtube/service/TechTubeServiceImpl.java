@@ -11,6 +11,8 @@ import ssammudan.cotree.domain.education.type.SearchEducationSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
@@ -40,6 +42,8 @@ public class TechTubeServiceImpl implements TechTubeService {
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
 	private final EducationCategoryRepository educationCategoryRepository;
+
+	private final ViewCountStore viewCountStore;
 
 	/**
 	 * TechTube 신규 생성
@@ -92,7 +96,8 @@ public class TechTubeServiceImpl implements TechTubeService {
 			content = content.withTechTubeUrl(null);
 		}
 
-		// todo: view Count 증가
+		// 해당 TechTube 조회수 count 업데이트
+		viewCountStore.incrementViewCount(ViewCountType.TECH_TUBE, techTubeId);
 
 		return content;
 	}
