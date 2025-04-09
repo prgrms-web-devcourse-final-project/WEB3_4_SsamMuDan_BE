@@ -26,4 +26,6 @@ public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long
 
 	boolean existsByOrderId(String orderId);
 
+	boolean existsByCustomer_IdAndOrderCategory_IdAndProductId(String customerId, Long orderCategoryId, Long productId);
+
 }

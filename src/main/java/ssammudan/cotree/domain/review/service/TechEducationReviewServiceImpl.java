@@ -15,6 +15,7 @@ import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRep
 import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
+import ssammudan.cotree.model.payment.order.history.repository.OrderHistoryRepository;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.entity.TechEducationType;
@@ -41,6 +42,7 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	private final TechEducationTypeRepository techEducationTypeRepository;
 	private final TechTubeRepository techTubeRepository;
 	private final TechBookRepository techBookRepository;
+	private final OrderHistoryRepository orderHistoryRepository;
 
 	/**
 	 * TechEducationReview 신규 생성
@@ -56,11 +58,16 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 		Member reviewer = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
-		//TODO: 작성자의 구매 이력에 해당 교육 컨텐츠 유효성 확인 필요
-
 		Long reviewTypeId = EducationType.getTechEducationTypeId(
 			requestDto.techEducationType()
 		); //TechTube = 1 or TechBook = 2
+
+		//해당 리뷰 작성자가 구매한 제품이 맞는지 확인
+		if (!orderHistoryRepository.existsByCustomer_IdAndOrderCategory_IdAndProductId(
+			memberId, reviewTypeId, requestDto.itemId()
+		)) {
+			throw new GlobalException(ErrorCode.NO_PERMISSION_TO_WRITE_REVIEW);
+		}
 
 		//입력된 리뷰의 카테고리 확인(TechBook or TechTube)
 		TechEducationType techEducationType = techEducationTypeRepository.findById(

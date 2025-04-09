@@ -28,6 +28,7 @@ public enum ErrorCode {
 	TECH_EDUCATION_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "1006", "TechEducation 리뷰를 찾을 수 없습니다."),
 	TECH_EDUCATION_REVIEW_DUPLICATED(HttpStatus.BAD_REQUEST, "1007", "작성된 리뷰가 존재합니다."),
 	INVALID_EDUCATION_CATEGORY_ID(HttpStatus.BAD_REQUEST, "1008", "유효하지 않은 Education Category 입니다."),
+	NO_PERMISSION_TO_WRITE_REVIEW(HttpStatus.BAD_REQUEST, "1009", "리뷰 작성 권한이 없습니다."),
 
 	//Payment: 2001 ~ 3000
 	PAYMENT_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "2001", "결제는 완료되었으나, 서버 처리에 실패했습니다."),
