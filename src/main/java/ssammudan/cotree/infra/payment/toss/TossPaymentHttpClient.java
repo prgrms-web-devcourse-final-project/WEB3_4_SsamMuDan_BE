@@ -44,7 +44,7 @@ public class TossPaymentHttpClient {
 	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
 
-	@Value("${TOSS_API_SECRET_KEY}")
+	@Value("${api.toss.secret-key}")
 	private String tossApiSecretKey;
 
 	public TossPaymentResponse sendPaymentConfirmRequest(final TossPaymentRequest request) {
