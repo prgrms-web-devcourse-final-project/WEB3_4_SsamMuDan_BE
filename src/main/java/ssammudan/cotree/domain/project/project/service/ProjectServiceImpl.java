@@ -28,13 +28,11 @@ import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.common.techstack.repository.TechStackRepository;
 import ssammudan.cotree.model.member.member.entity.Member;
-import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionRepository;
 import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
-import ssammudan.cotree.model.project.project.repository.ProjectRepositoryImpl;
 import ssammudan.cotree.model.project.techstack.entity.ProjectTechStack;
 import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepository;
 
@@ -56,12 +54,10 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
 public class ProjectServiceImpl implements ProjectService {
 	private final TechStackRepository techStackRepository;
 	private final DevelopmentPositionRepository developmentPositionRepository;
-	private final MemberRepository memberRepository;
 	private final ProjectTechStackRepository projectTechStackRepository;
 	private final ProjectRepository projectRepository;
 	private final ProjectDevPositionRepository projectDevPositionRepository;
 	private final S3Uploader s3Uploader;
-	private final ProjectRepositoryImpl projectRepositoryImpl;
 	private final ProjectViewService projectViewService;
 	private final ProjectHelper projectHelper;
 
@@ -135,7 +131,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort) {
-		Page<ProjectListResponse> projects = projectRepositoryImpl.findByFilters(pageable, techStackIds,
+		Page<ProjectListResponse> projects = projectRepository.findByFilters(pageable, techStackIds,
 			devPositionIds, sort);
 		return PageResponse.of(projects);
 	}
