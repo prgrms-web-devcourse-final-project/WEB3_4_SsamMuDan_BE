@@ -91,6 +91,13 @@ dependencies {
 
     // coolSms
     implementation 'net.nurigo:sdk:4.3.2'
+
+    // retry
+    implementation 'org.springframework.retry:spring-retry'
+
+    // aop
+    implementation 'org.springframework:spring-aspects'
+
 }
 
 tasks.named('test') {
