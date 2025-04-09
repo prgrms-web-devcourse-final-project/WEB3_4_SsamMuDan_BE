@@ -28,6 +28,7 @@ import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRep
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
@@ -111,7 +112,7 @@ public class MemberServiceImpl implements MemberService {
 		}
 
 		Pageable pageable = PageRequest.of(page, size);
-		
+
 		Page<MemberOrderResponse> orderList = memberRepository.getOrderList(pageable, type, id);
 		return PageResponse.of(orderList);
 	}
