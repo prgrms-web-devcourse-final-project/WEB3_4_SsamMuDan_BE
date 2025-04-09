@@ -22,6 +22,8 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.like.entity.Like;
@@ -48,6 +50,7 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * 2025. 4. 2.     sangxxjin          create project 구현
  * 2025. 4. 2.     sangxxjin          get project 구현
  * 2025. 4. 3.     sangxxjin          get hot project 구현, 상세 조회 시 조회수 증가 구현
+ * 2025. 4. 9.     Baekgwa            프로젝트 상세 조회 시, 조회수 증가 로직 변경.
  */
 @Service
 @RequiredArgsConstructor
@@ -58,8 +61,8 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectRepository projectRepository;
 	private final ProjectDevPositionRepository projectDevPositionRepository;
 	private final S3Uploader s3Uploader;
-	private final ProjectViewService projectViewService;
 	private final ProjectHelper projectHelper;
+	private final ViewCountStore viewCountStore;
 
 	private static final int HOT_PROJECT_LIMIT = 2;
 
@@ -86,7 +89,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
 		Project project = getProjectByIdAndOptionalMemberId(projectId, memberId);
 
-		projectViewService.incrementViewCount(projectId);
+		viewCountStore.incrementViewCount(ViewCountType.PROJECT, projectId);
 
 		Member creator = project.getMember();
 
