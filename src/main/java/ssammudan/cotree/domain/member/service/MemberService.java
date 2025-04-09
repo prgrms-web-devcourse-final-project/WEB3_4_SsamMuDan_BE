@@ -14,7 +14,7 @@ public interface MemberService {
 
 	Member signIn(MemberSigninRequest request);
 
-	Member updateMember(Member memberId, MemberInfoRequest request);
+	Member updateMember(String memberId, MemberInfoRequest request);
 
 	Member findById(String memberId);
 
@@ -22,4 +22,6 @@ public interface MemberService {
 
 	PageResponse<MemberOrderResponse> getOrderList(int page, int size, OrderProductCategoryType type, String id);
 
+
+	void updatePassword(String memberId, String password);
 }

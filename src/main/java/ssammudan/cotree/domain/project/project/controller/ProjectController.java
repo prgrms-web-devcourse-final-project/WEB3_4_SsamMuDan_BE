@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.project.controller;
+package ssammudan.cotree.domain.project.project.controller;
 
 import java.util.List;
 
@@ -21,11 +21,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
-import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
-import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
-import ssammudan.cotree.domain.project.dto.ProjectListResponse;
-import ssammudan.cotree.domain.project.service.ProjectServiceImpl;
+import ssammudan.cotree.domain.project.membership.dto.MembershipResponse;
+import ssammudan.cotree.domain.project.membership.service.MembershipService;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.project.service.ProjectService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
@@ -47,7 +49,8 @@ import ssammudan.cotree.global.response.SuccessCode;
 @RequiredArgsConstructor
 @Tag(name = "Project Controller", description = "프로젝트 생성 API")
 public class ProjectController {
-	private final ProjectServiceImpl projectServiceImpl;
+	private final ProjectService projectService;
+	private final MembershipService membershipService;
 
 	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "프로젝트 생성", description = "새로운 프로젝트를 생성합니다.")
@@ -58,7 +61,7 @@ public class ProjectController {
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
-		ProjectCreateResponse response = projectServiceImpl.create(request, projectImage, memberId);
+		ProjectCreateResponse response = projectService.create(request, projectImage, memberId);
 
 		return BaseResponse.success(SuccessCode.PROJECT_CREATE_SUCCESS, response);
 	}
@@ -71,7 +74,7 @@ public class ProjectController {
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = (customUser != null) ? customUser.getId() : null;
-		ProjectInfoResponse response = projectServiceImpl.getProjectInfo(projectId, memberId);
+		ProjectInfoResponse response = projectService.getProjectInfo(projectId, memberId);
 
 		return BaseResponse.success(SuccessCode.PROJECT_FETCH_SUCCESS, response);
 	}
@@ -85,7 +88,7 @@ public class ProjectController {
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS,
-			projectServiceImpl.getHotProjectsForMain(pageable));
+			projectService.getHotProjectsForMain(pageable));
 	}
 
 	@GetMapping("/hot")
@@ -93,7 +96,7 @@ public class ProjectController {
 	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<List<ProjectListResponse>> getHotProjectsForProject() {
 		return BaseResponse.success(SuccessCode.PROJECT_HOT_LIST_SEARCH_SUCCESS,
-			projectServiceImpl.getHotProjectsForProject());
+			projectService.getHotProjectsForProject());
 	}
 
 	@GetMapping
@@ -104,13 +107,12 @@ public class ProjectController {
 		@RequestParam(value = "size", defaultValue = "12", required = false) int size,
 		@RequestParam(value = "sort", defaultValue = "createdAt", required = false) String sort,
 		@RequestParam(value = "techStack", required = false) List<Long> techStackIds,
-		@RequestParam(value = "jobPosition", required = false) List<Long> devPositionIds
+		@RequestParam(value = "devPosition", required = false) List<Long> devPositionIds
 	) {
 		Pageable pageable = PageRequest.of(page, size);
 		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS,
-			projectServiceImpl.getProjects(pageable, techStackIds, devPositionIds, sort));
+			projectService.getProjects(pageable, techStackIds, devPositionIds, sort));
 	}
-
 
 	@PatchMapping("/{projectId}/status")
 	@Operation(summary = "프로젝트 모집 상태 변경", description = "프로젝트의 모집 상태(모집 중/모집 완료)를 변경합니다.")
@@ -120,8 +122,32 @@ public class ProjectController {
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
-		projectServiceImpl.updateRecruitmentStatus(projectId, memberId);
+		projectService.updateRecruitmentStatus(projectId, memberId);
 		return BaseResponse.success(SuccessCode.PROJECT_STATUS_UPDATE_SUCCESS);
+	}
+
+	@PostMapping("/{projectId}/apply")
+	@Operation(summary = "프로젝트 참가 신청", description = "프로젝트에 참가 신청합니다.")
+	@ApiResponse(responseCode = "200", description = "참가 신청 성공")
+	public BaseResponse<Void> applyForProject(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		membershipService.applyForProject(projectId, memberId);
+		return BaseResponse.success(SuccessCode.PROJECT_APPLY_SUCCESS);
+	}
+
+	@GetMapping("/{projectId}/membership")
+	@Operation(summary = "프로젝트 참가자 전체 목록 조회", description = "프로젝트에 참가자 전체 유저들을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "프로젝트 참가자 목록 조회 성공")
+	public BaseResponse<List<MembershipResponse>> getProjectMemberships(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		return BaseResponse.success(SuccessCode.PROJECT_MEMBERSHIP_LIST_RETRIEVED,
+			membershipService.getMemberships(projectId, memberId));
 	}
 
 }

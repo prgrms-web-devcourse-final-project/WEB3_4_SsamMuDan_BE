@@ -22,6 +22,7 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
+import ssammudan.cotree.model.member.member.type.MemberRole;
 
 @Slf4j
 @Service
@@ -53,6 +54,7 @@ public class MemberServiceImpl implements MemberService {
 				.username(signupRequest.username())
 				.nickname(signupRequest.nickname())
 				.phoneNumber(signupRequest.phoneNumber())
+				.role(MemberRole.from(signupRequest.role()))
 				.build();
 			return memberRepository.save(newMember);
 		} catch (DataIntegrityViolationException e) {
@@ -64,6 +66,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Member signIn(MemberSigninRequest request) {
 		Member member = memberRepository.findByEmail(request.email())
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_UNAUTHORIZED));
@@ -76,20 +79,22 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	@Transactional
-	public Member updateMember(Member member, MemberInfoRequest memberInfoRequest) {
+	public Member updateMember(String memberId, MemberInfoRequest memberInfoRequest) {
+		Member member = findById(memberId);
 		return member.update(memberInfoRequest);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Member findById(String memberId) {
-		return memberRepository.findById(memberId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public MemberInfoResponse getMemberInfo(String id) {
-		Member member = memberRepository.findById(id)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		Member member = findById(id);
 		return new MemberInfoResponse(member);
 	}
 
@@ -100,5 +105,20 @@ public class MemberServiceImpl implements MemberService {
 		Pageable pageable = PageRequest.of(page, size);
 		Page<MemberOrderResponse> orderList = memberRepository.getOrderList(pageable, type, id);
 		return PageResponse.of(orderList);
+	}
+
+	@Override
+	public void updatePassword(String memberId, String password) {
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+
+		String redisEmailCode = redisTemplate.opsForValue()
+			.get("signup:email:%s".formatted(member.getEmail()));
+		if (redisEmailCode == null) {
+			throw new GlobalException(ErrorCode.EMAIL_VERIFY_FAILED);
+		}
+		redisTemplate.delete("signup:email:%s".formatted(member.getEmail()));
+
+		member.updatePassword(passwordEncoder.encode(password));
 	}
 }

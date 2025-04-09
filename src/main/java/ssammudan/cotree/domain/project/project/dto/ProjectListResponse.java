@@ -1,13 +1,7 @@
-package ssammudan.cotree.domain.project.dto;
+package ssammudan.cotree.domain.project.project.dto;
 
 import java.time.LocalDate;
 import java.util.List;
-
-
-import lombok.AccessLevel;
-import lombok.Builder;
-import ssammudan.cotree.model.member.member.entity.Member;
-import ssammudan.cotree.model.project.project.entity.Project;
 
 /**
  * PackageName : ssammudan.cotree.domain.project.dto

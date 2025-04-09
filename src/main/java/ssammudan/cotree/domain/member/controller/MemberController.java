@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,8 +69,7 @@ public class MemberController {
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
-		Member member = memberService.findById(memberId);
-		memberService.updateMember(member, request);
+		memberService.updateMember(memberId, request);
 
 		return BaseResponse.success(SuccessCode.MEMBER_INFO_UPDATE_SUCCESS);
 	}
@@ -106,13 +106,21 @@ public class MemberController {
 	public BaseResponse<Void> signOut(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = getValueInCookie("refresh_token", request);
 		long remainingTime = refreshTokenService.getClaimsFromToken(refreshToken)
-								 .getExpiration().getTime() - new Date().getTime();
+			.getExpiration().getTime() - new Date().getTime();
 
 		tokenBlacklistService.addToBlacklist(refreshToken, remainingTime);
 
 		response.addHeader("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
 		response.addHeader("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNOUT_SUCCESS);
+	}
+
+	@PatchMapping("/recovery/password")
+	@Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
+	public BaseResponse<Void> recoveryPassword(@RequestParam String password,
+		@AuthenticationPrincipal CustomUser customUser) {
+		memberService.updatePassword(customUser.getId(), password);
+		return BaseResponse.success(SuccessCode.MEMBER_PASSWORD_UPDATE_SUCCESS);
 	}
 
 	@PostMapping("/signup/phone")

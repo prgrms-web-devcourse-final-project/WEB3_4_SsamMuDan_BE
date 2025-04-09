@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.project.dto;
+package ssammudan.cotree.domain.project.project.dto;
 
 import java.time.LocalDate;
 import java.util.List;
