@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.dto.ProjectDevPositionResponse;
 import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.dto.UpdateProjectPositionRequest;
@@ -204,9 +205,9 @@ public class ProjectServiceImpl implements ProjectService {
 		return developmentPositionRepository.findByIds(request.recruitmentPositions().keySet());
 	}
 
-	private List<Map<String, Integer>> convertDevPositions(Set<ProjectDevPosition> devPositions) {
+	private List<ProjectDevPositionResponse> convertDevPositions(Set<ProjectDevPosition> devPositions) {
 		return devPositions.stream()
-			.map(devPos -> Map.of(devPos.getDevelopmentPosition().getName(), devPos.getAmount()))
+			.map(ProjectDevPositionResponse::from)
 			.toList();
 	}
 
