@@ -45,10 +45,11 @@ public enum ErrorCode {
 
 	//Project: 4001 ~ 5000
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
-	PROJECT_OWNER_ONLY(HttpStatus.FORBIDDEN, "4002", "해당 프로젝트의 생성자만 수정할 수 있습니다."),
+	PROJECT_OWNER_ONLY_CAN_UPDATE(HttpStatus.FORBIDDEN, "4002", "해당 프로젝트의 생성자만 수정할 수 있습니다."),
 	PROJECT_OWNER_CANNOT_JOIN(HttpStatus.FORBIDDEN, "4003", "프로젝트 생성자는 참가 신청할 수 없습니다."),
 	PROJECT_NOT_OPEN(HttpStatus.FORBIDDEN, "4004", "프로젝트가 모집중이 아닙니다."),
 	PROJECT_MEMBER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "4005", "이미 프로젝트에 참가 신청한 기록이 있습니다."),
+	PROJECT_OWNER_ONLY_CAN_VIEW(HttpStatus.FORBIDDEN, "4006", "해당 프로젝트의 생성자만 조회할 수 있습니다."),
 
 	//Community: 5001 ~ 6000
 	COMMUNITY_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, "5001", "유효하지 않은 글 카테고리 입니다."),
