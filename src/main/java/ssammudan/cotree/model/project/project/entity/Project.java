@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.global.entity.BaseEntity;
 import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.member.member.entity.Member;

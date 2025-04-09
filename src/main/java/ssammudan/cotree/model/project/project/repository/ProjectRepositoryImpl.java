@@ -13,7 +13,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import ssammudan.cotree.domain.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.project.devposition.entity.QProjectDevPosition;
 import ssammudan.cotree.model.project.membership.entity.QProjectMembership;

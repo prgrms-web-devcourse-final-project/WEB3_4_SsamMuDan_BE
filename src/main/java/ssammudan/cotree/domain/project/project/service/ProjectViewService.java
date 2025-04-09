@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.project.service;
+package ssammudan.cotree.domain.project.project.service;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
