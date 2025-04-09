@@ -2,7 +2,6 @@ package ssammudan.cotree.domain.project.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -32,6 +31,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionRepository;
 import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
+import ssammudan.cotree.model.project.membership.repository.ProjectMembershipRepository;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
 import ssammudan.cotree.model.project.project.repository.ProjectRepositoryImpl;
@@ -43,7 +43,7 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * FileName    : ProjectService
  * Author      : sangxxjin
  * Date        : 2025. 4. 2.
- * Description : 
+ * Description : ProjectService
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -63,13 +63,16 @@ public class ProjectServiceImpl implements ProjectService {
 	private final S3Uploader s3Uploader;
 	private final ProjectRepositoryImpl projectRepositoryImpl;
 	private final ProjectViewService projectViewService;
+	private final ProjectMembershipRepository projectMembershipRepository;
+
+	private static final int HOT_PROJECT_LIMIT = 2;
 
 	@Override
 	@Transactional
 	public ProjectCreateResponse create(@Valid ProjectCreateRequest request, MultipartFile projectImage,
 		String memberId) {
 		Member member = getMemberOrThrow(memberId);
-		String savedImageUrl = uploadImageIfPresent(projectImage, memberId);
+		String savedImageUrl = uploadImage(projectImage, memberId);
 		List<TechStack> techStacks = getTechStackNames(request);
 		List<DevelopmentPosition> devPositions = getDevelopmentPositions(request);
 
@@ -82,6 +85,7 @@ public class ProjectServiceImpl implements ProjectService {
 		return ProjectCreateResponse.from(project);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
 		Project project = getProjectByIdAndOptionalMemberId(projectId, memberId);
@@ -102,36 +106,52 @@ public class ProjectServiceImpl implements ProjectService {
 		);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
 		Page<ProjectListResponse> projects = projectRepository.findHotProjectsForMain(pageable);
 		return PageResponse.of(projects);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public List<ProjectListResponse> getHotProjectsForProject() {
 		//todo: 캐싱 작업
-		return projectRepository.findHotProjectsForProject(2);
+		return projectRepository.findHotProjectsForProject(HOT_PROJECT_LIMIT);
 	}
 
 	@Override
 	@Transactional
 	public void updateRecruitmentStatus(Long projectId, String memberId) {
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+		Project project = getProjectOrThrow(projectId);
 
 		if (!isProjectOwner(project, memberId)) {
-			throw new GlobalException(ErrorCode.PROJECT_FORBIDDEN);
+			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY);
 		}
 		project.toggleIsOpen();
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort) {
 		Page<ProjectListResponse> projects = projectRepositoryImpl.findByFilters(pageable, techStackIds,
 			devPositionIds, sort);
 		return PageResponse.of(projects);
+	}
+
+	@Override
+	@Transactional
+	public void applyForProject(Long projectId, String memberId) {
+		Project project = getProjectOrThrow(projectId);
+		if (Boolean.FALSE.equals(project.getIsOpen()))
+			throw new GlobalException(ErrorCode.PROJECT_NOT_OPEN);
+		if (isProjectOwner(project, memberId))
+			throw new GlobalException(ErrorCode.PROJECT_OWNER_CANNOT_JOIN);
+		if (isMemberAlreadyApplied(projectId, memberId))
+			throw new GlobalException(ErrorCode.PROJECT_MEMBER_ALREADY_EXISTS);
+		ProjectMembership projectMembership = ProjectMembership.builderForApply(project, getMemberOrThrow(memberId));
+		projectMembershipRepository.save(projectMembership);
 	}
 
 	private Project getProjectByIdAndOptionalMemberId(Long projectId, String memberId) {
@@ -182,10 +202,10 @@ public class ProjectServiceImpl implements ProjectService {
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
-	private String uploadImageIfPresent(MultipartFile image, String memberId) {
-		return Optional.ofNullable(image)
-			.map(img -> s3Uploader.upload(memberId, img, S3Directory.PROJECT).getSaveUrl())
-			.orElse(null);
+	private String uploadImage(MultipartFile image, String memberId) {
+		if (image == null)
+			return null;
+		return s3Uploader.upload(memberId, image, S3Directory.PROJECT).getSaveUrl();
 	}
 
 	private Project createProjectEntity(Member member, ProjectCreateRequest request, String imageUrl) {
@@ -211,6 +231,15 @@ public class ProjectServiceImpl implements ProjectService {
 		projectRepository.save(project);
 		projectTechStackRepository.saveAll(stacks);
 		projectDevPositionRepository.saveAll(devPositions);
+	}
+
+	private Project getProjectOrThrow(Long projectId) {
+		return projectRepository.findById(projectId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
+	}
+
+	private boolean isMemberAlreadyApplied(Long projectId, String memberId) {
+		return projectMembershipRepository.existsByProjectIdAndMemberId(projectId, memberId);
 	}
 
 }
