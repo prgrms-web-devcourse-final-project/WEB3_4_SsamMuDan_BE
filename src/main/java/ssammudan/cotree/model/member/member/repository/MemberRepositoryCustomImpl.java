@@ -19,9 +19,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.member.dto.MemberOrderResponse;
 import ssammudan.cotree.domain.member.type.OrderProductCategoryType;
-import ssammudan.cotree.global.error.GlobalException;
-import ssammudan.cotree.global.response.ErrorCode;
-import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRepository;
 
 /**
  * PackageName : ssammudan.cotree.model.member.member.repository
@@ -38,16 +35,11 @@ import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRep
 public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
 	private final JPAQueryFactory jpaQueryFactory;
-	private final OrderCategoryRepository orderCategoryRepository;
 
 	@Override
 	public Page<MemberOrderResponse> getOrderList(Pageable pageable, OrderProductCategoryType type,
 		String memberId) {
 
-		// FK 관계 없으므로 무결성 검증 로직 진행
-		if (!orderCategoryRepository.existsById(type.getId())) {
-			throw new GlobalException(ErrorCode.ORDER_CATEGORY_NOT_FOUND);
-		}
 
 		if (type == TECH_TUBE) {
 			return getOrderTechTube(type.getId(), memberId, pageable);

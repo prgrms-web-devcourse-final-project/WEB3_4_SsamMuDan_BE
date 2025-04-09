@@ -23,6 +23,7 @@ import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.member.member.type.MemberRole;
+import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRepository;
 
 @Slf4j
 @Service
@@ -32,6 +33,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final OrderCategoryRepository orderCategoryRepository;
 
 	@Override
 	public Member signUp(MemberSignupRequest signupRequest) {
@@ -102,7 +104,14 @@ public class MemberServiceImpl implements MemberService {
 	@Transactional(readOnly = true)
 	public PageResponse<MemberOrderResponse> getOrderList(int page, int size, OrderProductCategoryType type,
 		String id) {
+
+		// FK 관계 없으므로 무결성 검증 로직 진행
+		if (!orderCategoryRepository.existsById(type.getId())) {
+			throw new GlobalException(ErrorCode.ORDER_CATEGORY_NOT_FOUND);
+		}
+
 		Pageable pageable = PageRequest.of(page, size);
+		
 		Page<MemberOrderResponse> orderList = memberRepository.getOrderList(pageable, type, id);
 		return PageResponse.of(orderList);
 	}
