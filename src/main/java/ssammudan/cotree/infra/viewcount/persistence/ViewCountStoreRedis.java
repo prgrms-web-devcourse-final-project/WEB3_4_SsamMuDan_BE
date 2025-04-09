@@ -55,8 +55,6 @@ public class ViewCountStoreRedis implements ViewCountStore {
 
 			incrementByKey(countKey);
 			addDirtySet(dirtyKey, itemId);
-
-			log.info("category = {}, id = {}, 조회수 증가 (임시저장)", category.name(), itemId);
 		} catch (Exception e) {
 			log.error("ViewCount increment 실패 - category : {}, itemId : {}, ", category.name(), itemId, e);
 		}
@@ -131,7 +129,7 @@ public class ViewCountStoreRedis implements ViewCountStore {
 	}
 
 	/**
-	 * ViewCountType으로 dirty set 키를 생성합니다.
+	 * ViewCountType 으로 dirty set 키를 생성합니다.
 	 */
 	private String dirtySetKeyGenerator(ViewCountType category) {
 		return switch (category) {

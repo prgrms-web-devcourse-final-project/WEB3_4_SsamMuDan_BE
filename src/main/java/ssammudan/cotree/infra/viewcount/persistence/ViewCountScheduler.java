@@ -19,7 +19,7 @@ import ssammudan.cotree.infra.viewcount.type.ViewCountType;
  * FileName    : ViewCountScheduler
  * Author      : Baekgwa
  * Date        : 2025-04-08
- * Description : 
+ * Description :
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -55,7 +55,6 @@ public class ViewCountScheduler {
 
 		// 없다면, 업데이트 종료
 		if (dirtyIdSet.isEmpty()) {
-			log.info("category = {}, 증가할 view count 가 없음.", type.name());
 			return;
 		}
 
@@ -64,7 +63,6 @@ public class ViewCountScheduler {
 
 		// 없다면, 업데이트 종료
 		if (idToViewCountMap.isEmpty()) {
-			log.info("category = {}, 증가할 view count 가 없음.", type.name());
 			return;
 		}
 
@@ -73,8 +71,6 @@ public class ViewCountScheduler {
 
 		// 처리 완료된 업데이트 대기 데이터 삭제 처리
 		viewCountStore.removeUpdatedItem(type);
-
-		log.info("category = {}, view count {}개 증가 완료", type.name(), updateCount);
 	}
 
 	/**
