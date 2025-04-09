@@ -39,5 +39,4 @@ public interface ProjectService {
 
 	void updateRecruitmentStatus(Long projectId, String memberId);
 
-	void applyForProject(Long projectId, String memberId);
 }

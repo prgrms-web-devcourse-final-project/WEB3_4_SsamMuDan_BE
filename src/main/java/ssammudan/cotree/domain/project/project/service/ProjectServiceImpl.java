@@ -32,7 +32,6 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionRepository;
 import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
-import ssammudan.cotree.model.project.membership.repository.ProjectMembershipRepository;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
 import ssammudan.cotree.model.project.project.repository.ProjectRepositoryImpl;
@@ -64,7 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private final S3Uploader s3Uploader;
 	private final ProjectRepositoryImpl projectRepositoryImpl;
 	private final ProjectViewService projectViewService;
-	private final ProjectMembershipRepository projectMembershipRepository;
+	private final ProjectHelper projectHelper;
 
 	private static final int HOT_PROJECT_LIMIT = 2;
 
@@ -72,7 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	public ProjectCreateResponse create(@Valid ProjectCreateRequest request, MultipartFile projectImage,
 		String memberId) {
-		Member member = getMemberOrThrow(memberId);
+		Member member = projectHelper.getMemberOrThrow(memberId);
 		String savedImageUrl = uploadImage(projectImage, memberId);
 		List<TechStack> techStacks = getTechStackNames(request);
 		List<DevelopmentPosition> devPositions = getDevelopmentPositions(request);
@@ -103,7 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
 			convertTechStacks(project.getProjectTechStacks()),
 			isLikedByMember(project.getLikes(), memberId),
 			isMemberParticipant(project.getProjectMemberships(), memberId),
-			isProjectOwner(project, memberId)
+			ProjectHelper.isProjectOwner(project, memberId)
 		);
 	}
 
@@ -124,10 +123,10 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional
 	public void updateRecruitmentStatus(Long projectId, String memberId) {
-		Project project = getProjectOrThrow(projectId);
+		Project project = projectHelper.getProjectOrThrow(projectId);
 
-		if (!isProjectOwner(project, memberId)) {
-			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY);
+		if (!ProjectHelper.isProjectOwner(project, memberId)) {
+			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY_CAN_UPDATE);
 		}
 		project.toggleIsOpen();
 	}
@@ -139,20 +138,6 @@ public class ProjectServiceImpl implements ProjectService {
 		Page<ProjectListResponse> projects = projectRepositoryImpl.findByFilters(pageable, techStackIds,
 			devPositionIds, sort);
 		return PageResponse.of(projects);
-	}
-
-	@Override
-	@Transactional
-	public void applyForProject(Long projectId, String memberId) {
-		Project project = getProjectOrThrow(projectId);
-		if (Boolean.FALSE.equals(project.getIsOpen()))
-			throw new GlobalException(ErrorCode.PROJECT_NOT_OPEN);
-		if (isProjectOwner(project, memberId))
-			throw new GlobalException(ErrorCode.PROJECT_OWNER_CANNOT_JOIN);
-		if (isMemberAlreadyApplied(projectId, memberId))
-			throw new GlobalException(ErrorCode.PROJECT_MEMBER_ALREADY_EXISTS);
-		ProjectMembership projectMembership = ProjectMembership.builderForApply(project, getMemberOrThrow(memberId));
-		projectMembershipRepository.save(projectMembership);
 	}
 
 	private Project getProjectByIdAndOptionalMemberId(Long projectId, String memberId) {
@@ -194,15 +179,6 @@ public class ProjectServiceImpl implements ProjectService {
 			memberships.stream().anyMatch(m -> m.getMember().getId().equals(memberId));
 	}
 
-	private boolean isProjectOwner(Project project, String memberId) {
-		return project.getMember().getId().equals(memberId);
-	}
-
-	private Member getMemberOrThrow(String memberId) {
-		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-	}
-
 	private String uploadImage(MultipartFile image, String memberId) {
 		if (image == null)
 			return null;
@@ -232,15 +208,6 @@ public class ProjectServiceImpl implements ProjectService {
 		projectRepository.save(project);
 		projectTechStackRepository.saveAll(stacks);
 		projectDevPositionRepository.saveAll(devPositions);
-	}
-
-	private Project getProjectOrThrow(Long projectId) {
-		return projectRepository.findById(projectId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
-	}
-
-	private boolean isMemberAlreadyApplied(Long projectId, String memberId) {
-		return projectMembershipRepository.existsByProjectIdAndMemberId(projectId, memberId);
 	}
 
 }
