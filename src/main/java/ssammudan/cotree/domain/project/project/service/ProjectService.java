@@ -1,14 +1,14 @@
-package ssammudan.cotree.domain.project.service;
+package ssammudan.cotree.domain.project.project.service;
 
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
-import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
-import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
-import ssammudan.cotree.domain.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.global.response.PageResponse;
 
 /**

@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.project.controller;
+package ssammudan.cotree.domain.project.project.controller;
 
 import java.util.List;
 
@@ -21,11 +21,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
-import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
-import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
-import ssammudan.cotree.domain.project.dto.ProjectListResponse;
-import ssammudan.cotree.domain.project.service.ProjectServiceImpl;
+import ssammudan.cotree.domain.project.membership.dto.MembershipResponse;
+import ssammudan.cotree.domain.project.membership.service.MembershipServiceImpl;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.project.service.ProjectServiceImpl;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
