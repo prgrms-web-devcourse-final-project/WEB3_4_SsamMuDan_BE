@@ -22,6 +22,8 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.like.entity.Like;
@@ -34,7 +36,6 @@ import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionR
 import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
-import ssammudan.cotree.model.project.project.repository.ProjectRepositoryImpl;
 import ssammudan.cotree.model.project.techstack.entity.ProjectTechStack;
 import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepository;
 
@@ -50,6 +51,7 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * 2025. 4. 2.     sangxxjin          create project 구현
  * 2025. 4. 2.     sangxxjin          get project 구현
  * 2025. 4. 3.     sangxxjin          get hot project 구현, 상세 조회 시 조회수 증가 구현
+ * 2025. 4. 9.     Baekgwa            ViewCount 증가 `ViewCountStore`, `ViewCountScheduler` 에서 통합 관리 진행
  */
 @Service
 @RequiredArgsConstructor
@@ -60,9 +62,9 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectTechStackRepository projectTechStackRepository;
 	private final ProjectRepository projectRepository;
 	private final ProjectDevPositionRepository projectDevPositionRepository;
+
 	private final S3Uploader s3Uploader;
-	private final ProjectRepositoryImpl projectRepositoryImpl;
-	private final ProjectViewService projectViewService;
+	private final ViewCountStore viewCountStore;
 
 	@Override
 	@Transactional
@@ -86,7 +88,8 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
 		Project project = getProjectByIdAndOptionalMemberId(projectId, memberId);
 
-		projectViewService.incrementViewCount(projectId);
+		// 조회수 증가 비동기 메서드 실행
+		viewCountStore.incrementViewCount(ViewCountType.PROJECT, project.getId());
 
 		Member creator = project.getMember();
 
@@ -129,7 +132,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort) {
-		Page<ProjectListResponse> projects = projectRepositoryImpl.findByFilters(pageable, techStackIds,
+		Page<ProjectListResponse> projects = projectRepository.findByFilters(pageable, techStackIds,
 			devPositionIds, sort);
 		return PageResponse.of(projects);
 	}

@@ -22,10 +22,12 @@ import ssammudan.cotree.model.project.project.repository.ProjectRepository;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 4.     sangxxjin               Initial creation
+ * 2025. 4. 9.     Baekgwa                 ViewCount 증가 스케줄, `ViewCountScheduler` 에서 통합 관리 진행
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Deprecated(since = "2025-04-09", forRemoval = true)
 public class RedisViewCountScheduler {
 
 	private final RedisTemplate<String, String> redisTemplate;
@@ -33,7 +35,8 @@ public class RedisViewCountScheduler {
 	private static final String VIEW_COUNT_KEY_PREFIX = "project:viewCount:";
 	private static final String VIEW_COUNT_QUEUE = "project:viewCountQueue";
 
-	@Scheduled(fixedDelay = 4000)
+	@Deprecated(since = "2025-04-09", forRemoval = true)
+	// @Scheduled(fixedDelay = 4000)
 	public void processViewCountUpdates() {
 		Set<String> projectIds = redisTemplate.opsForSet().members(VIEW_COUNT_QUEUE);
 		if (projectIds == null || projectIds.isEmpty()) {
