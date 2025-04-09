@@ -20,6 +20,7 @@ public enum SuccessCode {
 	MEMBER_SIGNUP_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "회원가입 전화번호 인증 성공"),
 	MEMBER_RECOVER_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 인증번호 발송 성공"),
 	MEMBER_RECOVER_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 전화번호 인증 성공"),
+	MEMBER_PASSWORD_UPDATE_SUCCESS(HttpStatus.OK, "200", "비밀번호 변경 성공"),
 
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 성공했습니다."),
@@ -71,7 +72,8 @@ public enum SuccessCode {
 	TECH_STACK_FIND_SUCCESS(HttpStatus.OK, "200", "기술 스택 조회 성공"),
 	EDUCATION_CATEGORY_FIND_SUCCESS(HttpStatus.OK, "200", "교육 카테고리 조회 성공"),
 	COMMUNITY_CATEGORY_FIND_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 카테고리 조회 성공"),
-	POSITION_FIND_SUCCESS(HttpStatus.OK, "200", "개발 직무 조회 성공");
+	POSITION_FIND_SUCCESS(HttpStatus.OK, "200", "개발 직무 조회 성공"),
+	;
 
 	private final HttpStatus status;
 	private final String code;
