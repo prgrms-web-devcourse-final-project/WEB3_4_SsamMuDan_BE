@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.review.controller;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -87,6 +88,7 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 
 		//When
 		ResultActions resultActions = mockMvc.perform(post("/api/v1/education/review")
+			.with(csrf())
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.content(requestBody));
 
@@ -104,6 +106,7 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 	@ParameterizedTest
 	@AutoSource
 	@Repeat(10)
+	@CustomWithMockUser
 	@DisplayName("[Success] getTechEducationReviews(): TechEducation 리뷰 다 건 조회, 페이징 적용")
 	void getTechEducationReviews(@Min(1) @Max(Long.MAX_VALUE) final Long itemId) throws Exception {
 		//Given
