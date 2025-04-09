@@ -9,6 +9,7 @@ import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.global.response.PageResponse;
 
 /**
@@ -40,4 +41,6 @@ public interface ProjectService {
 	void updateRecruitmentStatus(Long projectId, String memberId);
 
 	void applyForProject(Long projectId, String memberId);
+
+	void updateProjectPositionAmounts(Long projectId, String memberId, List<UpdateProjectPositionRequest> requests);
 }
