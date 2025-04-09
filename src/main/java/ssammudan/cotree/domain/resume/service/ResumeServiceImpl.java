@@ -1,7 +1,6 @@
 package ssammudan.cotree.domain.resume.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -139,13 +138,6 @@ public class ResumeServiceImpl implements ResumeService {
 		viewCountStore.incrementViewCount(ViewCountType.RESUME, id);
 
 		return ResumeDetailResponse.create(basicInfoResponse, careerInfoResponses, portfolioInfoResponses);
-	}
-
-	@Deprecated(since = "2025-04-09", forRemoval = true)
-	@Transactional
-	@Override
-	public void bulkViewCount(Map<Long, Integer> viewCountData) {
-		resumeRepository.bulkUpdateViewCount(viewCountData);
 	}
 
 	@Transactional(readOnly = true)

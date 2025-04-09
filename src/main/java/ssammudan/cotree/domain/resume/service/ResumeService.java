@@ -1,7 +1,6 @@
 package ssammudan.cotree.domain.resume.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,8 +28,6 @@ public interface ResumeService {
 
 	ResumeDetailResponse detail(Long id);
 
-	@Deprecated(since = "2025-04-09", forRemoval = true)
-	void bulkViewCount(Map<Long, Integer> viewCountData);
-
-	PageResponse<ResumeResponse> getResumeList(int page, int size, List<Long> positionIds, List<Long> skillIds, Integer startYear, Integer endYear, SearchResumeSort sort);
+	PageResponse<ResumeResponse> getResumeList(int page, int size, List<Long> positionIds, List<Long> skillIds,
+		Integer startYear, Integer endYear, SearchResumeSort sort);
 }
