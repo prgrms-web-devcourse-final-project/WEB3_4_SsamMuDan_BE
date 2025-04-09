@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -25,6 +26,8 @@ import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.dto.UpdateProjectPositionRequest;
+import ssammudan.cotree.domain.project.service.ProjectService;
 import ssammudan.cotree.domain.project.service.ProjectServiceImpl;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
@@ -48,6 +51,7 @@ import ssammudan.cotree.global.response.SuccessCode;
 @Tag(name = "Project Controller", description = "프로젝트 관련 API")
 public class ProjectController {
 	private final ProjectServiceImpl projectServiceImpl;
+	private final ProjectService projectService;
 
 	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "프로젝트 생성", description = "새로운 프로젝트를 생성합니다.")
@@ -133,6 +137,19 @@ public class ProjectController {
 		String memberId = customUser.getId();
 		projectServiceImpl.applyForProject(projectId, memberId);
 		return BaseResponse.success(SuccessCode.PROJECT_APPLY_SUCCESS);
+	}
+
+	@PatchMapping("/{projectId}/position")
+	@Operation(summary = "프로젝트 직무별 모집 인원 수정", description = "프로젝트 직무별 모집 인원을 수정합니다.")
+	@ApiResponse(responseCode = "200", description = "수정 성공")
+	public BaseResponse<Void> updateProjectPositionAmounts(
+		@PathVariable Long projectId,
+		@RequestBody List<UpdateProjectPositionRequest> requests,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		projectService.updateProjectPositionAmounts(projectId, memberId, requests);
+		return BaseResponse.success(SuccessCode.PROJECT_POSITION_UPDATE_SUCCESS);
 	}
 
 }
