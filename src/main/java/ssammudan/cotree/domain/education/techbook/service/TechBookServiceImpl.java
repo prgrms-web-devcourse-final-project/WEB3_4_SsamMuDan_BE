@@ -89,8 +89,7 @@ public class TechBookServiceImpl implements TechBookService {
 		if (!techBookRepository.existsById(id)) {
 			throw new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND);
 		}
-		//TODO: 조회 수 증가
-		return techBookRepository.findTechBook(id, memberId);
+		return techBookRepository.findTechBook(id, memberId).withPurchaseCheck();
 	}
 
 	/**

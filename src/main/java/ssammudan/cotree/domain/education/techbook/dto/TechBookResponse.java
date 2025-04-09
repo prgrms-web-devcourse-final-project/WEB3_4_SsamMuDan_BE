@@ -43,6 +43,31 @@ public class TechBookResponse {
 		@Schema(description = "TechBook 등록 일자", example = "2025-01-01") LocalDateTime createdAt,
 		@Schema(description = "TechBook 결제 유무", example = "true") boolean isPaymentDone
 	) {
+		public Detail withPurchaseCheck() {
+			return new Detail(
+				this.id,
+				this.writer,
+				this.writerProfileImageUrl,
+				this.educationLevel,
+				this.educationCategoryList,
+				this.title,
+				this.description,
+				this.introduction,
+				this.avgRating,
+				this.totalReviewCount,
+				this.isPaymentDone ? this.techBookUrl : null,
+				this.techBookPreviewUrl,
+				this.techBookThumbnailUrl,
+				this.techBookPage,
+				this.price,
+				this.viewCount,
+				this.likeCount,
+				this.isLike,
+				this.createdAt,
+				this.isPaymentDone
+			);
+		}
+
 		public void addEducationCategoryList(final List<String> categoryList) {
 			this.educationCategoryList.addAll(categoryList);
 		}
