@@ -3,6 +3,7 @@ package ssammudan.cotree.model.review.review.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 
 /**
@@ -19,6 +20,10 @@ import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 public interface TechEducationReviewRepositoryCustom {
 
 	Page<TechEducationReview> findAllTechEducationReviews(
+		final Long techEducationTypeId, final Long itemId, final Pageable pageable
+	);
+
+	Page<TechEducationReviewResponse.Detail> findReviews(
 		final Long techEducationTypeId, final Long itemId, final Pageable pageable
 	);
 

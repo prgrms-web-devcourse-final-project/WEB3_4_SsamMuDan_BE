@@ -1,7 +1,6 @@
 package ssammudan.cotree.integration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -42,7 +41,6 @@ import com.navercorp.fixturemonkey.mockito.plugin.MockitoPlugin;
  */
 @WebMvcTest({TechBookController.class, TechTubeController.class, TechEducationReviewController.class})
 @Import({TestWebConfig.class})
-@AutoConfigureMockMvc(addFilters = false)  // Security 비활성화
 public abstract class WebMvcTestSupporter {
 
 	protected final FixtureMonkey entityFixtureMonkey = FixtureMonkey.builder()
