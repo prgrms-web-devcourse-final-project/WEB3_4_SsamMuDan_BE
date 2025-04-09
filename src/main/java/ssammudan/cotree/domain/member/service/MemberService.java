@@ -11,7 +11,7 @@ public interface MemberService {
 
 	Member signIn(MemberSigninRequest request);
 
-	Member updateMember(Member memberId, MemberInfoRequest request);
+	Member updateMember(String memberId, MemberInfoRequest request);
 
 	Member findById(String memberId);
 

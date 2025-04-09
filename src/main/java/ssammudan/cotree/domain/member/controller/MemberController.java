@@ -64,8 +64,7 @@ public class MemberController {
 		@AuthenticationPrincipal CustomUser customUser
 	) {
 		String memberId = customUser.getId();
-		Member member = memberService.findById(memberId);
-		memberService.updateMember(member, request);
+		memberService.updateMember(memberId, request);
 
 		return BaseResponse.success(SuccessCode.MEMBER_INFO_UPDATE_SUCCESS);
 	}

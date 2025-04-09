@@ -67,26 +67,26 @@ public class MemberServiceImpl implements MemberService {
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
 			throw new GlobalException(ErrorCode.MEMBER_UNAUTHORIZED);
 		}
-
 		return member;
 	}
 
 	@Override
-	public Member updateMember(Member member, MemberInfoRequest memberInfoRequest) {
+	public Member updateMember(String memberId, MemberInfoRequest memberInfoRequest) {
+		Member member = findById(memberId);
 		return member.update(memberInfoRequest);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public Member findById(String memberId) {
-		return memberRepository.findById(memberId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public MemberInfoResponse getMemberInfo(String id) {
-		Member member = memberRepository.findById(id)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		Member member = findById(id);
 		return new MemberInfoResponse(member);
 	}
 }
