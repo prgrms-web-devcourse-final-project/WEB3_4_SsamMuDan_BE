@@ -21,6 +21,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.project.membership.dto.MembershipResponse;
+import ssammudan.cotree.domain.project.membership.service.MembershipServiceImpl;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
@@ -48,6 +50,7 @@ import ssammudan.cotree.global.response.SuccessCode;
 @Tag(name = "Project Controller", description = "프로젝트 생성 API")
 public class ProjectController {
 	private final ProjectServiceImpl projectServiceImpl;
+	private final MembershipServiceImpl membershipServiceImpl;
 
 	@PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@Operation(summary = "프로젝트 생성", description = "새로운 프로젝트를 생성합니다.")
@@ -121,6 +124,30 @@ public class ProjectController {
 		String memberId = customUser.getId();
 		projectServiceImpl.updateRecruitmentStatus(projectId, memberId);
 		return BaseResponse.success(SuccessCode.PROJECT_STATUS_UPDATE_SUCCESS);
+	}
+
+	@PostMapping("/{projectId}/apply")
+	@Operation(summary = "프로젝트 참가 신청", description = "프로젝트에 참가 신청합니다.")
+	@ApiResponse(responseCode = "200", description = "참가 신청 성공")
+	public BaseResponse<Void> applyForProject(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		membershipServiceImpl.applyForProject(projectId, memberId);
+		return BaseResponse.success(SuccessCode.PROJECT_APPLY_SUCCESS);
+	}
+
+	@GetMapping("/{projectId}/membership")
+	@Operation(summary = "프로젝트 참가자 전체 목록 조회", description = "프로젝트에 참가자 전체 유저들을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "프로젝트 참가자 목록 조회 성공")
+	public BaseResponse<List<MembershipResponse>> getProjectMemberships(
+		@PathVariable Long projectId,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		return BaseResponse.success(SuccessCode.PROJECT_MEMBERSHIP_LIST_RETRIEVED,
+			membershipServiceImpl.getMemberships(projectId, memberId));
 	}
 
 }
