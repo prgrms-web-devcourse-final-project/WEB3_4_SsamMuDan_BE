@@ -10,13 +10,17 @@ import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
+import ssammudan.cotree.model.member.member.entity.QMember;
 import ssammudan.cotree.model.review.review.entity.QTechEducationReview;
 import ssammudan.cotree.model.review.review.entity.TechEducationReview;
+import ssammudan.cotree.model.review.reviewtype.entity.QTechEducationType;
 
 /**
  * PackageName : ssammudan.cotree.model.review.review.repository
@@ -33,6 +37,10 @@ import ssammudan.cotree.model.review.review.entity.TechEducationReview;
 @RequiredArgsConstructor
 public class TechEducationReviewRepositoryImpl implements TechEducationReviewRepositoryCustom {
 
+	private static final QTechEducationReview techEducationReview = QTechEducationReview.techEducationReview;
+	private static final QTechEducationType techEducationType = QTechEducationType.techEducationType;
+	private static final QMember member = QMember.member;
+
 	private final JPAQueryFactory jpaQueryFactory;
 
 	/**
@@ -46,11 +54,10 @@ public class TechEducationReviewRepositoryImpl implements TechEducationReviewRep
 	public Page<TechEducationReview> findAllTechEducationReviews(
 		final Long techEducationTypeId, final Long itemId, final Pageable pageable
 	) {
-		QTechEducationReview techEducationReview = QTechEducationReview.techEducationReview;
 		List<TechEducationReview> content = jpaQueryFactory.selectFrom(techEducationReview)
 			.where(techEducationReview.techEducationType.id.eq(techEducationTypeId),
 				techEducationReview.itemId.eq(itemId))
-			.orderBy(getSortCondition(pageable, techEducationReview))
+			.orderBy(getSortCondition(pageable))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -62,13 +69,47 @@ public class TechEducationReviewRepositoryImpl implements TechEducationReviewRep
 	}
 
 	/**
+	 * TechEducationReview 페이징 목록 조회
+	 * @param techEducationTypeId - 교육 컨텐츠 타입 ID
+	 * @param itemId              - 교육 컨텐츠 ID
+	 * @param pageable            - 페이징 객체
+	 * @return Page<TechEducationReview>
+	 */
+	@Override
+	public Page<TechEducationReviewResponse.Detail> findReviews(
+		final Long techEducationTypeId, final Long itemId, final Pageable pageable
+	) {
+		List<TechEducationReviewResponse.Detail> content = jpaQueryFactory.select(Projections.constructor(
+				TechEducationReviewResponse.Detail.class,
+				techEducationReview.id,
+				techEducationType.id,
+				techEducationReview.itemId,
+				member.nickname,
+				member.profileImageUrl,
+				techEducationReview.rating,
+				techEducationReview.content,
+				techEducationReview.createdAt
+			)).from(techEducationReview)
+			.join(member).on(techEducationReview.reviewer.id.eq(member.id))
+			.where(techEducationReview.techEducationType.id.eq(techEducationTypeId)
+				.and(techEducationReview.itemId.eq(itemId)))
+			.orderBy(getSortCondition(pageable))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+		JPAQuery<Long> countJpaQuery = jpaQueryFactory.select(techEducationReview.count()).from(techEducationReview)
+			.where(techEducationReview.techEducationType.id.eq(techEducationTypeId)
+				.and(techEducationReview.itemId.eq(itemId)));
+		return PageableExecutionUtils.getPage(content, pageable, countJpaQuery::fetchOne);
+	}
+
+	/**
 	 * 페이징 객체에 포함된 정렬 조건에 따라 OrderSpecifier[] 생성
 	 * @param pageable            - 페이징 객체
-	 * @param techEducationReview - Querydsl TechEducationReview
 	 * @return OrderSpecifier[]
 	 */
 	private OrderSpecifier<?>[] getSortCondition(
-		@NotNull final Pageable pageable, @NotNull final QTechEducationReview techEducationReview
+		@NotNull final Pageable pageable
 	) {
 		List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
 		boolean hasCreatedAt = pageable.getSort().stream().anyMatch(order -> "createdAt".equals(order.getProperty()));

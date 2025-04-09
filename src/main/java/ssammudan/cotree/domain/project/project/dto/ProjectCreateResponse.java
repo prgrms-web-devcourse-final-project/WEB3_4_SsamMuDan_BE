@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.project.dto;
+package ssammudan.cotree.domain.project.project.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

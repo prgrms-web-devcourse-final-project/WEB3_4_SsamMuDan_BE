@@ -16,4 +16,6 @@ public interface MemberService {
 	Member findById(String memberId);
 
 	MemberInfoResponse getMemberInfo(String id);
+
+	void updatePassword(String memberId, String password);
 }

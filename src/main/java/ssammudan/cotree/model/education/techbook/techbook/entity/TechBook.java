@@ -238,16 +238,6 @@ public class TechBook extends BaseEntity {
 	}
 
 	/**
-	 * TechBook 조회 수 증가
-	 *
-	 * @return this
-	 */
-	public TechBook increseViewCount() {
-		this.viewCount += 1;
-		return this;
-	}
-
-	/**
 	 * TechBook 누적 리뷰 점수 추가
 	 *
 	 * @param rating - 리뷰 점수
