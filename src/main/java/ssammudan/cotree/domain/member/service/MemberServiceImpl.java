@@ -4,8 +4,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
@@ -20,6 +20,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberServiceImpl implements MemberService {
 
 	private final MemberRepository memberRepository;
@@ -58,6 +59,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Member signIn(MemberSigninRequest request) {
 		Member member = memberRepository.findByEmail(request.email())
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_UNAUTHORIZED));
@@ -70,17 +72,18 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	@Transactional
 	public Member updateMember(Member member, MemberInfoRequest memberInfoRequest) {
 		return member.update(memberInfoRequest);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Member findById(String memberId) {
 		return memberRepository.findById(memberId).orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public MemberInfoResponse getMemberInfo(String id) {
 		Member member = memberRepository.findById(id)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
