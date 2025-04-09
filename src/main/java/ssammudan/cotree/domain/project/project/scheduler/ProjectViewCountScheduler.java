@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.project.project.redis;
+package ssammudan.cotree.domain.project.project.scheduler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import ssammudan.cotree.model.project.project.repository.ProjectRepository;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RedisViewCountScheduler {
+public class ProjectViewCountScheduler {
 
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ProjectRepository projectRepository;
