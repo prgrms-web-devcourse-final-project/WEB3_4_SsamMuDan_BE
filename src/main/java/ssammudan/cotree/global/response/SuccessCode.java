@@ -20,6 +20,7 @@ public enum SuccessCode {
 	MEMBER_SIGNUP_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "회원가입 전화번호 인증 성공"),
 	MEMBER_RECOVER_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 인증번호 발송 성공"),
 	MEMBER_RECOVER_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 전화번호 인증 성공"),
+	MEMBER_PASSWORD_UPDATE_SUCCESS(HttpStatus.OK, "200", "비밀번호 변경 성공"),
 
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 성공했습니다."),
@@ -45,6 +46,7 @@ public enum SuccessCode {
 	PROJECT_FETCH_SUCCESS(HttpStatus.OK, "200", "프로젝트 상세 조회 성공"),
 	PROJECT_STATUS_UPDATE_SUCCESS(HttpStatus.OK, "200", "프로젝트 모집 상태 변경 성공"),
 	PROJECT_APPLY_SUCCESS(HttpStatus.OK, "200", "프로젝트 참가 신청 성공"),
+	PROJECT_MEMBERSHIP_LIST_RETRIEVED(HttpStatus.OK, "200", "프로젝트 참가자 목록 조회 성공"),
 
 	//Community
 	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
@@ -71,7 +73,8 @@ public enum SuccessCode {
 	TECH_STACK_FIND_SUCCESS(HttpStatus.OK, "200", "기술 스택 조회 성공"),
 	EDUCATION_CATEGORY_FIND_SUCCESS(HttpStatus.OK, "200", "교육 카테고리 조회 성공"),
 	COMMUNITY_CATEGORY_FIND_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 카테고리 조회 성공"),
-	POSITION_FIND_SUCCESS(HttpStatus.OK, "200", "개발 직무 조회 성공");
+	POSITION_FIND_SUCCESS(HttpStatus.OK, "200", "개발 직무 조회 성공"),
+	;
 
 	private final HttpStatus status;
 	private final String code;

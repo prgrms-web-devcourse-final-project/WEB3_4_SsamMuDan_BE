@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.project.service;
+package ssammudan.cotree.domain.project.project.service;
 
 import java.util.List;
 import java.util.Map;
@@ -12,28 +12,25 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.project.dto.ProjectCreateRequest;
-import ssammudan.cotree.domain.project.dto.ProjectCreateResponse;
-import ssammudan.cotree.domain.project.dto.ProjectInfoResponse;
-import ssammudan.cotree.domain.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.common.helper.ProjectHelper;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
+import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
-import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
-import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.like.entity.Like;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
 import ssammudan.cotree.model.common.techstack.repository.TechStackRepository;
 import ssammudan.cotree.model.member.member.entity.Member;
-import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.repository.ProjectDevPositionRepository;
 import ssammudan.cotree.model.project.membership.entity.ProjectMembership;
-import ssammudan.cotree.model.project.membership.repository.ProjectMembershipRepository;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.repository.ProjectRepository;
 import ssammudan.cotree.model.project.techstack.entity.ProjectTechStack;
@@ -51,21 +48,18 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * 2025. 4. 2.     sangxxjin          create project 구현
  * 2025. 4. 2.     sangxxjin          get project 구현
  * 2025. 4. 3.     sangxxjin          get hot project 구현, 상세 조회 시 조회수 증가 구현
- * 2025. 4. 9.     Baekgwa            ViewCount 증가 `ViewCountStore`, `ViewCountScheduler` 에서 통합 관리 진행
  */
 @Service
 @RequiredArgsConstructor
 public class ProjectServiceImpl implements ProjectService {
 	private final TechStackRepository techStackRepository;
 	private final DevelopmentPositionRepository developmentPositionRepository;
-	private final MemberRepository memberRepository;
 	private final ProjectTechStackRepository projectTechStackRepository;
 	private final ProjectRepository projectRepository;
 	private final ProjectDevPositionRepository projectDevPositionRepository;
-
 	private final S3Uploader s3Uploader;
-	private final ViewCountStore viewCountStore;
-	private final ProjectMembershipRepository projectMembershipRepository;
+	private final ProjectViewService projectViewService;
+	private final ProjectHelper projectHelper;
 
 	private static final int HOT_PROJECT_LIMIT = 2;
 
@@ -73,7 +67,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	public ProjectCreateResponse create(@Valid ProjectCreateRequest request, MultipartFile projectImage,
 		String memberId) {
-		Member member = getMemberOrThrow(memberId);
+		Member member = projectHelper.getMemberOrThrow(memberId);
 		String savedImageUrl = uploadImage(projectImage, memberId);
 		List<TechStack> techStacks = getTechStackNames(request);
 		List<DevelopmentPosition> devPositions = getDevelopmentPositions(request);
@@ -92,8 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectInfoResponse getProjectInfo(Long projectId, String memberId) {
 		Project project = getProjectByIdAndOptionalMemberId(projectId, memberId);
 
-		// 조회수 증가 비동기 메서드 실행
-		viewCountStore.incrementViewCount(ViewCountType.PROJECT, project.getId());
+		projectViewService.incrementViewCount(projectId);
 
 		Member creator = project.getMember();
 
@@ -105,7 +98,7 @@ public class ProjectServiceImpl implements ProjectService {
 			convertTechStacks(project.getProjectTechStacks()),
 			isLikedByMember(project.getLikes(), memberId),
 			isMemberParticipant(project.getProjectMemberships(), memberId),
-			isProjectOwner(project, memberId)
+			ProjectHelper.isProjectOwner(project, memberId)
 		);
 	}
 
@@ -126,10 +119,10 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional
 	public void updateRecruitmentStatus(Long projectId, String memberId) {
-		Project project = getProjectOrThrow(projectId);
+		Project project = projectHelper.getProjectOrThrow(projectId);
 
-		if (!isProjectOwner(project, memberId)) {
-			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY);
+		if (!ProjectHelper.isProjectOwner(project, memberId)) {
+			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY_CAN_UPDATE);
 		}
 		project.toggleIsOpen();
 	}
@@ -141,20 +134,6 @@ public class ProjectServiceImpl implements ProjectService {
 		Page<ProjectListResponse> projects = projectRepository.findByFilters(pageable, techStackIds,
 			devPositionIds, sort);
 		return PageResponse.of(projects);
-	}
-
-	@Override
-	@Transactional
-	public void applyForProject(Long projectId, String memberId) {
-		Project project = getProjectOrThrow(projectId);
-		if (Boolean.FALSE.equals(project.getIsOpen()))
-			throw new GlobalException(ErrorCode.PROJECT_NOT_OPEN);
-		if (isProjectOwner(project, memberId))
-			throw new GlobalException(ErrorCode.PROJECT_OWNER_CANNOT_JOIN);
-		if (isMemberAlreadyApplied(projectId, memberId))
-			throw new GlobalException(ErrorCode.PROJECT_MEMBER_ALREADY_EXISTS);
-		ProjectMembership projectMembership = ProjectMembership.builderForApply(project, getMemberOrThrow(memberId));
-		projectMembershipRepository.save(projectMembership);
 	}
 
 	private Project getProjectByIdAndOptionalMemberId(Long projectId, String memberId) {
@@ -196,15 +175,6 @@ public class ProjectServiceImpl implements ProjectService {
 			memberships.stream().anyMatch(m -> m.getMember().getId().equals(memberId));
 	}
 
-	private boolean isProjectOwner(Project project, String memberId) {
-		return project.getMember().getId().equals(memberId);
-	}
-
-	private Member getMemberOrThrow(String memberId) {
-		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-	}
-
 	private String uploadImage(MultipartFile image, String memberId) {
 		if (image == null)
 			return null;
@@ -234,15 +204,6 @@ public class ProjectServiceImpl implements ProjectService {
 		projectRepository.save(project);
 		projectTechStackRepository.saveAll(stacks);
 		projectDevPositionRepository.saveAll(devPositions);
-	}
-
-	private Project getProjectOrThrow(Long projectId) {
-		return projectRepository.findById(projectId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND));
-	}
-
-	private boolean isMemberAlreadyApplied(Long projectId, String memberId) {
-		return projectMembershipRepository.existsByProjectIdAndMemberId(projectId, memberId);
 	}
 
 }

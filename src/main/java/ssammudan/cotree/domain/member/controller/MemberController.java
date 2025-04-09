@@ -5,10 +5,12 @@ import java.util.Date;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -108,6 +110,14 @@ public class MemberController {
 		response.addHeader("Set-Cookie", "access_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
 		response.addHeader("Set-Cookie", "refresh_token=; Max-Age=0; Path=/; HttpOnly; SameSite=None; Secure");
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNOUT_SUCCESS);
+	}
+
+	@PatchMapping("/recovery/password")
+	@Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
+	public BaseResponse<Void> recoveryPassword(@RequestParam String password,
+		@AuthenticationPrincipal CustomUser customUser) {
+		memberService.updatePassword(customUser.getId(), password);
+		return BaseResponse.success(SuccessCode.MEMBER_PASSWORD_UPDATE_SUCCESS);
 	}
 
 	@PostMapping("/signup/phone")

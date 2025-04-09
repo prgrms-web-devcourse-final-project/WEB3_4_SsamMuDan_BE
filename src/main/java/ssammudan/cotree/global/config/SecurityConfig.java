@@ -140,7 +140,7 @@ public class SecurityConfig {
 		configuration.setAllowedOrigins(
 			List.of(frontendConfig.getFrontendUrl())); // 프론트 엔드
 		// 허용할 HTTP 메서드 설정
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 프론트 엔드 허용 메서드
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")); // 프론트 엔드 허용 메서드
 		// 자격 증명 허용 설정
 		configuration.setAllowCredentials(true);
 		// 허용할 헤더 설정
