@@ -35,6 +35,11 @@ public record MemberSignupRequest(
 	@Schema(description = "사용자 닉네임", examples = "MrHong")
 	String nickname,
 
+	@NotNull
+	@Pattern(regexp = "^(user|hunter)$", message = "역할은 user 또는 hunter만 가능합니다.")
+	@Schema(description = "사용자 역할", examples = "user", allowableValues = {"user", "hunter"})
+	String role,
+
 	@NotNull(message = "휴대폰 번호를 입력해주세요.")
 	@Pattern(regexp = "^01[016789][0-9]{7,8}$", message = "휴대폰 번호 형식이 올바르지 않습니다.")
 	@Schema(description = "사용자 휴대폰 번호", example = "01012345678", pattern = "^01[016789][0-9]{7,8}$")

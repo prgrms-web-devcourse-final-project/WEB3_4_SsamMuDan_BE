@@ -16,6 +16,7 @@ import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
+import ssammudan.cotree.model.member.member.type.MemberRole;
 
 @Slf4j
 @Service
@@ -48,6 +49,7 @@ public class MemberServiceImpl implements MemberService {
 				.username(signupRequest.username())
 				.nickname(signupRequest.nickname())
 				.phoneNumber(signupRequest.phoneNumber())
+				.role(MemberRole.from(signupRequest.role()))
 				.build();
 			return memberRepository.save(newMember);
 		} catch (DataIntegrityViolationException e) {
