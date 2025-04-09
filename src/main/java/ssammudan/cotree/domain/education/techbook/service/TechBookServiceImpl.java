@@ -10,6 +10,8 @@ import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
@@ -29,6 +31,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 28.    loadingKKamo21       Initial creation
  * 25. 4. 1.     loadingKKamo21       findAllTechBooks() 구현
+ * 25. 4. 9.     Baekgwa                 ViewCount 증가 `ViewCountStore` 에서 통합 관리 진행
  */
 @Service
 @Transactional(readOnly = true)
@@ -39,6 +42,7 @@ public class TechBookServiceImpl implements TechBookService {
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
 	private final LikeRepository likeRepository;
+	private final ViewCountStore viewCountStore;
 
 	/**
 	 * TechBook 신규 생성
@@ -85,7 +89,10 @@ public class TechBookServiceImpl implements TechBookService {
 	public TechBookResponse.Detail findTechBookById(final Long id) {
 		TechBook techBook = techBookRepository.findById(id)
 			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
-		techBook.increseViewCount();
+
+		// 해당 Tech Book 조회수 count 업데이트
+		viewCountStore.incrementViewCount(ViewCountType.TECH_BOOK, id);
+
 		return TechBookResponse.Detail.from(techBook);
 	}
 
@@ -107,7 +114,10 @@ public class TechBookServiceImpl implements TechBookService {
 			.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
 		//TODO: Member-Like 연관관계에 따라 수정 가능
 		boolean isLike = likeRepository.existsByMember_IdAndTechBook_Id(memberId, id);
-		techBook.increseViewCount();
+
+		// 해당 Tech Book 조회수 count 업데이트
+		viewCountStore.incrementViewCount(ViewCountType.TECH_BOOK, id);
+
 		return TechBookResponse.Detail.from(techBook, isLike);
 	}
 

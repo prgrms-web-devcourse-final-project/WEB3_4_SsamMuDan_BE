@@ -54,6 +54,7 @@ import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPl
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 31.    loadingKKamo21       Initial creation
  * 25. 4. 1.     loadingKKamo21       findAllTechBooks() 테스트 추가
+ * 25. 4. 9.     Baekgwa      		  상세조회 test 시, view_count 검증 삭제. (배치 처리로 테스트 불가)
  */
 @Transactional
 class TechBookServiceTest extends SpringBootTestSupporter {
@@ -262,7 +263,6 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
 		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
-		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
 		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
 		assertFalse(responseDto.isLike(), "좋아요 여부");
 		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
@@ -320,7 +320,6 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		assertEquals(responseDto.techBookThumbnailUrl(), techBook.getTechBookThumbnailUrl(), "썸네일 URL 일치");
 		assertEquals(responseDto.techBookPage(), techBook.getTechBookPage(), "페이지 수 일치");
 		assertEquals(responseDto.price(), techBook.getPrice(), "가격 일치");
-		assertEquals(responseDto.viewCount(), techBook.getViewCount() + 1, "조회 수 일치");
 		assertEquals(responseDto.likeCount(), techBook.getLikes().size(), "좋아요 수 일치");
 		assertTrue(responseDto.isLike(), "좋아요 여부");
 		assertEquals(responseDto.createdAt(), techBook.getCreatedAt().toLocalDate(), "등록 일자 일치");
