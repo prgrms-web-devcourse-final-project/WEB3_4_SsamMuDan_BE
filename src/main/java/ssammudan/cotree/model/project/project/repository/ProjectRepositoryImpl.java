@@ -15,6 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
+import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.entity.QProjectDevPosition;
 import ssammudan.cotree.model.project.membership.entity.QProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
@@ -131,6 +132,16 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		List<ProjectListResponse> content = projectQueryHelper.convertToDtoOrdered(projects, sortedIds);
 
 		return new PageImpl<>(content, pageable, filteredProjectIds.size());
+	}
+
+	@Override
+	public List<ProjectDevPosition> findAllByProjectId(Long projectId) {
+		QProjectDevPosition pdp = QProjectDevPosition.projectDevPosition;
+
+		return queryFactory
+			.selectFrom(pdp)
+			.where(pdp.project.id.eq(projectId))
+			.fetch();
 	}
 
 	private JPAQuery<Project> baseProjectJoinQuery() {

@@ -60,4 +60,8 @@ public class ProjectDevPosition {
 			.amount(amount)
 			.build();
 	}
+
+	public void updateAmount(Integer amount) {
+		this.amount = amount;
+	}
 }

@@ -2,7 +2,6 @@ package ssammudan.cotree.domain.project.project.dto;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,7 +28,7 @@ public record ProjectInfoResponse(
 	LocalDate startDate,
 	LocalDate endDate,
 	String contact,
-	List<Map<String, Integer>> devPositionsInfo,
+	List<ProjectDevPositionResponse> devPositionsInfo,
 	List<String> techStacks,
 	String partnerType,
 	int viewCount,
@@ -43,7 +42,7 @@ public record ProjectInfoResponse(
 		Project project,
 		Member creator,
 		long likeCount,
-		List<Map<String, Integer>> devPositionsInfo,
+		List<ProjectDevPositionResponse> devPositionsInfo,
 		List<String> techStacks,
 		boolean isLiked,
 		boolean isParticipant,
