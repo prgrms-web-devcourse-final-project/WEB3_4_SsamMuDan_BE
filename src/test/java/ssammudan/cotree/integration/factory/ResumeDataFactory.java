@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.resume;
+package ssammudan.cotree.integration.factory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  * 2025. 3. 31.     kwak               Initial creation
  */
 @Component
-public class ResumeTestHelper {
+public class ResumeDataFactory {
 	@Autowired
 	private MemberRepository memberRepository;
 
