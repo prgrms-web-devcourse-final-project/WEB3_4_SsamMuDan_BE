@@ -21,7 +21,6 @@ import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.domain.project.project.service.ProjectService;
-import ssammudan.cotree.domain.project.project.service.ProjectViewService;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
