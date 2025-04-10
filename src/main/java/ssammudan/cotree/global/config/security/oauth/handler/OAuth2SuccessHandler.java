@@ -40,7 +40,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 		Authentication authentication)
 		throws IOException, ServletException {
 
-		String frontendUrl = frontendConfig.getFrontendUrl();
+		String frontendUrl = frontendConfig.getPrimaryFrontendUrl();
 
 		CustomUser loginUser = (CustomUser)authentication.getPrincipal();
 
