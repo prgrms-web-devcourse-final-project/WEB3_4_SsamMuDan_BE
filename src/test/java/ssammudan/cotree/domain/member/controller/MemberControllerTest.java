@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.service.MemberService;
-import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.global.config.security.exception.CustomAccessDeniedHandler;
 import ssammudan.cotree.global.config.security.exception.CustomAuthenticationEntryPoint;
 import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
@@ -24,6 +23,7 @@ import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
 import ssammudan.cotree.global.config.security.jwt.TokenBlacklistService;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
+import ssammudan.cotree.infra.sms.SmsService;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
