@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
-import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
+import ssammudan.cotree.domain.resume.type.SearchResumeSort;
 
 /**
  * PackageName : ssammudan.cotree.model.recruitment.resume.resume.repository

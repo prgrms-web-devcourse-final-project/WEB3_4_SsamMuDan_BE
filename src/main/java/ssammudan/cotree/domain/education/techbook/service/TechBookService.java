@@ -22,10 +22,10 @@ public interface TechBookService {
 
 	Long createTechBook(String memberId, TechBookRequest.Create requestDto);
 
-	TechBookResponse.Detail findTechBookById(Long id);
-
 	TechBookResponse.Detail findTechBookById(Long id, String memberId);
 
-	PageResponse<TechBookResponse.ListInfo> findAllTechBooks(String keyword, Pageable pageable);
+	PageResponse<TechBookResponse.ListInfo> findAllTechBooks(
+		String keyword, String memberId, Long educationId, Pageable pageable
+	);
 
 }

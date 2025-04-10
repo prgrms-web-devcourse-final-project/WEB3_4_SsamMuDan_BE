@@ -51,13 +51,8 @@ public class TechBookController {
 		@PathVariable @Min(1) Long id,
 		@Nullable @AuthenticationPrincipal final UserDetails userDetails
 	) {
-		TechBookResponse.Detail responseDto;
-		if (userDetails != null) {
-			String memberId = ((CustomUser)userDetails).getId();
-			responseDto = techBookService.findTechBookById(id, memberId);
-		} else {
-			responseDto = techBookService.findTechBookById(id);
-		}
+		String memberId = (userDetails != null) ? ((CustomUser)userDetails).getId() : null;
+		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id, memberId);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_READ_SUCCESS, responseDto);
 	}
 
@@ -68,10 +63,13 @@ public class TechBookController {
 		@RequestParam(required = false) String keyword,
 		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
 		@RequestParam(value = "size", required = false, defaultValue = "16") final int size,
-		@RequestParam(value = "sort", required = false, defaultValue = "LATEST") final SearchEducationSort sort
+		@RequestParam(value = "sort", required = false, defaultValue = "LATEST") final SearchEducationSort sort,
+		@RequestParam(value = "categoryId", required = false) final Long educationId,
+		@Nullable @AuthenticationPrincipal final UserDetails userDetails
 	) {
+		String memberId = (userDetails != null) ? ((CustomUser)userDetails).getId() : null;
 		PageResponse<TechBookResponse.ListInfo> responseDto = techBookService.findAllTechBooks(
-			keyword, PageRequest.of(page, size, Sort.Direction.DESC, sort.getValue())
+			keyword, memberId, educationId, PageRequest.of(page, size, Sort.Direction.DESC, sort.getValue())
 		);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_LIST_FIND_SUCCESS, responseDto);
 	}

@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ssammudan.cotree.infra.frontend.FrontendConfig;
+import ssammudan.cotree.global.config.FrontendConfig;
 
 /**
  * PackageName : ssammudan.cotree.global.config.security.oauth.handler
@@ -34,7 +34,7 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException exception) throws IOException, ServletException {
 		log.error("OAuth2 인증 실패 : {}", exception.getMessage());
-		String frontendUrl = frontendConfig.getFrontendUrl();
+		String frontendUrl = frontendConfig.getPrimaryFrontendUrl();
 
 		response.sendRedirect(frontendUrl + "/login/callback?error=true");
 	}

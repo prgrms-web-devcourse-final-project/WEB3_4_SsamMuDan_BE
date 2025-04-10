@@ -1,4 +1,4 @@
-package ssammudan.cotree.infra.redis;
+package ssammudan.cotree.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 1.     hc               	  Initial creation
  * 25. 4. 7.     loadingKKamo21       GenericJackson2JsonRedisSerializer에 ObjectMapper 주입
+ * 25. 4. 8.     Baekgwa              경로 이동
  */
 @Configuration
 @EnableCaching // Redis 캐싱 사용 시 필요

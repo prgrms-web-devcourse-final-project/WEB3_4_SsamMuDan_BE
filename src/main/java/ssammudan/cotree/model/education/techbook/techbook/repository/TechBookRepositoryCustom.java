@@ -3,6 +3,7 @@ package ssammudan.cotree.model.education.techbook.techbook.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 
 /**
@@ -19,6 +20,10 @@ import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
  */
 public interface TechBookRepositoryCustom {
 
+	TechBookResponse.Detail findTechBook(Long techBookId, String memberId);
+
 	Page<TechBook> findAllTechBooksByKeyword(String keyword, Pageable pageable);
+
+	Page<TechBookResponse.ListInfo> findTechBooks(String keyword, String memberId, Long educationId, Pageable pageable);
 
 }

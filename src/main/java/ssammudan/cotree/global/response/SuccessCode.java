@@ -20,6 +20,7 @@ public enum SuccessCode {
 	MEMBER_SIGNUP_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "회원가입 전화번호 인증 성공"),
 	MEMBER_RECOVER_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 인증번호 발송 성공"),
 	MEMBER_RECOVER_CODE_VERIFY_SUCCESS(HttpStatus.OK, "200", "아이디 찾기 전화번호 인증 성공"),
+	MEMBER_ORDER_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "회원의 구매 목록 조회를 성공하였습니다."),
 	MEMBER_PASSWORD_UPDATE_SUCCESS(HttpStatus.OK, "200", "비밀번호 변경 성공"),
 
 	//Education
@@ -46,6 +47,7 @@ public enum SuccessCode {
 	PROJECT_FETCH_SUCCESS(HttpStatus.OK, "200", "프로젝트 상세 조회 성공"),
 	PROJECT_STATUS_UPDATE_SUCCESS(HttpStatus.OK, "200", "프로젝트 모집 상태 변경 성공"),
 	PROJECT_APPLY_SUCCESS(HttpStatus.OK, "200", "프로젝트 참가 신청 성공"),
+	PROJECT_POSITION_UPDATE_SUCCESS(HttpStatus.OK, "200", "프로젝트 직무별 모집 인원 수정 성공"),
 	PROJECT_MEMBERSHIP_LIST_RETRIEVED(HttpStatus.OK, "200", "프로젝트 참가자 목록 조회 성공"),
 
 	//Community

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
+import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
 /**
  * PackageName : ssammudan.cotree.model.payment.order.history.repository
@@ -25,5 +26,9 @@ public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long
 	List<OrderHistory> findAllByCustomer_Id(String customerId);
 
 	boolean existsByOrderId(String orderId);
+
+	boolean existsByCustomer_IdAndOrderCategory_IdAndProductIdAndStatus(
+		String customerId, Long orderCategoryId, Long productId, PaymentStatus status
+	);
 
 }

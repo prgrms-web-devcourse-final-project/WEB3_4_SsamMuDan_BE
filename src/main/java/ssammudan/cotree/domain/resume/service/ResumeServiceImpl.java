@@ -1,7 +1,6 @@
 package ssammudan.cotree.domain.resume.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -20,7 +19,7 @@ import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
-import ssammudan.cotree.domain.resume.dto.SearchResumeSort;
+import ssammudan.cotree.domain.resume.type.SearchResumeSort;
 import ssammudan.cotree.domain.resume.dto.query.BasicInfoQueryDto;
 import ssammudan.cotree.domain.resume.dto.query.TechStackInfo;
 import ssammudan.cotree.global.error.GlobalException;
@@ -28,6 +27,8 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
@@ -53,6 +54,7 @@ import ssammudan.cotree.model.recruitment.resume.resume.repository.ResumeReposit
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 28.     kwak               Initial creation
+ * 2025. 4. 9.     Baekgwa             ViewCount 증가 `ViewCountStore`, `ViewCountScheduler` 에서 통합 관리 진행
  */
 @Service
 @RequiredArgsConstructor
@@ -63,8 +65,9 @@ public class ResumeServiceImpl implements ResumeService {
 	private final CareerRepository careerRepository;
 	private final PortfolioRepository portfolioRepository;
 	private final MemberRepository memberRepository;
-	private final ResumeViewCountBuffer resumeViewCountBuffer;
+
 	private final S3Uploader s3Uploader;
+	private final ViewCountStore viewCountStore;
 
 	//todo 추후에 insert 작업 batchUpdate() 로 교체해서 테스트 전후 차이 비교 예정
 	@Transactional
@@ -132,15 +135,9 @@ public class ResumeServiceImpl implements ResumeService {
 			.toList();
 
 		// 조회수 저장
-		resumeViewCountBuffer.increaseViewCount(id);
+		viewCountStore.incrementViewCount(ViewCountType.RESUME, id);
 
 		return ResumeDetailResponse.create(basicInfoResponse, careerInfoResponses, portfolioInfoResponses);
-	}
-
-	@Transactional
-	@Override
-	public void bulkViewCount(Map<Long, Integer> viewCountData) {
-		resumeRepository.bulkUpdateViewCount(viewCountData);
 	}
 
 	@Transactional(readOnly = true)

@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.resume.dto;
+package ssammudan.cotree.domain.resume.type;
 
 /**
  * PackageName : ssammudan.cotree.domain.resume.dto
