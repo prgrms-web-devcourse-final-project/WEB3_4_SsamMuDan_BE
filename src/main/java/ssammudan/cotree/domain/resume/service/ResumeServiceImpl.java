@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import ssammudan.cotree.domain.resume.dto.BasicInfoResponse;
 import ssammudan.cotree.domain.resume.dto.CareerInfoResponse;
 import ssammudan.cotree.domain.resume.dto.PortfolioInfoResponse;
@@ -19,9 +18,9 @@ import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.domain.resume.dto.ResumeCreateResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeDetailResponse;
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
-import ssammudan.cotree.domain.resume.type.SearchResumeSort;
 import ssammudan.cotree.domain.resume.dto.query.BasicInfoQueryDto;
 import ssammudan.cotree.domain.resume.dto.query.TechStackInfo;
+import ssammudan.cotree.domain.resume.type.SearchResumeSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
@@ -109,7 +108,7 @@ public class ResumeServiceImpl implements ResumeService {
 	@Transactional(readOnly = true)
 	@Override
 	public ResumeDetailResponse detail(Long id) {
-		val resume = resumeRepository.findById(id)
+		Resume resume = resumeRepository.findById(id)
 			.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_RESUME));
 
 		// 기본정보에 있는 데이터 뽑기

@@ -41,7 +41,7 @@ public enum ErrorCode {
 	TOSS_API_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "2008", "토스 결제 서버의 응답이 지연되고 있습니다."),
 
 	//Recruitment: 3001 ~ 4000
-	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다"),
+	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다."),
 	NOR_FOUND_RESUME_ID(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서 ID 를 가져올 수 없습니다."),
 
 	//Project: 4001 ~ 5000
