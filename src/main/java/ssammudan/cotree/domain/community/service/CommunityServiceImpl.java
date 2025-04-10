@@ -18,6 +18,8 @@ import ssammudan.cotree.domain.community.type.SearchBoardSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.community.category.entity.CommunityCategory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.entity.Community;
@@ -46,6 +48,7 @@ public class CommunityServiceImpl implements CommunityService {
 	private final CommunityCategoryRepository communityCategoryRepository;
 	private final CommunityRepository communityRepository;
 	private final MemberRepository memberRepository;
+	private final ViewCountStore viewCountStore;
 
 	@Transactional
 	@Override
@@ -137,8 +140,7 @@ public class CommunityServiceImpl implements CommunityService {
 			() -> new GlobalException(ErrorCode.COMMUNITY_BOARD_NOTFOUND));
 
 		// 게시글 조회수 count 업데이트
-		// todo : 게시글 조회수 update 처리
-		// 벌크성 쿼리, redis 까지 붙일지는 고민 중.
+		viewCountStore.incrementViewCount(ViewCountType.COMMUNITY, findData.id());
 
 		return findData;
 	}

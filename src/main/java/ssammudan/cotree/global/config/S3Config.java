@@ -1,4 +1,4 @@
-package ssammudan.cotree.infra.s3;
+package ssammudan.cotree.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class S3Config {
 	@Bean
 	public S3Client s3Client() {
 		return S3Client.builder()
-				.region(Region.of(region))
-				.build();
+			.region(Region.of(region))
+			.build();
 	}
 }

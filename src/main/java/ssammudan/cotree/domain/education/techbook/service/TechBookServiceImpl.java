@@ -10,6 +10,8 @@ import ssammudan.cotree.domain.education.techbook.dto.TechBookResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.infra.viewcount.type.ViewCountType;
 import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
@@ -40,6 +42,7 @@ public class TechBookServiceImpl implements TechBookService {
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
 	private final LikeRepository likeRepository;
+	private final ViewCountStore viewCountStore;
 	private final EducationCategoryRepository educationCategoryRepository;
 
 	/**
@@ -89,6 +92,10 @@ public class TechBookServiceImpl implements TechBookService {
 		if (!techBookRepository.existsById(id)) {
 			throw new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND);
 		}
+
+		// 해당 Tech Book 조회수 count 업데이트
+		viewCountStore.incrementViewCount(ViewCountType.TECH_BOOK, id);
+
 		return techBookRepository.findTechBook(id, memberId).withPurchaseCheck();
 	}
 

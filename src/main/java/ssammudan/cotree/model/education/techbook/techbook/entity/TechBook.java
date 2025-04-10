@@ -36,6 +36,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 3. 28.    loadingKKamo21       Initial creation
+ * 25. 4. 9.     Baekgwa                 ViewCount 증가 `ViewCountStore` 에서 통합 관리 진행
  */
 @Entity
 @Table(name = "tech_book")

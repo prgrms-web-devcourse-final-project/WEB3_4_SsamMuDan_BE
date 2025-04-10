@@ -1,7 +1,6 @@
 package ssammudan.cotree.domain.resume.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,13 +21,13 @@ import ssammudan.cotree.global.response.PageResponse;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 28.     kwak               Initial creation
+ * 2025. 4. 9.     Baekgwa             ViewCount 증가 `ViewCountStore`, `ViewCountScheduler` 에서 통합 관리 진행
  */
 public interface ResumeService {
 	ResumeCreateResponse register(ResumeCreateRequest request, String memberId, MultipartFile resumeImage);
 
 	ResumeDetailResponse detail(Long id);
 
-	void bulkViewCount(Map<Long, Integer> viewCountData);
-
-	PageResponse<ResumeResponse> getResumeList(int page, int size, List<Long> positionIds, List<Long> skillIds, Integer startYear, Integer endYear, SearchResumeSort sort);
+	PageResponse<ResumeResponse> getResumeList(int page, int size, List<Long> positionIds, List<Long> skillIds,
+		Integer startYear, Integer endYear, SearchResumeSort sort);
 }
