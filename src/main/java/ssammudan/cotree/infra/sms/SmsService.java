@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.phone.service;
+package ssammudan.cotree.infra.sms;
 
 import java.time.Duration;
 
@@ -11,11 +11,7 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 
-import ssammudan.cotree.domain.member.dto.MemberRecoverSmsRequest;
 import ssammudan.cotree.domain.member.dto.MemberRecoverSmsResponse;
-import ssammudan.cotree.domain.member.dto.MemberRecoverSmsVerifyRequest;
-import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
-import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -63,20 +59,20 @@ public class SmsService {
 		this.memberRepository = memberRepository;
 	}
 
-	public void sendSignupCode(MemberSignupSmsRequest request) {
+	public void sendSignupCode(String receiverNumber) {
 
 		//  쿨다운 키에 존재 시 에러 , 특정 전화번호로 1시간에 최대 5번 시도 가능
-		validateSignupCodeSendLimit(request.receiverNumber());
+		validateSignupCodeSendLimit(receiverNumber);
 
 		// 기존의 인증 코드가 남아있을 경우 삭제
-		redisTemplate.delete(SIGNUP_KEY.formatted(request.receiverNumber()));
+		redisTemplate.delete(SIGNUP_KEY.formatted(receiverNumber));
 
 		// 랜덤 6자리
 		int randomCode = generateRandomCode();
 
 		Message message = new Message();
 		message.setFrom(senderPhoneNumber);
-		message.setTo(request.receiverNumber());
+		message.setTo(receiverNumber);
 
 		message.setText("[cotree]" + "\n" + "인증번호 : " + randomCode);
 
@@ -88,29 +84,30 @@ public class SmsService {
 		}
 
 		redisTemplate.opsForValue()
-			.set(SIGNUP_KEY.formatted(request.receiverNumber()), String.valueOf(randomCode),
+			.set(SIGNUP_KEY.formatted(receiverNumber), String.valueOf(randomCode),
 				Duration.ofMinutes(CODE_EXPIRATION));
 	}
 
-	public void verifySignupCode(MemberSignupSmsVerifyRequest request) {
-		String key = request.receiverNumber();
+	public void verifySignupCode(String receiverNumber, String requestCode) {
+		String key = receiverNumber;
 		String code = redisTemplate.opsForValue().get(SIGNUP_KEY.formatted(key));
 
-		if (code == null || !code.equals(request.code())) {
+		if (code == null || !code.equals(requestCode)) {
 			throw new GlobalException(ErrorCode.MEMBER_SIGNUP_VERIFY_FAILED);
 		}
-		redisTemplate.expire(SIGNUP_KEY.formatted(request.receiverNumber()),
+		redisTemplate.expire(SIGNUP_KEY.formatted(requestCode),
 			Duration.ofMinutes(10)); // 인증 코드 만료 시간 연장(10분)
 		//redisTemplate.delete(SIGNUP_KEY.formatted(request.receiverNumber()));
 	}
 
-	public void recoverLoginId(MemberRecoverSmsRequest request) {
+	public void recoverLoginId(String username, String receiverNumber) {
 
-		Member member = memberRepository.findByUsernameAndPhoneNumber(request.username(), request.receiverNumber())
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+		if (!memberRepository.existsByUsernameAndPhoneNumber(username, receiverNumber)) {
+			throw new GlobalException(ErrorCode.MEMBER_NOT_FOUND);
+		}
 
 		// 이름 + 전화번호 조합
-		String key = request.username() + request.receiverNumber();
+		String key = username + receiverNumber;
 
 		validateRecoverLoginIdSendLimit(key);
 
@@ -122,7 +119,7 @@ public class SmsService {
 
 		Message message = new Message();
 		message.setFrom(senderPhoneNumber);
-		message.setTo(request.receiverNumber());
+		message.setTo(receiverNumber);
 
 		message.setText("[cotree]" + "\n" + "인증번호 : " + randomCode);
 
@@ -138,30 +135,30 @@ public class SmsService {
 				Duration.ofMinutes(CODE_EXPIRATION));
 	}
 
-	public MemberRecoverSmsResponse verifyRecoverLoginId(MemberRecoverSmsVerifyRequest request) {
-		String key = request.username() + request.receiverNumber();
+	public MemberRecoverSmsResponse verifyRecoverLoginId(String username, String receiverNumber, String requestCode) {
+		String key = username + receiverNumber;
 		String code = redisTemplate.opsForValue().get(RECOVER_LOGIN_ID_KEY.formatted(key));
 
-		if (code == null || !code.equals(request.code())) {
+		if (code == null || !code.equals(requestCode)) {
 			throw new GlobalException(ErrorCode.SMS_SEND_FAILED);
 		}
 		redisTemplate.delete(RECOVER_LOGIN_ID_KEY.formatted(key));
 
-		String maskingEmail = extractMaskingEmail(request);
+		String maskingEmail = extractMaskingEmail(username, receiverNumber);
 		return MemberRecoverSmsResponse.from(maskingEmail);
 	}
 
-	private String extractMaskingEmail(MemberRecoverSmsVerifyRequest request) {
-		Member member = memberRepository.findByUsernameAndPhoneNumber(request.username(), request.receiverNumber())
+	private String extractMaskingEmail(String username, String receiverNumber) {
+		Member member = memberRepository.findByUsernameAndPhoneNumber(username, receiverNumber)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
 		String[] part = member.getEmail().split(EMAIL_DELIMITER);
-		String localPart = member.getEmail().split(EMAIL_DELIMITER)[0];
-		String domain = member.getEmail().split(EMAIL_DELIMITER)[1];
+		String localPart = part[0];
+		String domain = part[1];
 
-		int invisibleLength = localPart.length() / 2;
+		int visibleLength = localPart.length() / 2;
 
-		return localPart.substring(0, (invisibleLength / 2)) + MASKING.repeat(localPart.length() - invisibleLength);
+		return localPart.substring(0, visibleLength) + MASKING.repeat(localPart.length() - visibleLength) + domain;
 	}
 
 	private void validateSignupCodeSendLimit(String key) {
