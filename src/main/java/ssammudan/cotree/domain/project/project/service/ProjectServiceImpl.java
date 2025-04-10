@@ -1,8 +1,9 @@
-package ssammudan.cotree.domain.project.project.service;
+package ssammudan.cotree.domain.project.service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +16,12 @@ import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.project.common.helper.ProjectHelper;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectDevPositionResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
+import ssammudan.cotree.domain.project.project.service.ProjectService;
+import ssammudan.cotree.domain.project.project.service.ProjectViewService;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
@@ -139,6 +144,37 @@ public class ProjectServiceImpl implements ProjectService {
 		return PageResponse.of(projects);
 	}
 
+	@Override
+	@Transactional
+	public void updateProjectPositionAmounts(Long projectId, String memberId,
+		List<UpdateProjectPositionRequest> requests) {
+		Project project = projectHelper.getProjectOrThrow(projectId);
+		if (Boolean.FALSE.equals(project.getIsOpen()))
+			throw new GlobalException(ErrorCode.PROJECT_NOT_OPEN);
+		if (!ProjectHelper.isProjectOwner(project, memberId))
+			throw new GlobalException(ErrorCode.PROJECT_OWNER_ONLY_CAN_UPDATE);
+
+		List<ProjectDevPosition> currentPositions = projectRepository.findAllByProjectId(projectId);
+
+		Map<Long, ProjectDevPosition> currentMap = currentPositions.stream()
+			.collect(Collectors.toMap(ProjectDevPosition::getId, p -> p));
+
+		Set<Long> requestIds = requests.stream()
+			.map(UpdateProjectPositionRequest::projectDevPositionId)
+			.collect(Collectors.toSet());
+
+		for (ProjectDevPosition existing : currentPositions) {
+			if (!requestIds.contains(existing.getId())) {
+				projectDevPositionRepository.delete(existing);
+			}
+		}
+
+		for (UpdateProjectPositionRequest req : requests) {
+			ProjectDevPosition position = currentMap.get(req.projectDevPositionId());
+			position.updateAmount(req.amount());
+		}
+	}
+
 	private Project getProjectByIdAndOptionalMemberId(Long projectId, String memberId) {
 		if (memberId != null) {
 			return projectRepository.fetchProjectDetailById(projectId, memberId)
@@ -156,9 +192,9 @@ public class ProjectServiceImpl implements ProjectService {
 		return developmentPositionRepository.findByIds(request.recruitmentPositions().keySet());
 	}
 
-	private List<Map<String, Integer>> convertDevPositions(Set<ProjectDevPosition> devPositions) {
+	private List<ProjectDevPositionResponse> convertDevPositions(Set<ProjectDevPosition> devPositions) {
 		return devPositions.stream()
-			.map(devPos -> Map.of(devPos.getDevelopmentPosition().getName(), devPos.getAmount()))
+			.map(ProjectDevPositionResponse::from)
 			.toList();
 	}
 
