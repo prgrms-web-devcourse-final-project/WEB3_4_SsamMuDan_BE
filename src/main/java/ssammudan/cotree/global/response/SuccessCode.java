@@ -49,6 +49,7 @@ public enum SuccessCode {
 	PROJECT_APPLY_SUCCESS(HttpStatus.OK, "200", "프로젝트 참가 신청 성공"),
 	PROJECT_POSITION_UPDATE_SUCCESS(HttpStatus.OK, "200", "프로젝트 직무별 모집 인원 수정 성공"),
 	PROJECT_MEMBERSHIP_LIST_RETRIEVED(HttpStatus.OK, "200", "프로젝트 참가자 목록 조회 성공"),
+	PROJECT_LIKE_LIST_SEARCH_SUCCESS(HttpStatus.OK, "200", "프로젝트 좋아요 목록 조회 성공"),
 
 	//Community
 	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
