@@ -1,6 +1,7 @@
 package ssammudan.cotree.domain.order.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
 import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
 import ssammudan.cotree.model.payment.order.history.repository.OrderHistoryRepository;
+import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
 /**
  * PackageName : ssammudan.cotree.domain.order.service
@@ -44,6 +46,13 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 			prePaymentValue.info().productName(),
 			prePaymentValue.info().amount()
 		));
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
+	public void updateStatus(final OrderHistory orderHistory, final PaymentStatus status) {
+		orderHistory.modifyStatus(status);
+		orderHistoryRepository.save(orderHistory);
 	}
 
 }
