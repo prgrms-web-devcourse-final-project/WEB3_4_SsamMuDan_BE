@@ -22,7 +22,7 @@ public record ResumeResponse(
 	String profileImage,
 	boolean isOpen,
 	List<String> positions,
-	List<Long> techStacksId,
+	List<Long> tackStacksId,
 	Integer year,
 	String introduction,
 	Integer viewCount,
