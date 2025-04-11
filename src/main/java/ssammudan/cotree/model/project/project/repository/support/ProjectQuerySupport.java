@@ -1,8 +1,6 @@
-package ssammudan.cotree.model.project.project.repository.helper;
+package ssammudan.cotree.model.project.project.repository.support;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -11,12 +9,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
-import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
-import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
-import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.entity.QProjectDevPosition;
-import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.entity.QProject;
 import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
 
@@ -34,7 +28,7 @@ import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
  */
 @Component
 @RequiredArgsConstructor
-public class ProjectQueryHelper {
+public class ProjectQuerySupport {
 
 	private final JPAQueryFactory queryFactory;
 	private static final String SORT_BY_LIKE = "like";
@@ -66,69 +60,4 @@ public class ProjectQueryHelper {
 			.limit(pageable.getPageSize())
 			.fetch();
 	}
-
-	public List<ProjectListResponse> convertToDtoOrdered(List<Project> projects, List<Long> orderedIds) {
-		return convertToOrdered(projects, orderedIds, this::toDto);
-	}
-
-	public List<ProjectLikeListResponse> convertToLikeDtoOrdered(List<Project> projects, List<Long> orderedIds) {
-		return convertToOrdered(projects, orderedIds, this::toLikeDto);
-	}
-
-	private <T> List<T> convertToOrdered(List<Project> projects, List<Long> orderedIds,
-		java.util.function.Function<Project, T> mapper) {
-		Map<Long, T> dtoMap = projects.stream()
-			.collect(Collectors.toMap(Project::getId, mapper));
-
-		return orderedIds.stream()
-			.map(dtoMap::get)
-			.toList();
-	}
-
-	private ProjectListResponse toDto(Project p) {
-		String shortenedDescription = p.getDescription().length() > 30
-			? p.getDescription().substring(0, 30) + "..."
-			: p.getDescription();
-
-		return new ProjectListResponse(
-			p.getId(),
-			p.getTitle(),
-			shortenedDescription,
-			p.getProjectImageUrl(),
-			p.getViewCount(),
-			p.getLikes().size(),
-			getRecruitmentCount(p),
-			p.getIsOpen(),
-			p.getStartDate(),
-			p.getEndDate(),
-			getTechStackImageUrls(p),
-			p.getMember().getUsername(),
-			p.getMember().getProfileImageUrl()
-		);
-	}
-
-	private ProjectLikeListResponse toLikeDto(Project p) {
-		return new ProjectLikeListResponse(
-			p.getId(),
-			p.getTitle(),
-			getRecruitmentCount(p),
-			p.getIsOpen(),
-			p.getStartDate(),
-			p.getEndDate(),
-			getTechStackImageUrls(p)
-		);
-	}
-
-	private List<String> getTechStackImageUrls(Project p) {
-		return p.getProjectTechStacks().stream()
-			.map(ts -> ts.getTechStack().getImageUrl())
-			.toList();
-	}
-
-	private int getRecruitmentCount(Project p) {
-		return p.getProjectDevPositions().stream()
-			.mapToInt(ProjectDevPosition::getAmount)
-			.sum();
-	}
-
 }
