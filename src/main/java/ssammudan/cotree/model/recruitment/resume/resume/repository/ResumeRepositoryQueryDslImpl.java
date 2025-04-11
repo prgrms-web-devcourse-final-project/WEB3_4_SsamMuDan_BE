@@ -146,7 +146,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.profileImage(tuple.get(resume.profileImage))
 			.isOpen(Boolean.TRUE.equals(tuple.get(resume.isOpen)))
 			.positions(positionsMap.getOrDefault(resumeId, Collections.emptyList()))
-			.techStacksId(techStacksMap.getOrDefault(resumeId, Collections.emptyList()))
+			.tackStacksId(techStacksMap.getOrDefault(resumeId, Collections.emptyList()))
 			.year(tuple.get(resume.years))
 			.introduction(tuple.get(getStringTemplate()))
 			.viewCount(tuple.get(resume.viewCount))
