@@ -18,6 +18,7 @@ import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectDevPositionResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.global.error.GlobalException;
@@ -106,7 +107,7 @@ public class ProjectServiceImpl implements ProjectService {
 			convertDevPositions(project.getProjectDevPositions()),
 			convertTechStacks(project.getProjectTechStacks()),
 			isLikedByMember(project.getLikes(), memberId),
-			isMemberParticipant(project.getProjectMemberships(), memberId),
+			isParticipant(project.getProjectMemberships(), memberId),
 			ProjectHelper.isProjectOwner(project, memberId)
 		);
 	}
@@ -176,8 +177,8 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PageResponse<ProjectListResponse> getLikeProjects(Pageable pageable, String memberId) {
-		Page<ProjectListResponse> projects = projectRepository.getLikeProjects(pageable, memberId);
+	public PageResponse<ProjectLikeListResponse> getLikeProjects(Pageable pageable, String memberId) {
+		Page<ProjectLikeListResponse> projects = projectRepository.getLikeProjects(pageable, memberId);
 		return PageResponse.of(projects);
 	}
 
@@ -215,7 +216,7 @@ public class ProjectServiceImpl implements ProjectService {
 			likes.stream().anyMatch(like -> like.getMember().getId().equals(memberId));
 	}
 
-	private boolean isMemberParticipant(Set<ProjectMembership> memberships, String memberId) {
+	private boolean isParticipant(Set<ProjectMembership> memberships, String memberId) {
 		return memberId != null &&
 			memberships.stream().anyMatch(m -> m.getMember().getId().equals(memberId));
 	}

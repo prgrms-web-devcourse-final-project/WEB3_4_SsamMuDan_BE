@@ -13,6 +13,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
@@ -145,7 +146,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 	}
 
 	@Override
-	public Page<ProjectListResponse> getLikeProjects(Pageable pageable, String memberId) {
+	public Page<ProjectLikeListResponse> getLikeProjects(Pageable pageable, String memberId) {
 		List<Long> likedProjectIds = queryFactory
 			.select(LIKE.project.id)
 			.from(LIKE)
@@ -159,7 +160,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		}
 
 		List<Project> projects = fetchProjectsWithDetails(likedProjectIds);
-		List<ProjectListResponse> content = projectQueryHelper.convertToDtoOrdered(projects, likedProjectIds);
+		List<ProjectLikeListResponse> content = projectQueryHelper.convertToLikeDtoOrdered(projects, likedProjectIds);
 
 		Long total = queryFactory
 			.select(LIKE.count())

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.project.entity.Project;
@@ -35,5 +36,5 @@ public interface ProjectRepositoryCustom {
 
 	List<ProjectDevPosition> findAllByProjectId(Long projectId);
 
-	Page<ProjectListResponse> getLikeProjects(Pageable pageable, String memberId);
+	Page<ProjectLikeListResponse> getLikeProjects(Pageable pageable, String memberId);
 }

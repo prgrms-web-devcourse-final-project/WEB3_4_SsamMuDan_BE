@@ -27,6 +27,7 @@ import ssammudan.cotree.domain.project.membership.service.MembershipService;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.domain.project.project.service.ProjectService;
@@ -168,7 +169,7 @@ public class ProjectController {
 	@GetMapping("/like")
 	@Operation(summary = "프로젝트 직무별 모집 인원 수정", description = "프로젝트 직무별 모집 인원을 수정합니다.")
 	@ApiResponse(responseCode = "200", description = "수정 성공")
-	public BaseResponse<PageResponse<ProjectListResponse>> getLikeProjects(
+	public BaseResponse<PageResponse<ProjectLikeListResponse>> getLikeProjects(
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "16") int size,
 		@AuthenticationPrincipal CustomUser customUser

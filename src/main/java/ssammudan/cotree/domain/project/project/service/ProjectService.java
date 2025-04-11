@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.global.response.PageResponse;
@@ -44,5 +45,5 @@ public interface ProjectService {
 
 	void updateProjectPositionAmounts(Long projectId, String memberId, List<UpdateProjectPositionRequest> requests);
 
-	PageResponse<ProjectListResponse> getLikeProjects(Pageable pageable, String memberId);
+	PageResponse<ProjectLikeListResponse> getLikeProjects(Pageable pageable, String memberId);
 }

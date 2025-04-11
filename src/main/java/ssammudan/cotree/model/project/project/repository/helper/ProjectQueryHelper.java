@@ -30,10 +30,10 @@ import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 4. 7.     sangxxjin               Initial creation
+ * 2025. 4.11.     sangxxjin               좋아요 목록 조회
  */
 @Component
 @RequiredArgsConstructor
-
 public class ProjectQueryHelper {
 
 	private final JPAQueryFactory queryFactory;
@@ -41,6 +41,7 @@ public class ProjectQueryHelper {
 
 	public BooleanBuilder buildFilterConditions(List<Long> techStackIds, List<Long> devPositionIds) {
 		BooleanBuilder where = new BooleanBuilder();
+
 		if (techStackIds != null && !techStackIds.isEmpty()) {
 			where.and(QProjectTechStack.projectTechStack.techStack.id.in(techStackIds));
 		}
@@ -48,46 +49,6 @@ public class ProjectQueryHelper {
 			where.and(QProjectDevPosition.projectDevPosition.developmentPosition.id.in(devPositionIds));
 		}
 		return where;
-	}
-
-	public List<ProjectListResponse> convertToDtoOrdered(List<Project> projects, List<Long> orderedIds) {
-		Map<Long, ProjectListResponse> projectDtoMap = projects.stream()
-			.collect(Collectors.toMap(Project::getId, this::toDto));
-
-		return orderedIds.stream()
-			.map(projectDtoMap::get)
-			.toList();
-	}
-
-	private ProjectListResponse toDto(Project p) {
-		List<String> techStacksImageUrl = p.getProjectTechStacks().stream()
-			.map(ts -> ts.getTechStack().getImageUrl())
-			.toList();
-
-		long likeCount = p.getLikes().size();
-		int recruitmentCount = p.getProjectDevPositions().stream()
-			.mapToInt(ProjectDevPosition::getAmount).sum();
-
-		String description = p.getDescription();
-		if (description.length() > 30) {
-			description = description.substring(0, 30) + "...";
-		}
-
-		return new ProjectListResponse(
-			p.getId(),
-			p.getTitle(),
-			description,
-			p.getProjectImageUrl(),
-			p.getViewCount(),
-			likeCount,
-			recruitmentCount,
-			p.getIsOpen(),
-			p.getStartDate(),
-			p.getEndDate(),
-			techStacksImageUrl,
-			p.getMember().getUsername(),
-			p.getMember().getProfileImageUrl()
-		);
 	}
 
 	public List<Long> sortFilteredProjects(List<Long> ids, String sort, Pageable pageable) {
@@ -105,4 +66,69 @@ public class ProjectQueryHelper {
 			.limit(pageable.getPageSize())
 			.fetch();
 	}
+
+	public List<ProjectListResponse> convertToDtoOrdered(List<Project> projects, List<Long> orderedIds) {
+		return convertToOrdered(projects, orderedIds, this::toDto);
+	}
+
+	public List<ProjectLikeListResponse> convertToLikeDtoOrdered(List<Project> projects, List<Long> orderedIds) {
+		return convertToOrdered(projects, orderedIds, this::toLikeDto);
+	}
+
+	private <T> List<T> convertToOrdered(List<Project> projects, List<Long> orderedIds,
+		java.util.function.Function<Project, T> mapper) {
+		Map<Long, T> dtoMap = projects.stream()
+			.collect(Collectors.toMap(Project::getId, mapper));
+
+		return orderedIds.stream()
+			.map(dtoMap::get)
+			.toList();
+	}
+
+	private ProjectListResponse toDto(Project p) {
+		String shortenedDescription = p.getDescription().length() > 30
+			? p.getDescription().substring(0, 30) + "..."
+			: p.getDescription();
+
+		return new ProjectListResponse(
+			p.getId(),
+			p.getTitle(),
+			shortenedDescription,
+			p.getProjectImageUrl(),
+			p.getViewCount(),
+			p.getLikes().size(),
+			getRecruitmentCount(p),
+			p.getIsOpen(),
+			p.getStartDate(),
+			p.getEndDate(),
+			getTechStackImageUrls(p),
+			p.getMember().getUsername(),
+			p.getMember().getProfileImageUrl()
+		);
+	}
+
+	private ProjectLikeListResponse toLikeDto(Project p) {
+		return new ProjectLikeListResponse(
+			p.getId(),
+			p.getTitle(),
+			getRecruitmentCount(p),
+			p.getIsOpen(),
+			p.getStartDate(),
+			p.getEndDate(),
+			getTechStackImageUrls(p)
+		);
+	}
+
+	private List<String> getTechStackImageUrls(Project p) {
+		return p.getProjectTechStacks().stream()
+			.map(ts -> ts.getTechStack().getImageUrl())
+			.toList();
+	}
+
+	private int getRecruitmentCount(Project p) {
+		return p.getProjectDevPositions().stream()
+			.mapToInt(ProjectDevPosition::getAmount)
+			.sum();
+	}
+
 }
