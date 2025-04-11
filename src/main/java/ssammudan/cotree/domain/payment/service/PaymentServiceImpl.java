@@ -73,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 		PrePaymentValue value = PrePaymentValue.of(memberId, prePaymentInfo);
 
-		redisTemplate.opsForValue().set(redisKey, value, Duration.ofMillis(MAX_RETENTION_TIME));
+		redisTemplate.opsForValue().set(redisKey, value, Duration.ofMinutes(MAX_RETENTION_TIME));
 
 		return prePaymentInfo;
 	}

@@ -20,10 +20,16 @@ public record MemberInfoResponse(
 	String email,
 	String username,
 	String nickname,
+	String profileImageUrl,
 	MemberRole role,
 	LocalDateTime createdAt
 ) {
 	public MemberInfoResponse(Member member) {
-		this(member.getEmail(), member.getUsername(), member.getNickname(), member.getRole(), member.getCreatedAt());
+		this(member.getEmail(),
+			member.getUsername(),
+			member.getNickname(),
+			member.getProfileImageUrl(),
+			member.getRole(),
+			member.getCreatedAt());
 	}
 }
