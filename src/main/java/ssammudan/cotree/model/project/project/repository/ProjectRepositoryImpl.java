@@ -144,6 +144,32 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.fetch();
 	}
 
+	@Override
+	public Page<ProjectListResponse> getLikeProjects(Pageable pageable, String memberId) {
+		List<Long> likedProjectIds = queryFactory
+			.select(LIKE.project.id)
+			.from(LIKE)
+			.where(LIKE.member.id.eq(memberId))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		if (likedProjectIds.isEmpty()) {
+			return new PageImpl<>(Collections.emptyList(), pageable, 0);
+		}
+
+		List<Project> projects = fetchProjectsWithDetails(likedProjectIds);
+		List<ProjectListResponse> content = projectQueryHelper.convertToDtoOrdered(projects, likedProjectIds);
+
+		Long total = queryFactory
+			.select(LIKE.count())
+			.from(LIKE)
+			.where(LIKE.member.id.eq(memberId))
+			.fetchOne();
+
+		return new PageImpl<>(content, pageable, total != null ? total : 0);
+	}
+
 	private JPAQuery<Project> baseProjectJoinQuery() {
 		return queryFactory.selectFrom(PROJECT)
 			.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK).fetchJoin()

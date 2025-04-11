@@ -34,4 +34,6 @@ public interface ProjectRepositoryCustom {
 		List<Long> devPositionIds, String sort);
 
 	List<ProjectDevPosition> findAllByProjectId(Long projectId);
+
+	Page<ProjectListResponse> getLikeProjects(Pageable pageable, String memberId);
 }
