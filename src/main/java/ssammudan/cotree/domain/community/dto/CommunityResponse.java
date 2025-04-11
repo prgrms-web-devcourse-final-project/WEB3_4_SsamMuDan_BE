@@ -2,8 +2,6 @@ package ssammudan.cotree.domain.community.dto;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.With;
@@ -34,7 +32,6 @@ public class CommunityResponse {
 	}
 
 	public record BoardDetail(
-		@JsonIgnore Long id,
 		String title,
 		String author,
 		LocalDateTime createdAt,

@@ -49,5 +49,10 @@ public class CommunityRequest {
 
 		@CommunityContent
 		private String content;
+
+		public ModifyBoard(String title, String content) {
+			this.title = title;
+			this.content = content;
+		}
 	}
 }

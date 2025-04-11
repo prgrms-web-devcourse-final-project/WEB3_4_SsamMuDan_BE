@@ -1,7 +1,5 @@
 package ssammudan.cotree.model.community.community.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,11 +21,11 @@ import ssammudan.cotree.domain.community.type.SearchBoardSort;
 public interface CommunityRepositoryCustom {
 
 	Page<CommunityResponse.BoardListDetail> findBoardList(
-			final Pageable pageable,
-			final SearchBoardSort sort,
-			final SearchBoardCategory category,
-			final String keyword,
-			final String memberId);
+		final Pageable pageable,
+		final SearchBoardSort sort,
+		final SearchBoardCategory category,
+		final String keyword,
+		final String memberId);
 
-	Optional<CommunityResponse.BoardDetail> findBoard(final Long boardId, final String memberId);
+	CommunityResponse.BoardDetail findBoard(final Long boardId, final String memberId);
 }

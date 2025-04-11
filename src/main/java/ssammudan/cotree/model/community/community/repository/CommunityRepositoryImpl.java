@@ -2,7 +2,6 @@ package ssammudan.cotree.model.community.community.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -112,10 +111,9 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 	}
 
 	@Override
-	public Optional<CommunityResponse.BoardDetail> findBoard(final Long boardId, final String memberId) {
-		return Optional.ofNullable(jpaQueryFactory
+	public CommunityResponse.BoardDetail findBoard(final Long boardId, final String memberId) {
+		return jpaQueryFactory
 			.select(Projections.constructor(CommunityResponse.BoardDetail.class,
-				community.id,
 				community.title,
 				member.nickname,
 				community.createdAt,
@@ -142,7 +140,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 			.from(community)
 			.join(member).on(community.member.id.eq(member.id))
 			.where(community.id.eq(boardId))
-			.fetchOne());
+			.fetchOne();
 	}
 
 	/**
