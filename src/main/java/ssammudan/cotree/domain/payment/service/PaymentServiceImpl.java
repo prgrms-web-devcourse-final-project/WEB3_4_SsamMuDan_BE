@@ -2,11 +2,12 @@ package ssammudan.cotree.domain.payment.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +18,7 @@ import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
 import ssammudan.cotree.domain.payment.dto.TossPaymentResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
-import ssammudan.cotree.infra.payment.PaymentClient;
 import ssammudan.cotree.infra.payment.toss.TossPaymentClient;
-import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
 import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
 /**
@@ -41,7 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
 	private static final long MAX_RETENTION_TIME = 10;    //서버 내 결제 정보 저장 유지 시간
 
 	private final RedisTemplate<String, Object> redisTemplate;
-	private final PaymentClient paymentClient;
+	private final ObjectMapper objectMapper;
 	private final TossPaymentClient tossPaymentClient;
 
 	/**
@@ -89,7 +88,9 @@ public class PaymentServiceImpl implements PaymentService {
 	public PrePaymentValue verifyPayment(
 		final String redisKey, final TossPaymentRequest request, final String memberId
 	) {
-		PrePaymentValue value = (PrePaymentValue)redisTemplate.opsForValue().get(redisKey);
+		PrePaymentValue value = objectMapper.convertValue(
+			redisTemplate.opsForValue().get(redisKey), PrePaymentValue.class
+		);
 
 		if (value == null) {
 			throw new GlobalException(ErrorCode.PAYMENT_EXPIRED_PREPAYMENT);
@@ -109,49 +110,27 @@ public class PaymentServiceImpl implements PaymentService {
 	 *
 	 * @param redisKey     - Redis 키
 	 * @param request      - 토스 결제 정보 요청 DTO
-	 * @param orderHistory - OrderHistory 엔티티
 	 * @return PaymentResponse Detail DTO
 	 */
 	@Override
-	public PaymentResponse.Detail confirmPaymentRequest(
-		final String redisKey, final TossPaymentRequest request, final OrderHistory orderHistory
-	) {
+	public PaymentResponse.Detail confirmPaymentRequest(final String redisKey, final TossPaymentRequest request) {
 		try {
 			TossPaymentResponse tossPaymentResponse = (TossPaymentResponse)tossPaymentClient.confirmPayment(
 				request
 			);
-			orderHistory.modifyStatus(PaymentStatus.SUCCESS);
-
 			return PaymentResponse.Detail.from(tossPaymentResponse, PaymentStatus.SUCCESS);
 		} catch (GlobalException e) {
-			if (e.getErrorCode() == ErrorCode.TOSS_API_ERROR) {
-				log.error("Toss API Error", e.getMessage());
-			} else if (e.getErrorCode() == ErrorCode.TOSS_API_TIMEOUT) {
-				log.error("Toss API Timeout", e.getMessage());
-			}
-			orderHistory.modifyStatus(PaymentStatus.FAILED);
+			throw e;
 		} catch (Exception e) {
 			log.error("Unexpected error calling Toss API", e);
-			orderHistory.modifyStatus(PaymentStatus.FAILED);
+			throw e;
 		} finally {
 			try {
-				deletePrePayment(redisKey);
+				redisTemplate.delete(redisKey);
 			} catch (Exception e) {
 				log.warn("Failed to delete Redis pre-payment info. key: {}", redisKey, e);
 			}
 		}
-
-		return PaymentResponse.Detail.of(
-			orderHistory.getOrderId(),
-			orderHistory.getProductName(),
-			orderHistory.getPrice(),
-			LocalDateTime.now().format(DateTimeFormatter.ISO_ZONED_DATE_TIME),
-			PaymentStatus.FAILED
-		);
-	}
-
-	private void deletePrePayment(final String redisKey) {
-		redisTemplate.delete(redisKey);
 	}
 
 }

@@ -6,7 +6,6 @@ import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PaymentResponse;
 import ssammudan.cotree.domain.payment.dto.PrePaymentValue;
 import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
-import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
 
 /**
  * PackageName : ssammudan.cotree.domain.payment.service
@@ -31,8 +30,6 @@ public interface PaymentService {
 
 	PrePaymentValue verifyPayment(String redisKey, TossPaymentRequest request, String memberId);
 
-	PaymentResponse.Detail confirmPaymentRequest(
-		String redisKey, TossPaymentRequest request, OrderHistory orderHistory
-	);
+	PaymentResponse.Detail confirmPaymentRequest(String redisKey, TossPaymentRequest request);
 
 }

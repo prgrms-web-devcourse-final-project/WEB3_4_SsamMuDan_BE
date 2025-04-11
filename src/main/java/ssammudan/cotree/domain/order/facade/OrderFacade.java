@@ -20,6 +20,7 @@ import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
 import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
+import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
 /**
  * PackageName : ssammudan.cotree.domain.order.facade
@@ -87,7 +88,16 @@ public class OrderFacade {
 			member, orderCategory, tossPaymentRequest.getPaymentKey(), verifiedValue
 		);
 
-		return paymentService.confirmPaymentRequest(redisKey, tossPaymentRequest, orderHistory);
+		PaymentResponse.Detail response;
+		try {
+			response = paymentService.confirmPaymentRequest(redisKey, tossPaymentRequest);
+			orderHistoryService.updateStatus(orderHistory, response.paymentStatus());
+		} catch (Exception e) {
+			orderHistoryService.updateStatus(orderHistory, PaymentStatus.FAILED);
+			throw e;
+		}
+
+		return response;
 	}
 
 	/**

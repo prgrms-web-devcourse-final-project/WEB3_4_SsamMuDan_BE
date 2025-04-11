@@ -51,10 +51,10 @@ public class PaymentController {
 		@RequestBody @Valid final PaymentRequest.PrePayment requestDto,
 		@AuthenticationPrincipal final UserDetails userDetails
 	) {
-		PaymentResponse.PrePaymentInfo resopnseDt = orderFacade.savePrePayment(
+		PaymentResponse.PrePaymentInfo responseDto = orderFacade.savePrePayment(
 			requestDto, ((CustomUser)userDetails).getId()
 		);
-		return BaseResponse.success(SuccessCode.PRE_PAYMENT_SAVE_SUCCESS, resopnseDt);
+		return BaseResponse.success(SuccessCode.PRE_PAYMENT_SAVE_SUCCESS, responseDto);
 	}
 
 	@GetMapping("/confirm")
@@ -69,6 +69,7 @@ public class PaymentController {
 		PaymentResponse.Detail responseDto = orderFacade.confirmPayment(
 			TossPaymentRequest.of(paymentKey, amount, orderId), ((CustomUser)userDetails).getId()
 		);
+
 		return BaseResponse.success(SuccessCode.TOSS_PAYMENT_SUCCESS, responseDto);
 	}
 

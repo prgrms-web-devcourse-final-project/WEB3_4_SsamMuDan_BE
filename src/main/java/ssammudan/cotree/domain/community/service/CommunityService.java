@@ -51,4 +51,9 @@ public interface CommunityService {
 		@NonNull final Long boardId,
 		@NonNull final String memberId
 	);
+
+	PageResponse<CommunityResponse.BoardLikeListDetail> getBoardLikeList(
+		@NonNull final Pageable pageable,
+		@NonNull final String memberId
+	);
 }
