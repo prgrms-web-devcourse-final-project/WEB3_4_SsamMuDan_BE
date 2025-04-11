@@ -21,8 +21,12 @@ import ssammudan.cotree.integration.factory.ResumeDataFactory;
 import ssammudan.cotree.domain.resume.service.ResumeService;
 import ssammudan.cotree.domain.review.service.TechEducationReviewService;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountScheduler;
+import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
+import ssammudan.cotree.integration.factory.CommentDataFactory;
 import ssammudan.cotree.infra.sms.SmsService;
 import ssammudan.cotree.integration.factory.CommunityDataFactory;
+import ssammudan.cotree.integration.factory.LikeDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
@@ -60,9 +64,13 @@ public abstract class SpringBootTestSupporter {
 	 * Entity save factory
 	 */
 	@Autowired
-	protected CommunityDataFactory communityFactory;
+	protected CommunityDataFactory communityDataFactory;
 	@Autowired
 	protected MemberDataFactory memberDataFactory;
+	@Autowired
+	protected LikeDataFactory likeDataFactory;
+	@Autowired
+	protected CommentDataFactory commentDataFactory;
 	@Autowired
 	protected ResumeDataFactory resumeDataFactory;
 
@@ -123,4 +131,8 @@ public abstract class SpringBootTestSupporter {
 	private SmsService smsService;
 	@MockitoBean
 	private EmailService emailService;
+	@MockitoBean
+	protected ViewCountStore viewCountStore;
+	@MockitoBean
+	private ViewCountScheduler viewCountScheduler;
 }

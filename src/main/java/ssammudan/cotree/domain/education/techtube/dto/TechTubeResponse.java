@@ -20,6 +20,7 @@ import lombok.With;
  * 25. 4. 4.     loadingKKamo21       Initial creation
  * 25. 4. 7.     Baekgwa       		  TechTube 목록 조회, 회원의 좋아요 상태 추가
  * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
+ * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, TechTube 목록 조회 기능 추가
  */
 @Schema(description = "TechTube 응답")
 public class TechTubeResponse {
@@ -68,4 +69,14 @@ public class TechTubeResponse {
 	) {
 	}
 
+	public record TechTubeLikeListDetail(
+		Long id,
+		String author,
+		String title,
+		Integer price,
+		String techTubeThumbnailUrl,
+		LocalDateTime createdAt,
+		String description
+	) {
+	}
 }

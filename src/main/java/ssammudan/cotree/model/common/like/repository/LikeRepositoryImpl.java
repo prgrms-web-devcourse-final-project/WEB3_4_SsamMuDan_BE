@@ -12,8 +12,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.community.dto.CommunityResponse;
+import ssammudan.cotree.domain.education.techtube.dto.TechTubeResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.community.community.entity.QCommunity;
+import ssammudan.cotree.model.education.techtube.techtube.entity.QTechTube;
 import ssammudan.cotree.model.member.member.entity.QMember;
 
 /**
@@ -27,6 +29,7 @@ import ssammudan.cotree.model.member.member.entity.QMember;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 2.     loadingKKamo21       Initial creation
  * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, Community 목록 조회 기능 추가
+ * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, TechTube 목록 조회 기능 추가
  */
 @Repository
 @RequiredArgsConstructor
@@ -36,6 +39,7 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
 	private static final QCommunity community = QCommunity.community;
 	private static final QLike like = QLike.like;
 	private static final QMember member = QMember.member;
+	private static final QTechTube techTube = QTechTube.techTube;
 
 	@Override
 	public Page<CommunityResponse.BoardLikeListDetail> findBoardLikeList(
@@ -69,6 +73,44 @@ public class LikeRepositoryImpl implements LikeRepositoryCustom {
 			.where(
 				like.member.id.eq(memberId),
 				like.community.id.isNotNull()
+			)
+			.fetchOne();
+
+		return new PageImpl<>(content, pageable, total != null ? total : 0);
+	}
+
+	@Override
+	public Page<TechTubeResponse.TechTubeLikeListDetail> findTechBookLikeList(
+		Pageable pageable, String memberId) {
+		List<TechTubeResponse.TechTubeLikeListDetail> content = jpaQueryFactory.select(
+				Projections.constructor(TechTubeResponse.TechTubeLikeListDetail.class,
+					techTube.id,
+					member.nickname,
+					techTube.title,
+					techTube.price,
+					techTube.techTubeThumbnailUrl,
+					techTube.createdAt,
+					techTube.description
+				))
+			.from(like)
+			.join(techTube).on(techTube.id.eq(like.techTube.id))
+			.join(member).on(member.id.eq(like.member.id))
+			.where(
+				like.member.id.eq(memberId),
+				like.techTube.id.isNotNull()
+			)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.orderBy(like.createdAt.desc())
+			.fetch();
+
+		// Count 쿼리
+		Long total = jpaQueryFactory
+			.select(like.count())
+			.from(like)
+			.where(
+				like.member.id.eq(memberId),
+				like.techTube.id.isNotNull()
 			)
 			.fetchOne();
 

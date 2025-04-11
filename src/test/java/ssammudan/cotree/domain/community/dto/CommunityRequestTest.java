@@ -75,4 +75,36 @@ class CommunityRequestTest {
 		assertThat(validate.stream()
 			.anyMatch(v -> v.getMessage().equals("내용은 1자 이상 1000자 이하로 입력해주세요."))).isTrue();
 	}
+
+	@DisplayName("커뮤니티 글 수정 dto 유효성 검증")
+	@Test
+	void modifyBoard1() {
+		// given
+		CommunityRequest.ModifyBoard modifyBoard = new CommunityRequest.ModifyBoard("제목", "내용");
+
+		// when
+		Set<ConstraintViolation<CommunityRequest.ModifyBoard>> validate = validator.validate(modifyBoard);
+
+		// then
+		assertThat(validate).isEmpty();
+	}
+
+	@DisplayName("커뮤니티 글 수정 dto 유효성 검증")
+	@Test
+	void modifyBoard2() {
+		// given
+		String tooLongTitle = "A".repeat(51);
+		String tooLongContent = "B".repeat(1001);
+		CommunityRequest.ModifyBoard modifyBoard = new CommunityRequest.ModifyBoard(tooLongTitle, tooLongContent);
+
+		// when
+		Set<ConstraintViolation<CommunityRequest.ModifyBoard>> validate = validator.validate(modifyBoard);
+
+		// then
+		assertThat(validate).hasSize(2);
+		assertThat(validate.stream()
+			.anyMatch(v -> v.getMessage().equals("제목은 1자 이상 50자 이하로 입력해주세요."))).isTrue();
+		assertThat(validate.stream()
+			.anyMatch(v -> v.getMessage().equals("내용은 1자 이상 1000자 이하로 입력해주세요."))).isTrue();
+	}
 }
