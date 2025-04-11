@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -29,6 +30,7 @@ public class MemberDataFactory {
 
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final EntityManager em;
 
 	/**
 	 * count : 생성할 회원 수
@@ -53,6 +55,11 @@ public class MemberDataFactory {
 				String.format("0101234%4d", index))));
 		}
 
-		return memberRepository.saveAll(newMemberList);
+		List<Member> savedMemberList = memberRepository.saveAll(newMemberList);
+
+		em.flush();
+		em.clear();
+
+		return savedMemberList;
 	}
 }

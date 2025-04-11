@@ -33,6 +33,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * 25. 4. 4.     loadingKKamo21       Initial creation
  * 25. 4. 7.     Baekgwa       		  techTube 목록 조회 refactor
  * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
+ * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, TechTube 목록 조회 기능 추가
  */
 @RestController
 @RequestMapping("/api/v1/education/techtube")
@@ -72,5 +73,21 @@ public class TechTubeController {
 			techTubeService.findAllTechTubes(keyword, sort, pageable, memberId, educationId);
 
 		return BaseResponse.success(SuccessCode.TECH_TUBE_LIST_FIND_SUCCESS, responseDto);
+	}
+
+	@GetMapping("/like")
+	@Operation(summary = "TechBook 중, 내가 좋아요(관심) 목록 조회")
+	public BaseResponse<PageResponse<TechTubeResponse.TechTubeLikeListDetail>> getLikeBoardList(
+		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
+		@RequestParam(value = "size", required = false, defaultValue = "16") final int size,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		Pageable pageable = PageRequest.of(page, size);
+
+		PageResponse<TechTubeResponse.TechTubeLikeListDetail> responseDto =
+			techTubeService.getTechTubeLikeList(pageable, memberId);
+
+		return BaseResponse.success(SuccessCode.TECH_TUBE_LIKE_SEARCH_SUCCESS, responseDto);
 	}
 }

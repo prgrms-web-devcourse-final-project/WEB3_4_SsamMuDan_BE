@@ -13,6 +13,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
@@ -20,7 +21,8 @@ import ssammudan.cotree.model.project.devposition.entity.QProjectDevPosition;
 import ssammudan.cotree.model.project.membership.entity.QProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.entity.QProject;
-import ssammudan.cotree.model.project.project.helper.ProjectQueryHelper;
+import ssammudan.cotree.model.project.project.mapper.ProjectMapper;
+import ssammudan.cotree.model.project.project.repository.support.ProjectQuerySupport;
 import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
 
 /**
@@ -44,11 +46,14 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 	private static final QProjectMembership PROJECT_MEMBERSHIP = QProjectMembership.projectMembership;
 
 	private final JPAQueryFactory queryFactory;
-	private final ProjectQueryHelper projectQueryHelper;
+	private final ProjectQuerySupport projectQuerySupport;
+	private final ProjectMapper projectMapper;
 
-	public ProjectRepositoryImpl(JPAQueryFactory queryFactory, ProjectQueryHelper projectQueryHelper) {
+	public ProjectRepositoryImpl(JPAQueryFactory queryFactory, ProjectQuerySupport projectQuerySupport,
+		ProjectMapper projectMapper) {
 		this.queryFactory = queryFactory;
-		this.projectQueryHelper = projectQueryHelper;
+		this.projectQuerySupport = projectQuerySupport;
+		this.projectMapper = projectMapper;
 	}
 
 	@Override
@@ -79,7 +84,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 
 		List<Project> projects = fetchProjectsWithDetails(projectIds);
-		List<ProjectListResponse> content = projectQueryHelper.convertToDtoOrdered(projects, projectIds);
+		List<ProjectListResponse> content = projectMapper.toDtoOrdered(projects, projectIds);
 
 		Long total = queryFactory.select(PROJECT.countDistinct())
 			.from(PROJECT)
@@ -96,13 +101,13 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			return Collections.emptyList();
 
 		List<Project> projects = fetchProjectsWithDetails(projectIds);
-		return projectQueryHelper.convertToDtoOrdered(projects, projectIds);
+		return projectMapper.toDtoOrdered(projects, projectIds);
 	}
 
 	@Override
 	public Page<ProjectListResponse> findByFilters(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort) {
-		BooleanBuilder where = projectQueryHelper.buildFilterConditions(techStackIds, devPositionIds);
+		BooleanBuilder where = projectQuerySupport.buildFilterConditions(techStackIds, devPositionIds);
 
 		List<Long> filteredProjectIds = queryFactory
 			.select(PROJECT.id)
@@ -124,12 +129,12 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		if (filteredProjectIds.isEmpty())
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-		List<Long> sortedIds = projectQueryHelper.sortFilteredProjects(filteredProjectIds, sort, pageable);
+		List<Long> sortedIds = projectQuerySupport.sortFilteredProjects(filteredProjectIds, sort, pageable);
 		if (sortedIds.isEmpty())
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 
 		List<Project> projects = fetchProjectsWithDetails(sortedIds);
-		List<ProjectListResponse> content = projectQueryHelper.convertToDtoOrdered(projects, sortedIds);
+		List<ProjectListResponse> content = projectMapper.toDtoOrdered(projects, sortedIds);
 
 		return new PageImpl<>(content, pageable, filteredProjectIds.size());
 	}
@@ -142,6 +147,32 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.selectFrom(pdp)
 			.where(pdp.project.id.eq(projectId))
 			.fetch();
+	}
+
+	@Override
+	public Page<ProjectLikeListResponse> getLikeProjects(Pageable pageable, String memberId) {
+		List<Long> likedProjectIds = queryFactory
+			.select(LIKE.project.id)
+			.from(LIKE)
+			.where(LIKE.member.id.eq(memberId))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		if (likedProjectIds.isEmpty()) {
+			return new PageImpl<>(Collections.emptyList(), pageable, 0);
+		}
+
+		List<Project> projects = fetchProjectsWithDetails(likedProjectIds);
+		List<ProjectLikeListResponse> content = projectMapper.toLikeDtoOrdered(projects, likedProjectIds);
+
+		Long total = queryFactory
+			.select(LIKE.count())
+			.from(LIKE)
+			.where(LIKE.member.id.eq(memberId))
+			.fetchOne();
+
+		return new PageImpl<>(content, pageable, total != null ? total : 0);
 	}
 
 	private JPAQuery<Project> baseProjectJoinQuery() {
