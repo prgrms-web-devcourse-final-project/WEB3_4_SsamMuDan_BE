@@ -10,7 +10,9 @@ import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
+import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
 import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
 import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -117,9 +119,19 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	public PageResponse<TechEducationReviewResponse.Detail> findAllTechEducationReviews(
 		final TechEducationReviewRequest.Read requestDto, final Pageable pageable
 	) {
-		return PageResponse.of(techEducationReviewRepository.findReviews(
+		Double avgRating = Double.NaN;
+		if (requestDto.techEducationType() == EducationType.TECH_TUBE) {
+			TechTube techTube = techTubeRepository.findById(requestDto.itemId())
+				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND));
+			avgRating = techTube.getTotalRating() * 1.0 / techTube.getTotalReviewCount();
+		} else {
+			TechBook techBook = techBookRepository.findById(requestDto.itemId())
+				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
+			avgRating = techBook.getTotalRating() * 1.0 / techBook.getTotalReviewCount();
+		}
+		return PageResponse.from(techEducationReviewRepository.findReviews(
 			EducationType.getTechEducationTypeId(requestDto.techEducationType()), requestDto.itemId(), pageable
-		));
+		), avgRating.isNaN() ? 0.0 : avgRating);
 	}
 
 }
