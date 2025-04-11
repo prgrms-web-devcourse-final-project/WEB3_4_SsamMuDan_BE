@@ -29,7 +29,7 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 
 	private final OrderHistoryRepository orderHistoryRepository;
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public OrderHistory createOrderHistory(
 		final Member member,
