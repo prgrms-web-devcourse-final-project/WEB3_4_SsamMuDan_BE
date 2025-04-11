@@ -74,4 +74,19 @@ public class TechBookController {
 		return BaseResponse.success(SuccessCode.TECH_BOOK_LIST_FIND_SUCCESS, responseDto);
 	}
 
+	@GetMapping("/like")
+	@Operation(summary = "TechBook 관심 목록 조회", description = "회원의 좋아요 기준으로 TechBook 목록을 조회")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public BaseResponse<PageResponse<TechBookResponse.ListInfo>> getLikeTechBooks(
+		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
+		@RequestParam(value = "size", required = false, defaultValue = "16") final int size,
+		@AuthenticationPrincipal final UserDetails userDetails
+	) {
+		String memberId = ((CustomUser)userDetails).getId();
+		PageResponse<TechBookResponse.ListInfo> responseDto = techBookService.findLikeTechBooks(
+			memberId, PageRequest.of(page, size)
+		);
+		return BaseResponse.success(SuccessCode.TECH_BOOK_LIKE_LIST_FIND_SUCCESS, responseDto);
+	}
+
 }
