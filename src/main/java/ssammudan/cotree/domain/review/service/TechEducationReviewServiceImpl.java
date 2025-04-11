@@ -58,7 +58,8 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	 */
 	@Transactional
 	@Override
-	public Long createTechEducationReview(final String memberId, final TechEducationReviewRequest.Create requestDto) {
+	public Long createTechEducationReview(final String memberId,
+		final TechEducationReviewRequest.ReviewCreate requestDto) {
 		//리뷰 작성자 확인
 		Member reviewer = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
@@ -116,8 +117,8 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	 * @return PageResponse TechEducationReviewResponse Detail DTO
 	 */
 	@Override
-	public PageResponse<TechEducationReviewResponse.Detail> findAllTechEducationReviews(
-		final TechEducationReviewRequest.Read requestDto, final Pageable pageable
+	public PageResponse<TechEducationReviewResponse.ReviewDetail> findAllTechEducationReviews(
+		final TechEducationReviewRequest.ReviewRead requestDto, final Pageable pageable
 	) {
 		Double avgRating = Double.NaN;
 		if (requestDto.techEducationType() == EducationType.TECH_TUBE) {

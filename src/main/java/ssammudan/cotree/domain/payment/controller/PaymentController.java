@@ -60,13 +60,13 @@ public class PaymentController {
 	@GetMapping("/confirm")
 	@Operation(summary = "결제 승인 API 호출", description = "결제 API로부터 받은 정보로 서버에서 결제 정보 검증 후 결제 승인 API 호출")
 	@ApiResponse(responseCode = "200", description = "결제 승인 호출 성공")
-	public BaseResponse<PaymentResponse.Detail> confirmPayment(
+	public BaseResponse<PaymentResponse.PaymentDetail> confirmPayment(
 		@RequestParam("orderId") String orderId,
 		@RequestParam("paymentKey") String paymentKey,
 		@RequestParam("amount") @Min(0) int amount,
 		@AuthenticationPrincipal final UserDetails userDetails
 	) {
-		PaymentResponse.Detail responseDto = orderFacade.confirmPayment(
+		PaymentResponse.PaymentDetail responseDto = orderFacade.confirmPayment(
 			TossPaymentRequest.of(paymentKey, amount, orderId), ((CustomUser)userDetails).getId()
 		);
 

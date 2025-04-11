@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TechBookResponse {
 
 	@Schema(description = "TechBook 상세 조회 응답 DTO")
-	public record Detail(
+	public record TechBookDetail(
 		@Schema(description = "TechBook ID", example = "1") long id,
 		@Schema(description = "TechBook 저자", example = "홍길동") String writer,
 		@Schema(description = "TechBook 저자 프로필 이미지 URL") String writerProfileImageUrl,
@@ -43,8 +43,8 @@ public class TechBookResponse {
 		@Schema(description = "TechBook 등록 일자", example = "2025-01-01") LocalDateTime createdAt,
 		@Schema(description = "TechBook 결제 유무", example = "true") boolean isPaymentDone
 	) {
-		public Detail withPurchaseCheck() {
-			return new Detail(
+		public TechBookDetail withPurchaseCheck() {
+			return new TechBookDetail(
 				this.id,
 				this.writer,
 				this.writerProfileImageUrl,
