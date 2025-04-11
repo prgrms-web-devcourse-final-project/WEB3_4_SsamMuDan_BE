@@ -26,4 +26,6 @@ public interface TechBookRepositoryCustom {
 
 	Page<TechBookResponse.ListInfo> findTechBooks(String keyword, String memberId, Long educationId, Pageable pageable);
 
+	Page<TechBookResponse.ListInfo> findLikeTechBooks(String memberId, Pageable pageable);
+
 }

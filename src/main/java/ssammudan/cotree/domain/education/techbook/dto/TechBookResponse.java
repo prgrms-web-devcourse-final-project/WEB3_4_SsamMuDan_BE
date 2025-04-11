@@ -78,6 +78,7 @@ public class TechBookResponse {
 		@Schema(description = "TechBook ID", example = "1") long id,
 		@Schema(description = "TechBook 저자", example = "홍길동") String writer,
 		@Schema(description = "TechBook 저자 프로필 이미지 URL") String writerProfileImageUrl,
+		@Schema(description = "TechBook 카테고리") String category,
 		@Schema(description = "TechBook 제목", example = "Spring Boot") String title,
 		@Schema(description = "TechBook 가격", example = "10000") int price,
 		@Schema(description = "TechBook 썸네일 URL", example = "https://cotree.ssammudan.com/techbook/SpringBoot_thumbnail.png") String techBookThumbnailUrl,

@@ -30,6 +30,7 @@ import ssammudan.cotree.model.project.project.repository.ProjectRepository;
  * 25. 4. 2.     loadingKKamo21       Initial creation
  */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
 
@@ -43,13 +44,12 @@ public class LikeServiceImpl implements LikeService {
 	/**
 	 * Like 신규 생성
 	 *
-	 * @param memberId   - Member PK
+	 * @param memberId   - 회원 ID
 	 * @param requestDto - LikeRequest Create DTO
 	 * @return PK
 	 */
-	@Transactional
 	@Override
-	public Long createLike(final String memberId, final LikeRequest.Create requestDto) {
+	public Long createLike(final String memberId, final LikeRequest requestDto) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -58,20 +58,46 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	/**
+	 * Like 삭제
+	 *
+	 * @param memberId   - 회원 ID
+	 * @param requestDto - LikeRequest DTO
+	 */
+	@Override
+	public void deleteLike(final String memberId, final LikeRequest requestDto) {
+		Optional<Like> opLike = getLike(memberId, requestDto);
+		if (opLike.isPresent()) {
+			likeRepository.delete(opLike.get());
+		} else {
+			throw new GlobalException(ErrorCode.LIKE_NOT_FOUND);
+		}
+	}
+
+	/**
+	 * Optional Like 엔티티 조회
+	 *
+	 * @param memberId   - Member ID
+	 * @param requestDto - LikeRequest DTO
+	 * @return Optional<Like>
+	 */
+	private Optional<Like> getLike(final String memberId, final LikeRequest requestDto) {
+		return switch (requestDto.likeType()) {
+			case TECH_TUBE -> likeRepository.findByMember_IdAndTechTube_Id(memberId, requestDto.itemId());
+			case TECH_BOOK -> likeRepository.findByMember_IdAndTechBook_Id(memberId, requestDto.itemId());
+			case PROJECT -> likeRepository.findByMember_IdAndProject_Id(memberId, requestDto.itemId());
+			case COMMUNITY -> likeRepository.findByMember_IdAndCommunity_Id(memberId, requestDto.itemId());
+		};
+	}
+
+	/**
 	 * 파라미터를 활용하여 분기 후 Like 엔티티 생성
 	 *
 	 * @param member     - Member
-	 * @param requestDto - LikeRequest Create DTO
+	 * @param requestDto - LikeRequest DTO
 	 * @return Like
 	 */
-	private Like createDesignedLike(final Member member, final LikeRequest.Create requestDto) {
-		Optional<Like> opLike = switch (requestDto.likeType()) {
-			case TECH_TUBE -> likeRepository.findByMember_IdAndTechTube_Id(member.getId(), requestDto.itemId());
-			case TECH_BOOK -> likeRepository.findByMember_IdAndTechBook_Id(member.getId(), requestDto.itemId());
-			case PROJECT -> likeRepository.findByMember_IdAndProject_Id(member.getId(), requestDto.itemId());
-			case COMMUNITY -> likeRepository.findByMember_IdAndCommunity_Id(member.getId(), requestDto.itemId());
-			default -> throw new GlobalException(ErrorCode.INVALID_INPUT_VALUE);
-		};
+	private Like createDesignedLike(final Member member, final LikeRequest requestDto) {
+		Optional<Like> opLike = getLike(member.getId(), requestDto);
 
 		//이미 추가된 좋아요에 대한 중복 시도의 경우
 		if (opLike.isPresent()) {
@@ -89,13 +115,13 @@ public class LikeServiceImpl implements LikeService {
 			);
 			case PROJECT -> Like.create(
 				member, projectRepository.findById(requestDto.itemId())
-					.orElseThrow(() -> new GlobalException(ErrorCode.ENTITY_NOT_FOUND)) //TODO: Project 관련 에러 코드 확인 필요
+					.orElseThrow(() -> new GlobalException(ErrorCode.PROJECT_NOT_FOUND))
 			);
 			case COMMUNITY -> Like.create(
 				member, communityRepository.findById(requestDto.itemId())
-					.orElseThrow(() -> new GlobalException(ErrorCode.ENTITY_NOT_FOUND)) //TODO: Community 관련 에러 코드 확인 필요
+					.orElseThrow(() -> new GlobalException(ErrorCode.ENTITY_NOT_FOUND))
+				//TODO: Community 관련 에러 코드 확인 필요
 			);
-			default -> throw new GlobalException(ErrorCode.INVALID_INPUT_VALUE);
 		};
 	}
 

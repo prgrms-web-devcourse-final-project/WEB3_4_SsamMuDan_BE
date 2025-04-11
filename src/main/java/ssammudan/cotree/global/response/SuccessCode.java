@@ -26,6 +26,7 @@ public enum SuccessCode {
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 성공했습니다."),
 	TECH_BOOK_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechBook 목록 조회를 성공했습니다."),
+	TECH_BOOK_LIKE_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechBook 목록 조회를 성공했습니다."),
 	TECH_TUBE_READ_SUCCESS(HttpStatus.OK, "200", "TechTube 조회를 성공했습니다."),
 	TECH_TUBE_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechTube 목록 조회를 성공했습니다."),
 	TECH_EDUCATION_REVIEW_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "리뷰 목록 조회를 성공했습니다."),
@@ -68,6 +69,7 @@ public enum SuccessCode {
 
 	//Like
 	LIKE_ADD_SUCCESS(HttpStatus.OK, "200", "좋아요 추가 성공"),
+	LIKE_CANCEL_SUCCESS(HttpStatus.OK, "200", "좋아요 삭제 성공"),
 
 	// email
 	EMAIL_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "이메일 인증 코드 발송 성공"),

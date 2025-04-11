@@ -28,4 +28,8 @@ public interface TechBookService {
 		String keyword, String memberId, Long educationId, Pageable pageable
 	);
 
+	PageResponse<TechBookResponse.ListInfo> findLikeTechBooks(
+		String memberId, Pageable pageable
+	);
+
 }

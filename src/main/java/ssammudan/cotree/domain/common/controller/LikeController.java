@@ -2,6 +2,7 @@ package ssammudan.cotree.domain.common.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,11 +44,24 @@ public class LikeController {
 	@ApiResponse(responseCode = "200", description = "좋아요 추가 성공")
 	@SecurityRequirement(name = "bearerAuth")
 	public BaseResponse<Void> createLike(
-		@RequestBody @Valid LikeRequest.Create requestDto, @AuthenticationPrincipal UserDetails userDetails
+		@RequestBody @Valid LikeRequest requestDto, @AuthenticationPrincipal UserDetails userDetails
 	) {
 		String memberId = ((CustomUser)userDetails).getId();
 		Long id = likeService.createLike(memberId, requestDto);
 		return BaseResponse.success(SuccessCode.LIKE_ADD_SUCCESS);
+	}
+
+	@DeleteMapping
+	@Operation(summary = "Like(좋아요) 취소", description = "좋아요된 컨텐츠를 좋아요 취소")
+	@ApiResponse(responseCode = "200", description = "좋아요 취소 성공")
+	@SecurityRequirement(name = "bearerAuth")
+	public BaseResponse<Void> deleteLike(
+		@RequestBody @Valid LikeRequest requestDto,
+		@AuthenticationPrincipal final UserDetails userDetails
+	) {
+		String memberId = ((CustomUser)userDetails).getId();
+		likeService.deleteLike(memberId, requestDto);
+		return BaseResponse.success(SuccessCode.LIKE_CANCEL_SUCCESS);
 	}
 
 }
