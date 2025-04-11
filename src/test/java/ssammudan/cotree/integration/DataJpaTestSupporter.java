@@ -14,7 +14,7 @@ import ssammudan.cotree.model.education.techbook.category.repository.TechBookEdu
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
 import ssammudan.cotree.model.education.techtube.category.repository.TechTubeEducationCategoryRepository;
 import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
-import ssammudan.cotree.model.project.project.helper.ProjectQueryHelper;
+import ssammudan.cotree.model.project.project.repository.helper.ProjectQueryHelper;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
 

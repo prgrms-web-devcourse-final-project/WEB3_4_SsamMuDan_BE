@@ -1,4 +1,4 @@
-package ssammudan.cotree.model.project.project.helper;
+package ssammudan.cotree.model.project.project.repository.helper;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;

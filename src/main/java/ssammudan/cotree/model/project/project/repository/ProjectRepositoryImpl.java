@@ -20,7 +20,7 @@ import ssammudan.cotree.model.project.devposition.entity.QProjectDevPosition;
 import ssammudan.cotree.model.project.membership.entity.QProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.entity.QProject;
-import ssammudan.cotree.model.project.project.helper.ProjectQueryHelper;
+import ssammudan.cotree.model.project.project.repository.helper.ProjectQueryHelper;
 import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
 
 /**
