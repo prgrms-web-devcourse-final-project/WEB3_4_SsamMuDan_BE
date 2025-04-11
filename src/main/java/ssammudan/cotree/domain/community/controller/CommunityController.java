@@ -37,6 +37,7 @@ import ssammudan.cotree.global.response.SuccessCode;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-28     Baekgwa               Initial creation
+ * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, Community 목록 조회 기능 추가
  */
 @RestController
 @RequestMapping("/api/v1/community")
@@ -110,5 +111,20 @@ public class CommunityController {
 		String memberId = customUser.getId();
 		communityService.deleteBoard(boardId, memberId);
 		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_DELETE_SUCCESS);
+	}
+
+	@GetMapping("/like")
+	@Operation(summary = "커뮤니티 글 중, 내가 좋아요(관심) 목록 조회")
+	public BaseResponse<PageResponse<CommunityResponse.BoardLikeListDetail>> getLikeBoardList(
+		@RequestParam(value = "page", defaultValue = "0", required = false) int page,
+		@RequestParam(value = "size", defaultValue = "16", required = false) int size,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		String memberId = customUser.getId();
+		Pageable pageable = PageRequest.of(page, size);
+		PageResponse<CommunityResponse.BoardLikeListDetail> boardLikeList =
+			communityService.getBoardLikeList(pageable, memberId);
+
+		return BaseResponse.success(SuccessCode.COMMUNITY_BOARD_LIKE_SEARCH_SUCCESS, boardLikeList);
 	}
 }

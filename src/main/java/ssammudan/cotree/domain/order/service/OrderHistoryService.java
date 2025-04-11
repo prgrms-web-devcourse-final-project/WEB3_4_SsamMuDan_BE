@@ -4,6 +4,7 @@ import ssammudan.cotree.domain.payment.dto.PrePaymentValue;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
 import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
+import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
 /**
  * PackageName : ssammudan.cotree.domain.order.service
@@ -21,5 +22,7 @@ public interface OrderHistoryService {
 	OrderHistory createOrderHistory(
 		Member member, OrderCategory orderCategory, String paymentKey, PrePaymentValue prePaymentValue
 	);
+
+	void updateStatus(OrderHistory orderHistory, PaymentStatus status);
 
 }

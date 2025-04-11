@@ -15,6 +15,8 @@ import ssammudan.cotree.domain.common.dto.LikeRequest;
  */
 public interface LikeService {
 
-	Long createLike(String memberId, LikeRequest.Create requestDto);
+	Long createLike(String memberId, LikeRequest requestDto);
+
+	void deleteLike(String memberId, LikeRequest requestDto);
 
 }

@@ -120,4 +120,16 @@ public class TechBookServiceImpl implements TechBookService {
 		);
 	}
 
+	/**
+	 * 좋아요된 TechBook 다 건 조회
+	 *
+	 * @param memberId - 회원 ID
+	 * @param pageable - 페이징 객체
+	 * @return PageResponse TechBookResponse ListInfo DTO
+	 */
+	@Override
+	public PageResponse<TechBookResponse.ListInfo> findLikeTechBooks(final String memberId, final Pageable pageable) {
+		return PageResponse.of(techBookRepository.findLikeTechBooks(memberId, pageable));
+	}
+
 }

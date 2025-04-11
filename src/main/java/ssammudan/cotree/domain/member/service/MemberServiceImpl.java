@@ -66,7 +66,9 @@ public class MemberServiceImpl implements MemberService {
 				.phoneNumber(signupRequest.phoneNumber())
 				.role(MemberRole.from(signupRequest.role()))
 				.build();
-			return memberRepository.save(newMember);
+			memberRepository.save(newMember);
+			memberRepository.flush();
+			return newMember;
 		} catch (DataIntegrityViolationException e) {
 			throw new GlobalException(ErrorCode.MEMBER_DUPLICATED);
 		} catch (Exception e) {

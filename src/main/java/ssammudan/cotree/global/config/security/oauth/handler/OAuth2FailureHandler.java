@@ -34,7 +34,7 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException exception) throws IOException, ServletException {
 		log.error("OAuth2 인증 실패 : {}", exception.getMessage());
-		String frontendUrl = frontendConfig.getFrontendUrl();
+		String frontendUrl = frontendConfig.getPrimaryFrontendUrl();
 
 		response.sendRedirect(frontendUrl + "/login/callback?error=true");
 	}
