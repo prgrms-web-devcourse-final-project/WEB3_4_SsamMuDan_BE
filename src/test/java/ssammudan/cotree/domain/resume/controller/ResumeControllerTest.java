@@ -134,7 +134,7 @@ class ResumeControllerTest extends SpringBootTestSupporter {
 			.andExpect(jsonPath("$.data.content[0].profileImage").isEmpty())
 			.andExpect(jsonPath("$.data.content[0].isOpen").value(true))
 			.andExpect(jsonPath("$.data.content[0].positions.length()").value(2))
-			.andExpect(jsonPath("$.data.content[0].techStacksId.length()").value(3))
+			.andExpect(jsonPath("$.data.content[0].tackStacksId.length()").value(3))
 			.andExpect(jsonPath("$.data.content[0].year").value(1))
 			.andExpect(jsonPath("$.data.content[0].introduction").value("안녕하세요 쌈무단입니다."))
 			.andExpect(jsonPath("$.data.content[0].viewCount").value(0));
