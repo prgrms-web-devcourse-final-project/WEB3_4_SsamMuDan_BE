@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.category.CategoryTestHelper;
 import ssammudan.cotree.domain.email.service.EmailService;
-import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.sms.SmsService;
 
 /**
  * PackageName : ssammudan.cotree.domain.category.controller

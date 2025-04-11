@@ -18,7 +18,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * FileName    : CustomUserDetailsService
  * Author      : hc
  * Date        : 25. 3. 31.
- * Description : 
+ * Description :
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------

@@ -12,14 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ssammudan.cotree.domain.member.dto.MemberOrderResponse;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsRequest;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsResponse;
+import ssammudan.cotree.domain.member.dto.MemberRecoverSmsVerifyRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
 import ssammudan.cotree.domain.member.type.OrderProductCategoryType;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.infra.sms.SmsService;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.member.member.type.MemberRole;
@@ -35,6 +41,7 @@ public class MemberServiceImpl implements MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final OrderCategoryRepository orderCategoryRepository;
+	private final SmsService smsService;
 
 	@Override
 	public Member signUp(MemberSignupRequest signupRequest) {
@@ -99,6 +106,28 @@ public class MemberServiceImpl implements MemberService {
 	public MemberInfoResponse getMemberInfo(String id) {
 		Member member = findById(id);
 		return new MemberInfoResponse(member);
+	}
+
+	@Override
+	public void sendSignupCode(MemberSignupSmsRequest request) {
+		smsService.sendSignupCode(request.receiverNumber());
+	}
+
+	@Override
+	public void verifySignupCode(MemberSignupSmsVerifyRequest request) {
+		smsService.verifySignupCode(request.receiverNumber(), request.code());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public void recoveryLoginId(MemberRecoverSmsRequest request) {
+		smsService.recoverLoginId(request.username(), request.receiverNumber());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public MemberRecoverSmsResponse verifyRecoverLoginId(MemberRecoverSmsVerifyRequest request) {
+		return smsService.verifyRecoverLoginId(request.username(), request.receiverNumber(), request.code());
 	}
 
 	@Override

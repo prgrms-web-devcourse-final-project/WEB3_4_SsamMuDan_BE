@@ -32,7 +32,6 @@ import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
 import ssammudan.cotree.domain.member.service.MemberService;
 import ssammudan.cotree.domain.member.type.OrderProductCategoryType;
-import ssammudan.cotree.domain.phone.service.SmsService;
 import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
 import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
 import ssammudan.cotree.global.config.security.jwt.TokenBlacklistService;
@@ -51,7 +50,6 @@ public class MemberController {
 	private final AccessTokenService accessTokenService;
 	private final RefreshTokenService refreshTokenService;
 	private final TokenBlacklistService tokenBlacklistService;
-	private final SmsService smsService;
 
 	@GetMapping
 	@Operation(summary = "회원 조회", description = "로그인한 회원의 정보를 제공합니다.")
@@ -126,21 +124,21 @@ public class MemberController {
 	@PostMapping("/signup/phone")
 	@Operation(summary = "회원가입 전화번호 인증 코드 전송", description = "회원가입 전화번호 인증 코드를 전송합니다")
 	public BaseResponse<Void> sendSignupCode(@Valid @RequestBody MemberSignupSmsRequest request) {
-		smsService.sendSignupCode(request);
+		memberService.sendSignupCode(request);
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_SEND_SUCCESS);
 	}
 
 	@PostMapping("/signup/phone/verify")
 	@Operation(summary = "회원가입 전화번호 인증 확인", description = "화원가입 전화번호 인증번호를 확인합니다.")
 	public BaseResponse<Void> verifySignupCode(@Valid @RequestBody MemberSignupSmsVerifyRequest request) {
-		smsService.verifySignupCode(request);
+		memberService.verifySignupCode(request);
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNUP_CODE_VERIFY_SUCCESS);
 	}
 
 	@PostMapping("/recovery/loginId")
 	@Operation(summary = "로그인 아이디 찾기 전화번호 인증 코드전송", description = "로그인 아이디 찾기 인증번호를 전송합니다.")
 	public BaseResponse<Void> recoveryLoginId(@Valid @RequestBody MemberRecoverSmsRequest request) {
-		smsService.recoverLoginId(request);
+		memberService.recoveryLoginId(request);
 		return BaseResponse.success(SuccessCode.MEMBER_RECOVER_CODE_SEND_SUCCESS);
 	}
 
@@ -149,7 +147,7 @@ public class MemberController {
 	public BaseResponse<MemberRecoverSmsResponse> verifyLoginId(
 		@Valid @RequestBody MemberRecoverSmsVerifyRequest request) {
 		return BaseResponse.success(SuccessCode.MEMBER_RECOVER_CODE_VERIFY_SUCCESS,
-			smsService.verifyRecoverLoginId(request));
+			memberService.verifyRecoverLoginId(request));
 	}
 
 	@GetMapping("/order")
