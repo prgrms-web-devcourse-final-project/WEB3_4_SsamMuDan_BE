@@ -16,6 +16,7 @@ import ssammudan.cotree.domain.community.service.CommunityService;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
 import ssammudan.cotree.domain.education.techtube.service.TechTubeService;
 import ssammudan.cotree.domain.email.service.EmailService;
+import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
 import ssammudan.cotree.integration.factory.ResumeDataFactory;
 import ssammudan.cotree.domain.resume.service.ResumeService;
 import ssammudan.cotree.domain.review.service.TechEducationReviewService;
@@ -108,6 +109,8 @@ public abstract class SpringBootTestSupporter {
 	protected TechEducationReviewService techEducationReviewService;
 	@Autowired
 	protected ResumeService resumeService;
+	@Autowired
+	protected CustomUserDetailsService customUserDetailsService;
 
 	/**
 	 * MockBean

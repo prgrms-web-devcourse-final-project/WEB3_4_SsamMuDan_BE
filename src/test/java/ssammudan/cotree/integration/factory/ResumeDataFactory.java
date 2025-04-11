@@ -45,7 +45,7 @@ public class ResumeDataFactory {
 	private EntityManager entityManager;
 
 	@Transactional
-	public String setData() {
+	public Member setData() {
 		// 테스트 전 기존 데이터 삭제
 		memberRepository.deleteAll();
 		techStackRepository.deleteAll();
@@ -67,8 +67,8 @@ public class ResumeDataFactory {
 			MemberRole.USER,
 			MemberStatus.ACTIVE);
 
-		Member member1 = memberRepository.save(member);
-		String memberID = member1.getId();
+		Member saverMember = memberRepository.save(member);
+		String memberID = saverMember.getId();
 		memberRepository.flush();
 
 		Map<String, String> techStackData = new HashMap<>();
@@ -103,7 +103,7 @@ public class ResumeDataFactory {
 
 		// entityManager.flush();
 		// entityManager.clear();
-		return memberID;
+		return saverMember;
 	}
 
 }
