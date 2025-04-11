@@ -17,12 +17,14 @@ import ssammudan.cotree.global.response.PageResponse;
  * FileName    : ProjectService
  * Author      : sangxxjin
  * Date        : 2025. 4. 2.
- * Description : 
+ * Description : ProjectService
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-04-02.   sangxxjin             Initial creation
- * 2025-04-02    sangxxjin             get HotProject
+ * 2025-04-02.   sangxxjin             get HotProject
+ * 2025-04-07.   sangxxjin             get Projects, updateRecruitmentStatus
+ * 2024-04-11.   sangxxjin             get LikeProjects
  */
 
 public interface ProjectService {
@@ -41,4 +43,6 @@ public interface ProjectService {
 	void updateRecruitmentStatus(Long projectId, String memberId);
 
 	void updateProjectPositionAmounts(Long projectId, String memberId, List<UpdateProjectPositionRequest> requests);
+
+	PageResponse<ProjectListResponse> getLikeProjects(Pageable pageable, String memberId);
 }
