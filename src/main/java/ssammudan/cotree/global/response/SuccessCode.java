@@ -56,6 +56,7 @@ public enum SuccessCode {
 	COMMUNITY_BOARD_DETAIL_SEARCH_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 상세 조회 성공"),
 	COMMUNITY_BOARD_MODIFY_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 수정 성공"),
 	COMMUNITY_BOARD_DELETE_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 삭제 성공"),
+	COMMUNITY_BOARD_LIKE_SEARCH_SUCCESS(HttpStatus.OK, "200", "내 좋아요 커뮤니티 글 조회 성공"),
 
 	//S3 Upload
 	S3_FILE_UPLOAD_SUCCESS(HttpStatus.CREATED, "201", "파일 업로드 성공."),
