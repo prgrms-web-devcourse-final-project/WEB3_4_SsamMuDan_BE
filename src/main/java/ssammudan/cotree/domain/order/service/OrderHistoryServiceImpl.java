@@ -35,7 +35,7 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 		final String paymentKey,
 		final PrePaymentValue prePaymentValue
 	) {
-		return OrderHistory.create(
+		return orderHistoryRepository.save(OrderHistory.create(
 			member,
 			orderCategory,
 			prePaymentValue.info().orderId(),
@@ -43,7 +43,7 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
 			prePaymentValue.info().itemId(),
 			prePaymentValue.info().productName(),
 			prePaymentValue.info().amount()
-		);
+		));
 	}
 
 }
