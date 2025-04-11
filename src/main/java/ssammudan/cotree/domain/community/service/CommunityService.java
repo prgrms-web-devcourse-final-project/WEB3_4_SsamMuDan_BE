@@ -1,7 +1,10 @@
 package ssammudan.cotree.domain.community.service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
+import jakarta.validation.constraints.NotNull;
 import ssammudan.cotree.domain.community.dto.CommunityRequest;
 import ssammudan.cotree.domain.community.dto.CommunityResponse;
 import ssammudan.cotree.domain.community.type.SearchBoardCategory;
@@ -18,26 +21,39 @@ import ssammudan.cotree.global.response.PageResponse;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-03-28     Baekgwa               Initial creation
- * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, Community 목록 조회 기능 추가
  */
 public interface CommunityService {
-	CommunityResponse.BoardCreate createNewBoard(final CommunityRequest.CreateBoard createBoard, final String memberId);
+	CommunityResponse.BoardCreate createNewBoard(
+		@NonNull final CommunityRequest.CreateBoard createBoard,
+		@NonNull final String memberId
+	);
 
 	PageResponse<CommunityResponse.BoardListDetail> getBoardList(
-			final Pageable pageable,
-			final SearchBoardSort sort,
-			final SearchBoardCategory category,
-			final String keyword,
-			final String memberId);
+		@NonNull final Pageable pageable,
+		@NonNull final SearchBoardSort sort,
+		@NonNull final SearchBoardCategory category,
+		@NonNull final String keyword,
+		@Nullable final String memberId
+	);
 
-	CommunityResponse.BoardDetail getBoardDetail(final Long boardId, final String memberId);
+	CommunityResponse.BoardDetail getBoardDetail(
+		@NotNull final Long boardId,
+		@NonNull final String memberId
+	);
 
-	void modifyBoard(final Long boardId, final CommunityRequest.ModifyBoard modifyBoard, final String memberId);
+	void modifyBoard(
+		@NonNull final Long boardId,
+		@NonNull final CommunityRequest.ModifyBoard modifyBoard,
+		@NonNull final String memberId
+	);
 
-	void deleteBoard(final Long boardId, final String memberId);
+	void deleteBoard(
+		@NonNull final Long boardId,
+		@NonNull final String memberId
+	);
 
 	PageResponse<CommunityResponse.BoardLikeListDetail> getBoardLikeList(
-		final Pageable pageable,
-		final String memberId
+		@NonNull final Pageable pageable,
+		@NonNull final String memberId
 	);
 }
