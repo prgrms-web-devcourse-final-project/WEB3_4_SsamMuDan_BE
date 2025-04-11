@@ -165,5 +165,18 @@ public class ProjectController {
 			membershipService.getMemberships(projectId, memberId));
 	}
 
+	@GetMapping("/like")
+	@Operation(summary = "프로젝트 직무별 모집 인원 수정", description = "프로젝트 직무별 모집 인원을 수정합니다.")
+	@ApiResponse(responseCode = "200", description = "수정 성공")
+	public BaseResponse<PageResponse<ProjectListResponse>> getLikeProjects(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "16") int size,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+		String memberId = customUser.getId();
+		return BaseResponse.success(SuccessCode.PROJECT_LIKE_LIST_SEARCH_SUCCESS,
+			projectService.getLikeProjects(pageable, memberId));
+	}
 }
 
