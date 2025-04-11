@@ -167,8 +167,8 @@ public class ProjectController {
 	}
 
 	@GetMapping("/like")
-	@Operation(summary = "프로젝트 직무별 모집 인원 수정", description = "프로젝트 직무별 모집 인원을 수정합니다.")
-	@ApiResponse(responseCode = "200", description = "수정 성공")
+	@Operation(summary = "프로젝트 좋아요 목록 조회", description = "프로젝트 좋아요 목록을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
 	public BaseResponse<PageResponse<ProjectLikeListResponse>> getLikeProjects(
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "16") int size,
