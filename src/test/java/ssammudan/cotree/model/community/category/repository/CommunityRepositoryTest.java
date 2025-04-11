@@ -22,7 +22,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
 
 /**
  * PackageName : ssammudan.cotree.model.community.category.repository
- * FileName    : CommunityCategoryRepositoryTest
+ * FileName    : CommunityRepositoryTest
  * Author      : Baekgwa
  * Date        : 2025-03-30
  * Description : 
@@ -32,7 +32,7 @@ import ssammudan.cotree.model.member.member.entity.Member;
  * 2025-03-30     Baekgwa               Initial creation
  */
 @Transactional
-class CommunityCategoryRepositoryTest extends SpringBootTestSupporter {
+class CommunityRepositoryTest extends SpringBootTestSupporter {
 
 	@DisplayName("로그인 Uid 와 글 Id 로 회원의 글인지 확인합니다.")
 	@Test
