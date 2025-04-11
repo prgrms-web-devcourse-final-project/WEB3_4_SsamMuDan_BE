@@ -30,6 +30,6 @@ public interface PaymentService {
 
 	PrePaymentValue verifyPayment(String redisKey, TossPaymentRequest request, String memberId);
 
-	PaymentResponse.Detail confirmPaymentRequest(String redisKey, TossPaymentRequest request);
+	PaymentResponse.PaymentDetail confirmPaymentRequest(String redisKey, TossPaymentRequest request);
 
 }

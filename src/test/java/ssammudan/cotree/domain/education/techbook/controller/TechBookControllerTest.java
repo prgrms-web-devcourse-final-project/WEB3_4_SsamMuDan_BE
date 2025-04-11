@@ -47,8 +47,8 @@ import ssammudan.cotree.integration.WebMvcTestSupporter;
  */
 class TechBookControllerTest extends WebMvcTestSupporter {
 
-	private TechBookResponse.Detail createTechBookResponseDetail(final Long id) {
-		return dtoFixtureMonkey.giveMeBuilder(TechBookResponse.Detail.class)
+	private TechBookResponse.TechBookDetail createTechBookResponseDetail(final Long id) {
+		return dtoFixtureMonkey.giveMeBuilder(TechBookResponse.TechBookDetail.class)
 			.set("id", id)
 			.set("avgRating", Arbitraries.doubles().between(0, 5))
 			.set("totalReviewCount", Arbitraries.integers().greaterOrEqual(0))
@@ -74,7 +74,7 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 	@DisplayName("[Success] getTechBookById(): TechBook 단 건 조회")
 	void getTechBookById(@Min(1) @Max(Long.MAX_VALUE) final Long id) throws Exception {
 		//Given
-		TechBookResponse.Detail responseDto = createTechBookResponseDetail(id);
+		TechBookResponse.TechBookDetail responseDto = createTechBookResponseDetail(id);
 
 		when(techBookService.findTechBookById(eq(id), any())).thenReturn(responseDto);
 
@@ -82,7 +82,7 @@ class TechBookControllerTest extends WebMvcTestSupporter {
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/education/techbook/{id}/info", id));
 
 		//Then
-		BaseResponse<TechBookResponse.Detail> baseResponse = BaseResponse.success(
+		BaseResponse<TechBookResponse.TechBookDetail> baseResponse = BaseResponse.success(
 			SuccessCode.TECH_BOOK_READ_SUCCESS, responseDto
 		);
 		String responseBody = objectMapper.writeValueAsString(baseResponse);

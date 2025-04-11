@@ -76,11 +76,11 @@ public class TechEducationReviewRepositoryImpl implements TechEducationReviewRep
 	 * @return Page<TechEducationReview>
 	 */
 	@Override
-	public Page<TechEducationReviewResponse.Detail> findReviews(
+	public Page<TechEducationReviewResponse.ReviewDetail> findReviews(
 		final Long techEducationTypeId, final Long itemId, final Pageable pageable
 	) {
-		List<TechEducationReviewResponse.Detail> content = jpaQueryFactory.select(Projections.constructor(
-				TechEducationReviewResponse.Detail.class,
+		List<TechEducationReviewResponse.ReviewDetail> content = jpaQueryFactory.select(Projections.constructor(
+				TechEducationReviewResponse.ReviewDetail.class,
 				techEducationReview.id,
 				techEducationType.id,
 				techEducationReview.itemId,

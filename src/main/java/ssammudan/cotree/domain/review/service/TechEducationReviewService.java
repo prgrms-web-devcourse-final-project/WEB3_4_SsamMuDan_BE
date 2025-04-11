@@ -19,10 +19,10 @@ import ssammudan.cotree.global.response.PageResponse;
  */
 public interface TechEducationReviewService {
 
-	Long createTechEducationReview(String memberId, TechEducationReviewRequest.Create requestDto);
+	Long createTechEducationReview(String memberId, TechEducationReviewRequest.ReviewCreate requestDto);
 
-	PageResponse<TechEducationReviewResponse.Detail> findAllTechEducationReviews(
-		TechEducationReviewRequest.Read requestDto, Pageable pageable
+	PageResponse<TechEducationReviewResponse.ReviewDetail> findAllTechEducationReviews(
+		TechEducationReviewRequest.ReviewRead requestDto, Pageable pageable
 	);
 
 }

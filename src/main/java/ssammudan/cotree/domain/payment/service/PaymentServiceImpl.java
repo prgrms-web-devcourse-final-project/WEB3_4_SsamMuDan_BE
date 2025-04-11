@@ -113,12 +113,13 @@ public class PaymentServiceImpl implements PaymentService {
 	 * @return PaymentResponse Detail DTO
 	 */
 	@Override
-	public PaymentResponse.Detail confirmPaymentRequest(final String redisKey, final TossPaymentRequest request) {
+	public PaymentResponse.PaymentDetail confirmPaymentRequest(final String redisKey,
+		final TossPaymentRequest request) {
 		try {
 			TossPaymentResponse tossPaymentResponse = (TossPaymentResponse)tossPaymentClient.confirmPayment(
 				request
 			);
-			return PaymentResponse.Detail.from(tossPaymentResponse, PaymentStatus.SUCCESS);
+			return PaymentResponse.PaymentDetail.from(tossPaymentResponse, PaymentStatus.SUCCESS);
 		} catch (GlobalException e) {
 			throw e;
 		} catch (Exception e) {

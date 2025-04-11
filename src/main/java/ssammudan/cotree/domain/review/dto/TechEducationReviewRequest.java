@@ -23,7 +23,7 @@ import ssammudan.cotree.model.education.type.EducationType;
 public class TechEducationReviewRequest {
 
 	@Schema(description = "TechEducation(TechTube or TechBook) 리뷰 생성 요청 DTO")
-	public record Create(
+	public record ReviewCreate(
 		@NotNull
 		@Schema(description = "TechEducation 타입: TECH_BOOK, TECH_TUBE", example = "TECH_BOOK")
 		EducationType techEducationType,
@@ -40,7 +40,7 @@ public class TechEducationReviewRequest {
 	}
 
 	@Schema(description = "TechEducation(TechTube or TechBook) 리뷰 읽기 요청 DTO")
-	public record Read(
+	public record ReviewRead(
 		@NotNull
 		@Schema(description = "TechEducation 타입: TECH_BOOK, TECH_TUBE", example = "TECH_BOOK")
 		EducationType techEducationType,

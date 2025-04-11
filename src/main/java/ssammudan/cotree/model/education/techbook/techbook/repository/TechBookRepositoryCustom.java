@@ -20,7 +20,7 @@ import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
  */
 public interface TechBookRepositoryCustom {
 
-	TechBookResponse.Detail findTechBook(Long techBookId, String memberId);
+	TechBookResponse.TechBookDetail findTechBook(Long techBookId, String memberId);
 
 	Page<TechBook> findAllTechBooksByKeyword(String keyword, Pageable pageable);
 

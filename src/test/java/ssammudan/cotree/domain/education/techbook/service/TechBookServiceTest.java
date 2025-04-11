@@ -157,7 +157,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		EducationLevel educationLevel = createEducationLevel();
 		em.persist(educationLevel);
 
-		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(TechBookRequest.Create.class)
+		TechBookRequest.TechBookCreate requestDto = dtoFixtureMonkey.giveMeBuilder(TechBookRequest.TechBookCreate.class)
 			.set("educationLevel", EducationLevelType.BEGINNER)
 			.sample();
 
@@ -190,7 +190,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		Member writer = createMember();
 		em.persist(writer);
 
-		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.Create.class);
+		TechBookRequest.TechBookCreate requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.TechBookCreate.class);
 
 		//When
 
@@ -212,7 +212,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		EducationLevel educationLevel = createEducationLevel();
 		em.persist(educationLevel);
 
-		TechBookRequest.Create requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.Create.class);
+		TechBookRequest.TechBookCreate requestDto = dtoFixtureMonkey.giveMeOne(TechBookRequest.TechBookCreate.class);
 
 		//When
 
@@ -244,7 +244,7 @@ class TechBookServiceTest extends SpringBootTestSupporter {
 		clearEntityContext();
 
 		//When
-		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id, member.getId());
+		TechBookResponse.TechBookDetail responseDto = techBookService.findTechBookById(id, member.getId());
 
 		//Then
 		assertNotNull(responseDto, "TechBook 응답 DTO 존재");

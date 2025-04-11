@@ -54,7 +54,7 @@ public class TechBookServiceImpl implements TechBookService {
 	 */
 	@Transactional
 	@Override
-	public Long createTechBook(final String memberId, final TechBookRequest.Create requestDto) {
+	public Long createTechBook(final String memberId, final TechBookRequest.TechBookCreate requestDto) {
 		//TechBook 작성자 확인
 		Member writer = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
@@ -88,7 +88,7 @@ public class TechBookServiceImpl implements TechBookService {
 	 * @return TechBookResponse Detail DTO
 	 */
 	@Override
-	public TechBookResponse.Detail findTechBookById(final Long id, final String memberId) {
+	public TechBookResponse.TechBookDetail findTechBookById(final Long id, final String memberId) {
 		if (!techBookRepository.existsById(id)) {
 			throw new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND);
 		}

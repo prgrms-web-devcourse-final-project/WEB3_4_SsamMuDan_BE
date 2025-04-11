@@ -275,8 +275,8 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		em.persist(orderHistory);
 		clearEntityContext();
 
-		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
-				TechEducationReviewRequest.Create.class
+		TechEducationReviewRequest.ReviewCreate requestDto = dtoFixtureMonkey.giveMeBuilder(
+				TechEducationReviewRequest.ReviewCreate.class
 			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("content", Arbitraries.strings()
@@ -316,8 +316,8 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		String unknownMemberId = UUID.randomUUID().toString();
 		TechEducationType techEducationType = createTechEducationType(1L, "TechTube");
 
-		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
-				TechEducationReviewRequest.Create.class
+		TechEducationReviewRequest.ReviewCreate requestDto = dtoFixtureMonkey.giveMeBuilder(
+				TechEducationReviewRequest.ReviewCreate.class
 			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", Arbitraries.longs().greaterOrEqual(1))
@@ -365,8 +365,8 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		em.persist(orderHistory);
 		clearEntityContext();
 
-		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
-				TechEducationReviewRequest.Create.class
+		TechEducationReviewRequest.ReviewCreate requestDto = dtoFixtureMonkey.giveMeBuilder(
+				TechEducationReviewRequest.ReviewCreate.class
 			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.set("itemId", itemId)
@@ -410,8 +410,8 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		});
 		clearEntityContext();
 
-		TechEducationReviewRequest.Read requestDto = dtoFixtureMonkey.giveMeBuilder(
-				TechEducationReviewRequest.Read.class
+		TechEducationReviewRequest.ReviewRead requestDto = dtoFixtureMonkey.giveMeBuilder(
+				TechEducationReviewRequest.ReviewRead.class
 			)
 			.set("techEducationType", EducationType.TECH_TUBE)
 			.set("itemId", techTube.getId())
@@ -420,22 +420,22 @@ class TechEducationReviewServiceTest extends SpringBootTestSupporter {
 		Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
 
 		//When
-		List<TechEducationReviewResponse.Detail> findAllTechEducationReviewResopnseDto = techEducationReviewService.findAllTechEducationReviews(
+		List<TechEducationReviewResponse.ReviewDetail> findAllTechEducationReviewResopnseDto = techEducationReviewService.findAllTechEducationReviews(
 			requestDto, pageable
 		).getContent();
 
 		//Then
-		List<TechEducationReviewResponse.Detail> sortedTechEducationReviewResponseDto = reviews.stream()
+		List<TechEducationReviewResponse.ReviewDetail> sortedTechEducationReviewResponseDto = reviews.stream()
 			.sorted(Comparator.comparing(TechEducationReview::getCreatedAt).reversed())
 			.limit(pageable.getPageSize())
-			.map(TechEducationReviewResponse.Detail::from)
+			.map(TechEducationReviewResponse.ReviewDetail::from)
 			.toList();
 
 		assertEquals(sortedTechEducationReviewResponseDto.size(), findAllTechEducationReviewResopnseDto.size(),
 			"조회 결과 갯수 일치");
 		for (int i = 0; i < sortedTechEducationReviewResponseDto.size(); i++) {
-			TechEducationReviewResponse.Detail sortedReviewDto = sortedTechEducationReviewResponseDto.get(i);
-			TechEducationReviewResponse.Detail findReviewDto = findAllTechEducationReviewResopnseDto.get(i);
+			TechEducationReviewResponse.ReviewDetail sortedReviewDto = sortedTechEducationReviewResponseDto.get(i);
+			TechEducationReviewResponse.ReviewDetail findReviewDto = findAllTechEducationReviewResopnseDto.get(i);
 
 			assertEquals(sortedReviewDto.getId(), findReviewDto.getId(), "PK 일치");
 			assertEquals(sortedReviewDto.getTechEducationType(), findReviewDto.getTechEducationType(), "교육 컨텐츠 타입 일치");

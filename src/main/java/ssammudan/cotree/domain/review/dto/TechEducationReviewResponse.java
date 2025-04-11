@@ -26,7 +26,7 @@ public class TechEducationReviewResponse {
 	@Schema(description = "TechEducationReview 조회 DTO")
 	@Getter
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class Detail {
+	public static class ReviewDetail {
 		@Schema(description = "TechEducation 리뷰 ID", example = "1")
 		long id;
 		@Schema(description = "TechEducation 타입: TECH_TUBE, TECH_BOOK", example = "TECH_TUBE")
@@ -44,7 +44,7 @@ public class TechEducationReviewResponse {
 		@Schema(description = "TechEducation 리뷰 작성일자", example = "2025-01-01")
 		LocalDateTime createdAt;
 
-		public Detail(
+		public ReviewDetail(
 			final long id,
 			final long educationTypeId,
 			final long itemId,
@@ -64,8 +64,8 @@ public class TechEducationReviewResponse {
 			this.createdAt = createdAt;
 		}
 
-		public static Detail from(final TechEducationReview techEducationReview) {
-			return new Detail(
+		public static ReviewDetail from(final TechEducationReview techEducationReview) {
+			return new ReviewDetail(
 				techEducationReview.getId(),
 				EducationType.getTechEducationType(techEducationReview.getTechEducationType().getId()),
 				techEducationReview.getItemId(),

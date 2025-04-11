@@ -23,7 +23,7 @@ public interface TechEducationReviewRepositoryCustom {
 		final Long techEducationTypeId, final Long itemId, final Pageable pageable
 	);
 
-	Page<TechEducationReviewResponse.Detail> findReviews(
+	Page<TechEducationReviewResponse.ReviewDetail> findReviews(
 		final Long techEducationTypeId, final Long itemId, final Pageable pageable
 	);
 

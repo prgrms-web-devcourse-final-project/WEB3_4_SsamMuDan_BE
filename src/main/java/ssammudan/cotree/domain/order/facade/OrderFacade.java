@@ -70,7 +70,7 @@ public class OrderFacade {
 	 * @return PaymentResponse Detail DTO
 	 */
 	@Transactional
-	public PaymentResponse.Detail confirmPayment(final ApiPaymentRequest request, final String memberId) {
+	public PaymentResponse.PaymentDetail confirmPayment(final ApiPaymentRequest request, final String memberId) {
 		TossPaymentRequest tossPaymentRequest = (TossPaymentRequest)request;
 
 		Member member = memberService.findById(memberId);
@@ -88,7 +88,7 @@ public class OrderFacade {
 			member, orderCategory, tossPaymentRequest.getPaymentKey(), verifiedValue
 		);
 
-		PaymentResponse.Detail response;
+		PaymentResponse.PaymentDetail response;
 		try {
 			response = paymentService.confirmPaymentRequest(redisKey, tossPaymentRequest);
 			orderHistoryService.updateStatus(orderHistory, response.paymentStatus());

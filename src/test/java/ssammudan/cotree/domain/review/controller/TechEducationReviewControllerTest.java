@@ -59,14 +59,14 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 			.sample();
 	}
 
-	private List<TechEducationReviewResponse.Detail> createTechEducationReviews(
+	private List<TechEducationReviewResponse.ReviewDetail> createTechEducationReviews(
 		final TechEducationType techEducationType, final int size
 	) {
 		return entityFixtureMonkey.giveMeBuilder(TechEducationReview.class)
 			.set("techEducationType", techEducationType)
 			.sampleList(size)
 			.stream()
-			.map(TechEducationReviewResponse.Detail::from)
+			.map(TechEducationReviewResponse.ReviewDetail::from)
 			.toList();
 	}
 
@@ -76,15 +76,15 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 	@DisplayName("[Success] createTechEducationReview(): 교육 컨텐츠 리뷰 작성")
 	void createTechEducationReview() throws Exception {
 		//Given
-		TechEducationReviewRequest.Create requestDto = dtoFixtureMonkey.giveMeBuilder(
-				TechEducationReviewRequest.Create.class
+		TechEducationReviewRequest.ReviewCreate requestDto = dtoFixtureMonkey.giveMeBuilder(
+				TechEducationReviewRequest.ReviewCreate.class
 			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("rating", Arbitraries.integers().between(0, 5))
 			.sample();
 		String requestBody = objectMapper.writeValueAsString(requestDto);
 
 		when(techEducationReviewService.createTechEducationReview(anyString(),
-			any(TechEducationReviewRequest.Create.class))).thenReturn(1L);
+			any(TechEducationReviewRequest.ReviewCreate.class))).thenReturn(1L);
 
 		//When
 		ResultActions resultActions = mockMvc.perform(post("/api/v1/education/review")
@@ -110,15 +110,16 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 	@DisplayName("[Success] getTechEducationReviews(): TechEducation 리뷰 다 건 조회, 페이징 적용")
 	void getTechEducationReviews(@Min(1) @Max(Long.MAX_VALUE) final Long itemId) throws Exception {
 		//Given
-		List<TechEducationReviewResponse.Detail> content = createTechEducationReviews(createTechEducationType(), 50);
-		PageResponse<TechEducationReviewResponse.Detail> responseDto = PageResponse.of(new PageImpl<>(
+		List<TechEducationReviewResponse.ReviewDetail> content = createTechEducationReviews(createTechEducationType(),
+			50);
+		PageResponse<TechEducationReviewResponse.ReviewDetail> responseDto = PageResponse.of(new PageImpl<>(
 			content,
 			PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt"),
 			content.size())
 		);
 
-		TechEducationReviewRequest.Read requestDto = dtoFixtureMonkey.giveMeBuilder(
-				TechEducationReviewRequest.Read.class
+		TechEducationReviewRequest.ReviewRead requestDto = dtoFixtureMonkey.giveMeBuilder(
+				TechEducationReviewRequest.ReviewRead.class
 			).set("techEducationType", EducationType.TECH_TUBE)
 			.set("itemId", itemId)
 			.sample();
@@ -137,7 +138,7 @@ class TechEducationReviewControllerTest extends WebMvcTestSupporter {
 		ResultActions resultActions = mockMvc.perform(get("/api/v1/education/review").params(params));
 
 		//Then
-		BaseResponse<PageResponse<TechEducationReviewResponse.Detail>> baseResponse = BaseResponse.success(
+		BaseResponse<PageResponse<TechEducationReviewResponse.ReviewDetail>> baseResponse = BaseResponse.success(
 			SuccessCode.TECH_EDUCATION_REVIEW_LIST_FIND_SUCCESS, responseDto
 		);
 		String responseBody = objectMapper.writeValueAsString(baseResponse);

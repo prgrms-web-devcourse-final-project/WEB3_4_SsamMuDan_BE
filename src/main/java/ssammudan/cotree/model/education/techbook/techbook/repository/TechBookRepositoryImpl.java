@@ -67,9 +67,9 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	 * @return TechBookResponse Detail DTO
 	 */
 	@Override
-	public TechBookResponse.Detail findTechBook(final Long techBookId, final String memberId) {
-		TechBookResponse.Detail content = jpaQueryFactory.select(Projections.constructor(
-				TechBookResponse.Detail.class,
+	public TechBookResponse.TechBookDetail findTechBook(final Long techBookId, final String memberId) {
+		TechBookResponse.TechBookDetail content = jpaQueryFactory.select(Projections.constructor(
+				TechBookResponse.TechBookDetail.class,
 				techBook.id,
 				member.nickname,
 				member.profileImageUrl,
@@ -169,7 +169,7 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 				member.profileImageUrl,
 				educationId != null
 					? educationCategory.name
-					: null,
+					: Expressions.nullExpression(String.class),
 				techBook.title,
 				techBook.price,
 				techBook.techBookThumbnailUrl,

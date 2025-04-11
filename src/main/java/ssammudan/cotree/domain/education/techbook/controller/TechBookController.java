@@ -47,12 +47,12 @@ public class TechBookController {
 	@GetMapping("/{id}/info")
 	@Operation(summary = "TechBook 상세 조회", description = "ID를 통해 특정 TechBook을 조회")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<TechBookResponse.Detail> getTechBookById(
+	public BaseResponse<TechBookResponse.TechBookDetail> getTechBookById(
 		@PathVariable @Min(1) Long id,
 		@Nullable @AuthenticationPrincipal final UserDetails userDetails
 	) {
 		String memberId = (userDetails != null) ? ((CustomUser)userDetails).getId() : null;
-		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id, memberId);
+		TechBookResponse.TechBookDetail responseDto = techBookService.findTechBookById(id, memberId);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_READ_SUCCESS, responseDto);
 	}
 
