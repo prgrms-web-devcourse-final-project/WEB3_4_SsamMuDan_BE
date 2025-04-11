@@ -30,6 +30,7 @@ public enum SuccessCode {
 	TECH_TUBE_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechTube 목록 조회를 성공했습니다."),
 	TECH_EDUCATION_REVIEW_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "리뷰 목록 조회를 성공했습니다."),
 	TECH_EDUCATION_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "201", "리뷰 등록을 성공했습니다."),
+	TECH_TUBE_LIKE_SEARCH_SUCCESS(HttpStatus.OK, "200", "내 좋아요 Tech Tube 조회 성공"),
 
 	//Payment
 	PRE_PAYMENT_SAVE_SUCCESS(HttpStatus.OK, "200", "사전 결제 정보 저장을 완료했습니다."),
