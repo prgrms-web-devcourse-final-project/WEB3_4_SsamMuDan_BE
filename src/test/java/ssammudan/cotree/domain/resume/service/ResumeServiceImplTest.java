@@ -37,38 +37,8 @@ import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 30.     kwak               Initial creation
  */
-
-// @SpringBootTest
-// @ActiveProfiles("test")
 @Transactional
 class ResumeServiceImplTest extends SpringBootTestSupporter {
-
-	// @Autowired
-	// private ResumeTestHelper resumeTestHelper;
-
-	// @Autowired
-	// private ResumeRepository resumeRepository;
-	//
-	// @Autowired
-	// private CareerRepository careerRepository;
-	//
-	// @Autowired
-	// private PortfolioRepository portfolioRepository;
-	//
-	// @Autowired
-	// private ResumeService resumeService;
-
-	/**
-	 * MockBean
-	 */
-	// @MockitoBean
-	// private S3Client s3Client;
-	// @MockitoBean
-	// private S3Uploader s3Uploader;
-	// @MockitoBean
-	// SmsService smsService;
-	// @MockitoBean
-	// EmailService emailService;
 
 	private String memberId;
 
