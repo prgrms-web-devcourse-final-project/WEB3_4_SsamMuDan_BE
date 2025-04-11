@@ -20,6 +20,7 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
 import ssammudan.cotree.infra.viewcount.type.ViewCountType;
+import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.community.category.entity.CommunityCategory;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.entity.Community;
@@ -40,6 +41,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * 2025-04-04     Baekgwa               글 수정/삭제 기능 추가
  * 2025-04-07     Baekgwa               Thumbnail 이미지 출력 정상화
  * 2025-04-08     Baekgwa               커뮤니티 글 작성 시, community category 입력 형식 변경. 기존 : String / 변경 : Long id
+ * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, Community 목록 조회 기능 추가
  */
 @Service
 @RequiredArgsConstructor
@@ -49,6 +51,7 @@ public class CommunityServiceImpl implements CommunityService {
 	private final CommunityRepository communityRepository;
 	private final MemberRepository memberRepository;
 	private final ViewCountStore viewCountStore;
+	private final LikeRepository likeRepository;
 
 	@Transactional
 	@Override
@@ -166,6 +169,14 @@ public class CommunityServiceImpl implements CommunityService {
 
 		// 현재 글삭제는 하드 delete
 		communityRepository.deleteById(boardId);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public PageResponse<CommunityResponse.BoardLikeListDetail> getBoardLikeList(
+		Pageable pageable, String memberId
+	) {
+		return PageResponse.of(likeRepository.findBoardLikeList(pageable, memberId));
 	}
 
 	/**
