@@ -169,7 +169,7 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 				member.profileImageUrl,
 				educationId != null
 					? educationCategory.name
-					: null,
+					: Expressions.nullExpression(String.class),
 				techBook.title,
 				techBook.price,
 				techBook.techBookThumbnailUrl,
