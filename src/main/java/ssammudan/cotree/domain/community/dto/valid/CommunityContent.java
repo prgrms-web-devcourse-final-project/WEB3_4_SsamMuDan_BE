@@ -25,7 +25,7 @@ import jakarta.validation.constraints.Size;
 @Constraint(validatedBy = {})
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Size(min = 1, max = 1000, message = "내용은 1자 이상 1000자 이하로 입력해주세요.")
+@Size(min = 1, max = 10_000, message = "내용은 1자 이상 10,000자 이하로 입력해주세요.")
 public @interface CommunityContent {
 	String message() default "유효하지 않은 내용입니다.";
 
