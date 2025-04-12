@@ -22,7 +22,7 @@ import ssammudan.cotree.model.education.level.type.EducationLevelType;
 public class TechBookRequest {
 
 	@Schema(description = "TechBook 생성 요청 DTO")
-	public record Create(
+	public record TechBookCreate(
 		@NotNull
 		@Schema(description = "학습 난이도 ENUM: BEGINNER(입문), INTERMEDIATE(초급), ADVANCED(중급)", example = "INTERMEDIATE")
 		EducationLevelType educationLevel,
