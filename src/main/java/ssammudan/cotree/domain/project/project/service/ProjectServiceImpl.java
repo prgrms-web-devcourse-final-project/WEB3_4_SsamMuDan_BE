@@ -24,6 +24,7 @@ import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.global.util.ImageValidator;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
@@ -224,6 +225,9 @@ public class ProjectServiceImpl implements ProjectService {
 	private String uploadImage(MultipartFile image, String memberId) {
 		if (image == null)
 			return null;
+		if (!ImageValidator.isValidImage(image)) {
+			throw new GlobalException(ErrorCode.INVALID_IMAGE_TYPE);
+		}
 		return s3Uploader.upload(memberId, image, S3Directory.PROJECT).getSaveUrl();
 	}
 
