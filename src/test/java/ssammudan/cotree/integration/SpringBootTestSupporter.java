@@ -32,6 +32,7 @@ import ssammudan.cotree.model.community.category.repository.CommunityCategoryRep
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
 import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
+import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.recruitment.career.career.repository.CareerRepository;
 import ssammudan.cotree.model.recruitment.portfolio.portfolio.repository.PortfolioRepository;
 import ssammudan.cotree.model.recruitment.resume.resume.repository.ResumeRepository;
@@ -103,6 +104,8 @@ public abstract class SpringBootTestSupporter {
 	protected CareerRepository careerRepository;
 	@Autowired
 	protected PortfolioRepository portfolioRepository;
+	@Autowired
+	protected MemberRepository memberRepository;
 
 	/**
 	 * service

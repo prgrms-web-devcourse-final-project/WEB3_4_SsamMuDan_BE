@@ -9,10 +9,10 @@ import org.springframework.security.test.context.support.WithSecurityContext;
 
 /**
  * PackageName : ssammudan.cotree.integration.security
- * FileName    : WithCustomUser
+ * FileName    : WithCustomMember
  * Author      : Baekgwa
  * Date        : 2025-04-11
- * Description : 
+ * Description : 무작위 회원을 한명 생성하여 저장 후, securityContext 에 저장합니다.
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -20,6 +20,6 @@ import org.springframework.security.test.context.support.WithSecurityContext;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@WithSecurityContext(factory = WithCustomUserSecurityContextFactory.class)
-public @interface WithCustomUser {
+@WithSecurityContext(factory = WithCustomMemberSecurityContextFactory.class)
+public @interface WithCustomMember {
 }
