@@ -153,9 +153,14 @@ class CommunityControllerTest extends SpringBootTestSupporter {
 	@Test
 	void getBoardDetail2() throws Exception {
 		// given
+		List<Member> saveMemberList = memberDataFactory.createAndSaveMember(1);
+		List<CommunityCategory> saveCommunityCategoryList = communityDataFactory.createAndSaveCommunityCategory();
+		Community saveCommunity = communityDataFactory.createAndSaveCommunity(saveMemberList, saveCommunityCategoryList,
+				1)
+			.getFirst();
 
 		// when
-		ResultActions perform = mockMvc.perform(get("/api/v1/community/board/{id}", 1));
+		ResultActions perform = mockMvc.perform(get("/api/v1/community/board/{id}", saveCommunity.getId()));
 
 		// then
 		perform.andDo(print())
@@ -238,6 +243,37 @@ class CommunityControllerTest extends SpringBootTestSupporter {
 
 		// when
 		ResultActions perform = mockMvc.perform(delete("/api/v1/community/board/{id}", 1));
+
+		// then
+		perform.andDo(print())
+			.andExpect(status().isUnauthorized());
+	}
+
+	@WithCustomMember
+	@DisplayName("내가 좋아요 누른 커뮤니티 글을 조회합니다.")
+	@Test
+	void getLikeBoardList1() throws Exception {
+		// given
+
+		// when
+		ResultActions perform = mockMvc.perform(get("/api/v1/community/like"));
+
+		// then
+		perform.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.isSuccess").value(true))
+			.andExpect(jsonPath("$.message").value(SuccessCode.COMMUNITY_BOARD_LIKE_SEARCH_SUCCESS.getMessage()))
+			.andExpect(jsonPath("$.code").value(SuccessCode.COMMUNITY_BOARD_LIKE_SEARCH_SUCCESS.getCode()))
+			.andExpect(jsonPath("$.data.content").isArray());
+	}
+
+	@DisplayName("내가 좋아요 누른 커뮤니티 글을 조회합니다. 로그인 한 회원만 가능합니다.")
+	@Test
+	void getLikeBoardList2() throws Exception {
+		// given
+
+		// when
+		ResultActions perform = mockMvc.perform(get("/api/v1/community/like"));
 
 		// then
 		perform.andDo(print())

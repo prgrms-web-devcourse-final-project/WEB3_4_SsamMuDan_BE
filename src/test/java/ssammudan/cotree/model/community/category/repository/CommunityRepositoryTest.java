@@ -378,4 +378,92 @@ class CommunityRepositoryTest extends SpringBootTestSupporter {
 		assertThat(content.getContent())
 			.isEmpty();
 	}
+
+	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 댓글순, 키워드 : TEST, 비 로그인 상태]")
+	@Test
+	void findBoardList5() {
+		// given
+		// 회원 2명
+		List<Member> saveMemberList =
+			memberDataFactory.createAndSaveMember(2);
+		// 커뮤니티 카테고리 2개
+		List<CommunityCategory> saveCommunityCategoryList =
+			communityDataFactory.createAndSaveCommunityCategory();
+		// 커뮤니티 글 = 회원수 * 카테고리 수 * count = 2 * 2 * 2 = 8
+		List<Community> saveCommuintyList =
+			communityDataFactory.createAndSaveCommunity(saveMemberList, saveCommunityCategoryList, 2);
+		// 댓글 수 : member * community * count = 2 * 8 * 2 = 32
+		// 대댓글 수 : 댓글 수 * count = 32 * 2 = 64
+		commentDataFactory.createAndSaveCommunityComment(saveMemberList, saveCommuintyList, 2);
+		likeDataFactory.createAndSaveCommunityLike(saveMemberList, saveCommuintyList);
+
+		Pageable pageable = PageRequest.of(0, 5);
+		SearchBoardSort sort = SearchBoardSort.COMMENT;
+		SearchBoardCategory category = SearchBoardCategory.CODE_REVIEW;
+
+		// when
+		Page<CommunityResponse.BoardListDetail> content =
+			communityRepository.findBoardList(pageable, sort, category, "TEST", null);
+
+		// then
+		assertThat(content).asInstanceOf(InstanceOfAssertFactories.type(Page.class))
+			.satisfies(page -> {
+				assertThat(page.getTotalElements()).isZero();
+				assertThat(page.getTotalPages()).isZero();
+				assertThat(page.getNumber()).isZero();
+				assertThat(page.getSize()).isEqualTo(5);
+				assertThat(page.getNumberOfElements()).isZero();
+				assertThat(page.isFirst()).isTrue();
+				assertThat(page.isLast()).isTrue();
+				assertThat(page.hasNext()).isFalse();
+				assertThat(page.hasPrevious()).isFalse();
+			});
+
+		assertThat(content.getContent())
+			.isEmpty();
+	}
+
+	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 좋아요순, 키워드 : TEST, 비 로그인 상태]")
+	@Test
+	void findBoardList6() {
+		// given
+		// 회원 2명
+		List<Member> saveMemberList =
+			memberDataFactory.createAndSaveMember(2);
+		// 커뮤니티 카테고리 2개
+		List<CommunityCategory> saveCommunityCategoryList =
+			communityDataFactory.createAndSaveCommunityCategory();
+		// 커뮤니티 글 = 회원수 * 카테고리 수 * count = 2 * 2 * 2 = 8
+		List<Community> saveCommuintyList =
+			communityDataFactory.createAndSaveCommunity(saveMemberList, saveCommunityCategoryList, 2);
+		// 댓글 수 : member * community * count = 2 * 8 * 2 = 32
+		// 대댓글 수 : 댓글 수 * count = 32 * 2 = 64
+		commentDataFactory.createAndSaveCommunityComment(saveMemberList, saveCommuintyList, 2);
+		likeDataFactory.createAndSaveCommunityLike(saveMemberList, saveCommuintyList);
+
+		Pageable pageable = PageRequest.of(0, 5);
+		SearchBoardSort sort = SearchBoardSort.LIKE;
+		SearchBoardCategory category = SearchBoardCategory.CODE_REVIEW;
+
+		// when
+		Page<CommunityResponse.BoardListDetail> content =
+			communityRepository.findBoardList(pageable, sort, category, "TEST", null);
+
+		// then
+		assertThat(content).asInstanceOf(InstanceOfAssertFactories.type(Page.class))
+			.satisfies(page -> {
+				assertThat(page.getTotalElements()).isZero();
+				assertThat(page.getTotalPages()).isZero();
+				assertThat(page.getNumber()).isZero();
+				assertThat(page.getSize()).isEqualTo(5);
+				assertThat(page.getNumberOfElements()).isZero();
+				assertThat(page.isFirst()).isTrue();
+				assertThat(page.isLast()).isTrue();
+				assertThat(page.hasNext()).isFalse();
+				assertThat(page.hasPrevious()).isFalse();
+			});
+
+		assertThat(content.getContent())
+			.isEmpty();
+	}
 }

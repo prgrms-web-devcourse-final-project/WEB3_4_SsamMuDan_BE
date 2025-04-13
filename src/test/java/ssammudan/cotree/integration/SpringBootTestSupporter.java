@@ -28,6 +28,7 @@ import ssammudan.cotree.infra.sms.SmsService;
 import ssammudan.cotree.integration.factory.CommunityDataFactory;
 import ssammudan.cotree.integration.factory.LikeDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
+import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
@@ -106,6 +107,8 @@ public abstract class SpringBootTestSupporter {
 	protected PortfolioRepository portfolioRepository;
 	@Autowired
 	protected MemberRepository memberRepository;
+	@Autowired
+	protected LikeRepository likeRepository;
 
 	/**
 	 * service

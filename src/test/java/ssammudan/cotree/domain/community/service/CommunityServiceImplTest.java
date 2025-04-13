@@ -430,6 +430,50 @@ class CommunityServiceImplTest extends SpringBootTestSupporter {
 			.isEqualTo(ErrorCode.COMMUNITY_BOARD_NOTFOUND);
 	}
 
+	@DisplayName("내가 좋아요한 커뮤니티 글을 조회합니다.")
+	@Test
+	void getBoardLikeList1() {
+		// given
+		List<Member> saveMemberList =
+			memberDataFactory.createAndSaveMember(1);
+		List<CommunityCategory> saveCommunityCategoryList =
+			communityDataFactory.createAndSaveCommunityCategory();
+		List<Community> saveCommunityList =
+			communityDataFactory.createAndSaveCommunity(saveMemberList, saveCommunityCategoryList, 10);
+		likeDataFactory.createAndSaveCommunityLike(saveMemberList, saveCommunityList);
+
+		Member saveMember = saveMemberList.getFirst();
+		Pageable pageable = PageRequest.of(0, 16);
+
+		// when
+		PageResponse<CommunityResponse.BoardLikeListDetail> content =
+			communityService.getBoardLikeList(pageable, saveMember.getId());
+
+		// then
+		assertThat(content)
+			.satisfies(data -> {
+				assertThat(data.getPageNo()).isZero();
+				assertThat(data.getPageSize()).isEqualTo(16);
+				assertThat(data.getTotalElements()).isEqualTo(20);
+				assertThat(data.getTotalPages()).isEqualTo(2);
+				assertThat(data.isLast()).isFalse();
+				assertThat(data.isFirst()).isTrue();
+				assertThat(data.isHasNext()).isTrue();
+				assertThat(data.isHasPrevious()).isFalse();
+			});
+
+		assertThat(content.getContent())
+			.hasSize(16);
+		assertThat(content.getContent())
+			.allSatisfy(data -> {
+				assertThat(data.id()).isNotNull();
+				assertThat(data.title()).isNotNull();
+				assertThat(data.author()).isNotNull();
+				assertThat(data.createdAt()).isNotNull();
+				assertThat(data.content()).isNotNull();
+			});
+	}
+
 	private @NotNull String createNewMarkdownContent(final boolean isImageExist) {
 		String content = """
 			# 새글 제목
