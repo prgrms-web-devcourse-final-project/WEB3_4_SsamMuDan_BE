@@ -11,13 +11,16 @@ import org.springframework.security.test.context.support.WithSecurityContextFact
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.entity.MemberFactory;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
+import ssammudan.cotree.model.member.member.type.MemberRole;
 
 /**
  * PackageName : ssammudan.cotree.integration.security
- * FileName    : WithCustomUserSecurityContextFactory
+ * FileName    : WithCustomMemberSecurityContextFactory
  * Author      : Baekgwa
  * Date        : 2025-04-11
  * Description : 
@@ -28,20 +31,25 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  */
 @Component
 @RequiredArgsConstructor
-public class WithCustomUserSecurityContextFactory implements WithSecurityContextFactory<WithCustomUser> {
+public class WithCustomMemberSecurityContextFactory implements WithSecurityContextFactory<WithCustomMember> {
 
 	private final MemberRepository memberRepository;
 
 	@Override
-	public SecurityContext createSecurityContext(WithCustomUser annotation) {
+	public SecurityContext createSecurityContext(WithCustomMember annotation) {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 
-		Member findMember = memberRepository.findAll().getFirst();
+		Member newMember = MemberFactory.createSignUpMember(
+			new MemberSignupRequest("mockMember", "!asdf1234", "mock member", "mock member nickname",
+				MemberRole.USER.getRole(), "01099999999")
+		);
 
-		CustomUser customUser = new CustomUser(findMember, null);
+		Member savedMember = memberRepository.save(newMember);
+
+		CustomUser customUser = new CustomUser(savedMember, null);
 
 		Authentication auth = new UsernamePasswordAuthenticationToken(
-			customUser, null, List.of(new SimpleGrantedAuthority(findMember.getRole().getRole()))
+			customUser, null, List.of(new SimpleGrantedAuthority(savedMember.getRole().getRole()))
 		);
 
 		context.setAuthentication(auth);
