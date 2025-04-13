@@ -43,15 +43,15 @@ public class SmsService {
 	private static final String COOLDOWN_RECOVER_LOGIN_ID_KEY = "cooldown:loginId:%s";
 
 	public SmsService(
-		MessageSender messageSender,
 		@Value("${SENDER_PHONE_NUMBER}") String senderPhoneNumber,
+		MessageSender messageSender,
 		RedisTemplate<String, String> redisTemplate,
 		MemberRepository memberRepository
 	) {
+		this.senderPhoneNumber = senderPhoneNumber;
 		this.messageSender = messageSender;
 		this.redisTemplate = redisTemplate;
 		this.memberRepository = memberRepository;
-		this.senderPhoneNumber = senderPhoneNumber;
 	}
 
 	public void sendSignupCode(String receiverNumber) {
@@ -151,7 +151,10 @@ public class SmsService {
 
 		int visibleLength = localPart.length() / 2;
 
-		return localPart.substring(0, visibleLength) + MASKING.repeat(localPart.length() - visibleLength) + domain;
+		return localPart.substring(0, visibleLength)
+			+ MASKING.repeat(localPart.length() - visibleLength)
+			+ EMAIL_DELIMITER
+			+ domain;
 	}
 
 	private void validateSignupCodeSendLimit(String key) {
