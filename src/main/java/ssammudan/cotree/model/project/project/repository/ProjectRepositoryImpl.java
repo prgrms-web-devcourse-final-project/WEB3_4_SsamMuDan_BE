@@ -154,7 +154,10 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		List<Long> likedProjectIds = queryFactory
 			.select(LIKE.project.id)
 			.from(LIKE)
-			.where(LIKE.member.id.eq(memberId))
+			.where(
+				LIKE.member.id.eq(memberId),
+				LIKE.project.id.isNotNull()
+			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -169,7 +172,10 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		Long total = queryFactory
 			.select(LIKE.count())
 			.from(LIKE)
-			.where(LIKE.member.id.eq(memberId))
+			.where(
+				LIKE.member.id.eq(memberId),
+				LIKE.project.id.isNotNull()
+			)
 			.fetchOne();
 
 		return new PageImpl<>(content, pageable, total != null ? total : 0);
