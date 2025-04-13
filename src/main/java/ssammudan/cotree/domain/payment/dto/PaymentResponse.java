@@ -51,7 +51,7 @@ public class PaymentResponse {
 	}
 
 	@Schema(description = "애플리케이션 결제 응답 DTO")
-	public record Detail(
+	public record PaymentDetail(
 		@Schema(description = "주문번호, 결제 요청에서 직접 생성한 영문 대소문자, 숫자, '-', '_'로 이루어진 6자 이상 64이하 문자열")
 		String orderId,
 		@Schema(description = "주문 상품명")
@@ -63,8 +63,8 @@ public class PaymentResponse {
 		@Schema(description = "결제 상태")
 		PaymentStatus paymentStatus
 	) {
-		public static Detail from(final TossPaymentResponse response, final PaymentStatus paymentStatus) {
-			return new Detail(
+		public static PaymentDetail from(final TossPaymentResponse response, final PaymentStatus paymentStatus) {
+			return new PaymentDetail(
 				response.getOrderId(),
 				response.getOrderName(),
 				response.getTotalAmount().intValue(),
@@ -73,14 +73,14 @@ public class PaymentResponse {
 			);
 		}
 
-		public static Detail of(
+		public static PaymentDetail of(
 			final String orderId,
 			final String productName,
 			final int amount,
 			final String completedAt,
 			final PaymentStatus paymentStatus
 		) {
-			return new Detail(
+			return new PaymentDetail(
 				orderId,
 				productName,
 				amount,

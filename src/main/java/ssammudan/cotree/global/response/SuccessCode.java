@@ -26,10 +26,12 @@ public enum SuccessCode {
 	//Education
 	TECH_BOOK_READ_SUCCESS(HttpStatus.OK, "200", "TechBook 조회를 성공했습니다."),
 	TECH_BOOK_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechBook 목록 조회를 성공했습니다."),
+	TECH_BOOK_LIKE_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechBook 목록 조회를 성공했습니다."),
 	TECH_TUBE_READ_SUCCESS(HttpStatus.OK, "200", "TechTube 조회를 성공했습니다."),
 	TECH_TUBE_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "TechTube 목록 조회를 성공했습니다."),
 	TECH_EDUCATION_REVIEW_LIST_FIND_SUCCESS(HttpStatus.OK, "200", "리뷰 목록 조회를 성공했습니다."),
 	TECH_EDUCATION_REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "201", "리뷰 등록을 성공했습니다."),
+	TECH_TUBE_LIKE_SEARCH_SUCCESS(HttpStatus.OK, "200", "내 좋아요 Tech Tube 조회 성공"),
 
 	//Payment
 	PRE_PAYMENT_SAVE_SUCCESS(HttpStatus.OK, "200", "사전 결제 정보 저장을 완료했습니다."),
@@ -49,6 +51,7 @@ public enum SuccessCode {
 	PROJECT_APPLY_SUCCESS(HttpStatus.OK, "200", "프로젝트 참가 신청 성공"),
 	PROJECT_POSITION_UPDATE_SUCCESS(HttpStatus.OK, "200", "프로젝트 직무별 모집 인원 수정 성공"),
 	PROJECT_MEMBERSHIP_LIST_RETRIEVED(HttpStatus.OK, "200", "프로젝트 참가자 목록 조회 성공"),
+	PROJECT_LIKE_LIST_SEARCH_SUCCESS(HttpStatus.OK, "200", "프로젝트 좋아요 목록 조회 성공"),
 
 	//Community
 	COMMUNITY_BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "201", "글 작성 성공"),
@@ -56,6 +59,7 @@ public enum SuccessCode {
 	COMMUNITY_BOARD_DETAIL_SEARCH_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 상세 조회 성공"),
 	COMMUNITY_BOARD_MODIFY_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 수정 성공"),
 	COMMUNITY_BOARD_DELETE_SUCCESS(HttpStatus.OK, "200", "커뮤니티 글 삭제 성공"),
+	COMMUNITY_BOARD_LIKE_SEARCH_SUCCESS(HttpStatus.OK, "200", "내 좋아요 커뮤니티 글 조회 성공"),
 
 	//S3 Upload
 	S3_FILE_UPLOAD_SUCCESS(HttpStatus.CREATED, "201", "파일 업로드 성공."),
@@ -66,6 +70,7 @@ public enum SuccessCode {
 
 	//Like
 	LIKE_ADD_SUCCESS(HttpStatus.OK, "200", "좋아요 추가 성공"),
+	LIKE_CANCEL_SUCCESS(HttpStatus.OK, "200", "좋아요 삭제 성공"),
 
 	// email
 	EMAIL_CODE_SEND_SUCCESS(HttpStatus.OK, "200", "이메일 인증 코드 발송 성공"),

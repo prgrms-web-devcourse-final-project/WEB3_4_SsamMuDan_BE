@@ -18,11 +18,13 @@ import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectDevPositionResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
+import ssammudan.cotree.global.util.ImageValidator;
 import ssammudan.cotree.infra.s3.S3Directory;
 import ssammudan.cotree.infra.s3.S3Uploader;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
@@ -53,7 +55,10 @@ import ssammudan.cotree.model.project.techstack.repository.ProjectTechStackRepos
  * 2025. 4. 2.     sangxxjin          create project 구현
  * 2025. 4. 2.     sangxxjin          get project 구현
  * 2025. 4. 3.     sangxxjin          get hot project 구현, 상세 조회 시 조회수 증가 구현
+ * 2025. 4. 7.     sangxxjin          프로젝트 목록 조회, 모집상태 변경 구현
  * 2025. 4. 9.     Baekgwa            프로젝트 상세 조회 시, 조회수 증가 로직 변경.
+ * 2025. 4. 9.     sangxxjin          프로젝트 직무별 모집 인원 변경
+ * 2025. 4.10.     sangxxjin          유저별 프로젝트 좋아요 누른 기록 확인
  */
 @Service
 @RequiredArgsConstructor
@@ -103,7 +108,7 @@ public class ProjectServiceImpl implements ProjectService {
 			convertDevPositions(project.getProjectDevPositions()),
 			convertTechStacks(project.getProjectTechStacks()),
 			isLikedByMember(project.getLikes(), memberId),
-			isMemberParticipant(project.getProjectMemberships(), memberId),
+			isParticipant(project.getProjectMemberships(), memberId),
 			ProjectHelper.isProjectOwner(project, memberId)
 		);
 	}
@@ -111,8 +116,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getHotProjectsForMain(Pageable pageable) {
-		Page<ProjectListResponse> projects = projectRepository.findHotProjectsForMain(pageable);
-		return PageResponse.of(projects);
+		return PageResponse.of(projectRepository.findHotProjectsForMain(pageable));
 	}
 
 	@Override
@@ -137,9 +141,8 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort) {
-		Page<ProjectListResponse> projects = projectRepository.findByFilters(pageable, techStackIds,
-			devPositionIds, sort);
-		return PageResponse.of(projects);
+		return PageResponse.of(projectRepository.findByFilters(pageable, techStackIds,
+			devPositionIds, sort));
 	}
 
 	@Override
@@ -171,6 +174,13 @@ public class ProjectServiceImpl implements ProjectService {
 			ProjectDevPosition position = currentMap.get(req.projectDevPositionId());
 			position.updateAmount(req.amount());
 		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public PageResponse<ProjectLikeListResponse> getLikeProjects(Pageable pageable, String memberId) {
+		Page<ProjectLikeListResponse> projects = projectRepository.getLikeProjects(pageable, memberId);
+		return PageResponse.of(projects);
 	}
 
 	private Project getProjectByIdAndOptionalMemberId(Long projectId, String memberId) {
@@ -207,7 +217,7 @@ public class ProjectServiceImpl implements ProjectService {
 			likes.stream().anyMatch(like -> like.getMember().getId().equals(memberId));
 	}
 
-	private boolean isMemberParticipant(Set<ProjectMembership> memberships, String memberId) {
+	private boolean isParticipant(Set<ProjectMembership> memberships, String memberId) {
 		return memberId != null &&
 			memberships.stream().anyMatch(m -> m.getMember().getId().equals(memberId));
 	}
@@ -215,6 +225,9 @@ public class ProjectServiceImpl implements ProjectService {
 	private String uploadImage(MultipartFile image, String memberId) {
 		if (image == null)
 			return null;
+		if (!ImageValidator.isValidImage(image)) {
+			throw new GlobalException(ErrorCode.INVALID_IMAGE_TYPE);
+		}
 		return s3Uploader.upload(memberId, image, S3Directory.PROJECT).getSaveUrl();
 	}
 

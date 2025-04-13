@@ -48,7 +48,10 @@ class CommunityRequestTest {
 	@Test
 	void createBoard1() {
 		// given
-		CommunityRequest.CreateBoard createBoard = new CommunityRequest.CreateBoard(2L, "제목", "내용");
+		String longTitle = "A".repeat(49);
+		String longContent = "B".repeat(9999);
+		CommunityRequest.CreateBoard createBoard =
+			new CommunityRequest.CreateBoard(2L, longTitle, longContent);
 
 		// when
 		Set<ConstraintViolation<CommunityRequest.CreateBoard>> validate = validator.validate(createBoard);
@@ -62,7 +65,7 @@ class CommunityRequestTest {
 	void createBoard2() {
 		// given
 		String tooLongTitle = "A".repeat(51);
-		String tooLongContent = "B".repeat(1001);
+		String tooLongContent = "B".repeat(10001);
 		CommunityRequest.CreateBoard createBoard = new CommunityRequest.CreateBoard(0L, tooLongTitle, tooLongContent);
 
 		// when
@@ -73,6 +76,40 @@ class CommunityRequestTest {
 		assertThat(validate.stream()
 			.anyMatch(v -> v.getMessage().equals("제목은 1자 이상 50자 이하로 입력해주세요."))).isTrue();
 		assertThat(validate.stream()
-			.anyMatch(v -> v.getMessage().equals("내용은 1자 이상 1000자 이하로 입력해주세요."))).isTrue();
+			.anyMatch(v -> v.getMessage().equals("내용은 1자 이상 10,000자 이하로 입력해주세요."))).isTrue();
+	}
+
+	@DisplayName("커뮤니티 글 수정 dto 유효성 검증")
+	@Test
+	void modifyBoard1() {
+		// given
+		String longTitle = "A".repeat(49);
+		String longContent = "B".repeat(9999);
+		CommunityRequest.ModifyBoard modifyBoard = new CommunityRequest.ModifyBoard(longTitle, longContent);
+
+		// when
+		Set<ConstraintViolation<CommunityRequest.ModifyBoard>> validate = validator.validate(modifyBoard);
+
+		// then
+		assertThat(validate).isEmpty();
+	}
+
+	@DisplayName("커뮤니티 글 수정 dto 유효성 검증")
+	@Test
+	void modifyBoard2() {
+		// given
+		String tooLongTitle = "A".repeat(51);
+		String tooLongContent = "B".repeat(10001);
+		CommunityRequest.ModifyBoard modifyBoard = new CommunityRequest.ModifyBoard(tooLongTitle, tooLongContent);
+
+		// when
+		Set<ConstraintViolation<CommunityRequest.ModifyBoard>> validate = validator.validate(modifyBoard);
+
+		// then
+		assertThat(validate).hasSize(2);
+		assertThat(validate.stream()
+			.anyMatch(v -> v.getMessage().equals("제목은 1자 이상 50자 이하로 입력해주세요."))).isTrue();
+		assertThat(validate.stream()
+			.anyMatch(v -> v.getMessage().equals("내용은 1자 이상 10,000자 이하로 입력해주세요."))).isTrue();
 	}
 }

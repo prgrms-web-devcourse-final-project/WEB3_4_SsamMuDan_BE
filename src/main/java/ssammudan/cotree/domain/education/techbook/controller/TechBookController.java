@@ -47,12 +47,12 @@ public class TechBookController {
 	@GetMapping("/{id}/info")
 	@Operation(summary = "TechBook 상세 조회", description = "ID를 통해 특정 TechBook을 조회")
 	@ApiResponse(responseCode = "200", description = "조회 성공")
-	public BaseResponse<TechBookResponse.Detail> getTechBookById(
+	public BaseResponse<TechBookResponse.TechBookDetail> getTechBookById(
 		@PathVariable @Min(1) Long id,
 		@Nullable @AuthenticationPrincipal final UserDetails userDetails
 	) {
 		String memberId = (userDetails != null) ? ((CustomUser)userDetails).getId() : null;
-		TechBookResponse.Detail responseDto = techBookService.findTechBookById(id, memberId);
+		TechBookResponse.TechBookDetail responseDto = techBookService.findTechBookById(id, memberId);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_READ_SUCCESS, responseDto);
 	}
 
@@ -72,6 +72,21 @@ public class TechBookController {
 			keyword, memberId, educationId, PageRequest.of(page, size, Sort.Direction.DESC, sort.getValue())
 		);
 		return BaseResponse.success(SuccessCode.TECH_BOOK_LIST_FIND_SUCCESS, responseDto);
+	}
+
+	@GetMapping("/like")
+	@Operation(summary = "TechBook 관심 목록 조회", description = "회원의 좋아요 기준으로 TechBook 목록을 조회")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public BaseResponse<PageResponse<TechBookResponse.ListInfo>> getLikeTechBooks(
+		@RequestParam(value = "page", required = false, defaultValue = "0") final int page,
+		@RequestParam(value = "size", required = false, defaultValue = "16") final int size,
+		@AuthenticationPrincipal final UserDetails userDetails
+	) {
+		String memberId = ((CustomUser)userDetails).getId();
+		PageResponse<TechBookResponse.ListInfo> responseDto = techBookService.findLikeTechBooks(
+			memberId, PageRequest.of(page, size)
+		);
+		return BaseResponse.success(SuccessCode.TECH_BOOK_LIKE_LIST_FIND_SUCCESS, responseDto);
 	}
 
 }

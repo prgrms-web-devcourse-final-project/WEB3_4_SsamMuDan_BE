@@ -67,9 +67,9 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	 * @return TechBookResponse Detail DTO
 	 */
 	@Override
-	public TechBookResponse.Detail findTechBook(final Long techBookId, final String memberId) {
-		TechBookResponse.Detail content = jpaQueryFactory.select(Projections.constructor(
-				TechBookResponse.Detail.class,
+	public TechBookResponse.TechBookDetail findTechBook(final Long techBookId, final String memberId) {
+		TechBookResponse.TechBookDetail content = jpaQueryFactory.select(Projections.constructor(
+				TechBookResponse.TechBookDetail.class,
 				techBook.id,
 				member.nickname,
 				member.profileImageUrl,
@@ -167,6 +167,9 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 				techBook.id,
 				member.nickname,
 				member.profileImageUrl,
+				educationId != null
+					? educationCategory.name
+					: Expressions.nullExpression(String.class),
 				techBook.title,
 				techBook.price,
 				techBook.techBookThumbnailUrl,
@@ -192,6 +195,46 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 			.where(getSearchCondition(keyword));
 
 		addJoinByEducationCategory(countJpaQuery, educationId);
+
+		return PageableExecutionUtils.getPage(content, pageable, countJpaQuery::fetchOne);
+	}
+
+	/**
+	 * 회원 ID를 기준으로 좋아요된 TechBook 페이징 목록 조회
+	 *
+	 * @param memberId - 회원 ID
+	 * @param pageable - 페이징 객체
+	 * @return Page<TechBookResponse.ListInfo>
+	 */
+	@Override
+	public Page<TechBookResponse.ListInfo> findLikeTechBooks(final String memberId, final Pageable pageable) {
+		List<TechBookResponse.ListInfo> content = jpaQueryFactory.select(Projections.constructor(
+				TechBookResponse.ListInfo.class,
+				techBook.id,
+				member.id,
+				member.profileImageUrl,
+				Expressions.nullExpression(String.class),
+				techBook.title,
+				techBook.price,
+				techBook.techBookThumbnailUrl,
+				JPAExpressions.select(like.count()).from(like).where(like.techBook.id.eq(techBook.id)),
+				techBook.createdAt,
+				memberId != null
+					? JPAExpressions.select(like.count()).from(like)
+					.where(like.techBook.id.eq(techBook.id).and(like.member.id.eq(memberId))).exists()
+					: Expressions.constant(Boolean.FALSE)
+			)).from(techBook)
+			.join(member).on(techBook.writer.id.eq(member.id))
+			.join(like).on(like.techBook.id.eq(techBook.id))
+			.where(like.member.id.eq(memberId))
+			.orderBy(like.createdAt.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize()).fetch();
+
+		JPAQuery<Long> countJpaQuery = jpaQueryFactory.select(techBook.count())
+			.from(techBook)
+			.join(like).on(like.techBook.id.eq(techBook.id))
+			.where(like.member.id.eq(memberId));
 
 		return PageableExecutionUtils.getPage(content, pageable, countJpaQuery::fetchOne);
 	}

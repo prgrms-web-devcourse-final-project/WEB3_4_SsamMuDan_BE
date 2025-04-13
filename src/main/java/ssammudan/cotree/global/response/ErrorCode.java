@@ -41,7 +41,7 @@ public enum ErrorCode {
 	TOSS_API_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "2008", "토스 결제 서버의 응답이 지연되고 있습니다."),
 
 	//Recruitment: 3001 ~ 4000
-	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다"),
+	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다."),
 	NOR_FOUND_RESUME_ID(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서 ID 를 가져올 수 없습니다."),
 
 	//Project: 4001 ~ 5000
@@ -61,6 +61,7 @@ public enum ErrorCode {
 	//S3: 6001 ~ 7000
 	FILE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "6001", "파일 업로드 실패, 재시도 혹은 관리자 문의해주세요."),
 	INVALID_FILE(HttpStatus.BAD_REQUEST, "6002", "파일 업로드 실패. 잘못된 파일 입니다."),
+	INVALID_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "6003", "허용되지 않는 이미지 파일 형식입니다."),
 
 	//Comment: 7001 ~ 8000
 	POST_COMMENT_FAIL_COMMUNITY_NOTFOUND(HttpStatus.NOT_FOUND, "7001", "커뮤니티 댓글 작성 실패. 잘못된 글 ID 입니다."),

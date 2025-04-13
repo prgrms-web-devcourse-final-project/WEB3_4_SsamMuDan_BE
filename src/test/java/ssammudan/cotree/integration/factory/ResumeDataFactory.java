@@ -1,4 +1,4 @@
-package ssammudan.cotree.domain.resume;
+package ssammudan.cotree.integration.factory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  * 2025. 3. 31.     kwak               Initial creation
  */
 @Component
-public class ResumeTestHelper {
+public class ResumeDataFactory {
 	@Autowired
 	private MemberRepository memberRepository;
 
@@ -45,7 +45,7 @@ public class ResumeTestHelper {
 	private EntityManager entityManager;
 
 	@Transactional
-	public String setData() {
+	public Member setData() {
 		// 테스트 전 기존 데이터 삭제
 		memberRepository.deleteAll();
 		techStackRepository.deleteAll();
@@ -67,8 +67,8 @@ public class ResumeTestHelper {
 			MemberRole.USER,
 			MemberStatus.ACTIVE);
 
-		Member member1 = memberRepository.save(member);
-		String memberID = member1.getId();
+		Member saverMember = memberRepository.save(member);
+		String memberID = saverMember.getId();
 		memberRepository.flush();
 
 		Map<String, String> techStackData = new HashMap<>();
@@ -103,7 +103,7 @@ public class ResumeTestHelper {
 
 		// entityManager.flush();
 		// entityManager.clear();
-		return memberID;
+		return saverMember;
 	}
 
 }

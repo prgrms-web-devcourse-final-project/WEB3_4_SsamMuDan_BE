@@ -13,6 +13,7 @@ import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
 import ssammudan.cotree.infra.viewcount.type.ViewCountType;
+import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.education.category.repository.EducationCategoryRepository;
 import ssammudan.cotree.model.education.level.entity.EducationLevel;
 import ssammudan.cotree.model.education.level.repository.EducationLevelRepository;
@@ -32,6 +33,7 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 4. 4.     loadingKKamo21       Initial creation
  * 25. 4. 7.     Baekgwa       		  techTube 상세 조회 refactor
+ * 2025-04-11     Baekgwa               내가 좋아요 (관심)한, TechTube 목록 조회 기능 추가
  */
 @Service
 @Transactional(readOnly = true)
@@ -42,6 +44,7 @@ public class TechTubeServiceImpl implements TechTubeService {
 	private final MemberRepository memberRepository;
 	private final EducationLevelRepository educationLevelRepository;
 	private final EducationCategoryRepository educationCategoryRepository;
+	private final LikeRepository likeRepository;
 
 	private final ViewCountStore viewCountStore;
 
@@ -109,6 +112,7 @@ public class TechTubeServiceImpl implements TechTubeService {
 	 * @param pageable - 페이징 객체
 	 * @return PageResponse TechTubeResponse ListInfo DTO
 	 */
+	@Transactional(readOnly = true)
 	@Override
 	public PageResponse<TechTubeResponse.ListInfo> findAllTechTubes(
 		final String keyword,
@@ -124,5 +128,14 @@ public class TechTubeServiceImpl implements TechTubeService {
 
 		return PageResponse.of(
 			techTubeRepository.findTechTubeList(keyword, sort, pageable, memberId, educationId));
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public PageResponse<TechTubeResponse.TechTubeLikeListDetail> getTechTubeLikeList(
+		final Pageable pageable,
+		final String memberId
+	) {
+		return PageResponse.of(likeRepository.findTechBookLikeList(pageable, memberId));
 	}
 }

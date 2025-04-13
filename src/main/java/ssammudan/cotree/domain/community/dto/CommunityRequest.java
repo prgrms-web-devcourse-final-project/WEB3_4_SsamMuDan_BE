@@ -18,10 +18,8 @@ import ssammudan.cotree.domain.community.dto.valid.CommunityTitle;
  * 2025-03-28     Baekgwa               Initial creation
  * 2025-04-08     Baekgwa               커뮤니티 글 작성 시, community category 입력 형식 변경. 기존 : String / 변경 : Long id
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommunityRequest {
-
-	private CommunityRequest() {
-	}
 
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,5 +47,10 @@ public class CommunityRequest {
 
 		@CommunityContent
 		private String content;
+
+		public ModifyBoard(String title, String content) {
+			this.title = title;
+			this.content = content;
+		}
 	}
 }

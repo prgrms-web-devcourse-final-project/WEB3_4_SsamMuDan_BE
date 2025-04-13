@@ -54,7 +54,7 @@ public class TechBookServiceImpl implements TechBookService {
 	 */
 	@Transactional
 	@Override
-	public Long createTechBook(final String memberId, final TechBookRequest.Create requestDto) {
+	public Long createTechBook(final String memberId, final TechBookRequest.TechBookCreate requestDto) {
 		//TechBook 작성자 확인
 		Member writer = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
@@ -88,7 +88,7 @@ public class TechBookServiceImpl implements TechBookService {
 	 * @return TechBookResponse Detail DTO
 	 */
 	@Override
-	public TechBookResponse.Detail findTechBookById(final Long id, final String memberId) {
+	public TechBookResponse.TechBookDetail findTechBookById(final Long id, final String memberId) {
 		if (!techBookRepository.existsById(id)) {
 			throw new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND);
 		}
@@ -118,6 +118,18 @@ public class TechBookServiceImpl implements TechBookService {
 		return PageResponse.of(
 			techBookRepository.findTechBooks(keyword, memberId, educationId, pageable)
 		);
+	}
+
+	/**
+	 * 좋아요된 TechBook 다 건 조회
+	 *
+	 * @param memberId - 회원 ID
+	 * @param pageable - 페이징 객체
+	 * @return PageResponse TechBookResponse ListInfo DTO
+	 */
+	@Override
+	public PageResponse<TechBookResponse.ListInfo> findLikeTechBooks(final String memberId, final Pageable pageable) {
+		return PageResponse.of(techBookRepository.findLikeTechBooks(memberId, pageable));
 	}
 
 }

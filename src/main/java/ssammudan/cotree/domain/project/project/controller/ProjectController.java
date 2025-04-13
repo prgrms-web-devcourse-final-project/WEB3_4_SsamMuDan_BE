@@ -27,6 +27,7 @@ import ssammudan.cotree.domain.project.membership.service.MembershipService;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateRequest;
 import ssammudan.cotree.domain.project.project.dto.ProjectCreateResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
+import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.domain.project.project.service.ProjectService;
@@ -165,5 +166,18 @@ public class ProjectController {
 			membershipService.getMemberships(projectId, memberId));
 	}
 
+	@GetMapping("/like")
+	@Operation(summary = "프로젝트 좋아요 목록 조회", description = "프로젝트 좋아요 목록을 조회합니다.")
+	@ApiResponse(responseCode = "200", description = "조회 성공")
+	public BaseResponse<PageResponse<ProjectLikeListResponse>> getLikeProjects(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "16") int size,
+		@AuthenticationPrincipal CustomUser customUser
+	) {
+		Pageable pageable = PageRequest.of(page, size);
+		String memberId = customUser.getId();
+		return BaseResponse.success(SuccessCode.PROJECT_LIKE_LIST_SEARCH_SUCCESS,
+			projectService.getLikeProjects(pageable, memberId));
+	}
 }
 

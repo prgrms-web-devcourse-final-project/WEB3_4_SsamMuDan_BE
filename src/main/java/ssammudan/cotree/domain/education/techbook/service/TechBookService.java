@@ -20,12 +20,16 @@ import ssammudan.cotree.global.response.PageResponse;
  */
 public interface TechBookService {
 
-	Long createTechBook(String memberId, TechBookRequest.Create requestDto);
+	Long createTechBook(String memberId, TechBookRequest.TechBookCreate requestDto);
 
-	TechBookResponse.Detail findTechBookById(Long id, String memberId);
+	TechBookResponse.TechBookDetail findTechBookById(Long id, String memberId);
 
 	PageResponse<TechBookResponse.ListInfo> findAllTechBooks(
 		String keyword, String memberId, Long educationId, Pageable pageable
+	);
+
+	PageResponse<TechBookResponse.ListInfo> findLikeTechBooks(
+		String memberId, Pageable pageable
 	);
 
 }

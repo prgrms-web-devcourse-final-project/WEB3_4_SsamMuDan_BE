@@ -72,6 +72,8 @@ public class SecurityConfig {
 				.requestMatchers(POST, "/api/v1/member/signin").permitAll()
 				.requestMatchers(POST, "/api/v1/member/signup/phone").permitAll()
 				.requestMatchers(POST, "/api/v1/member/signup/phone/verify").permitAll()
+				.requestMatchers(POST, "/api/v1/member/recovery/loginId").permitAll()
+				.requestMatchers(POST, "/api/v1/member/recovery/loginId/verify").permitAll()
 				.requestMatchers(GET, "/oauth2/**", "/login/**").permitAll()
 
 				// Email Domain
