@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.service.DefaultMessageService;
 
 import ssammudan.cotree.domain.member.dto.MemberRecoverSmsResponse;
 import ssammudan.cotree.global.error.GlobalException;
@@ -30,13 +27,13 @@ import ssammudan.cotree.model.member.member.repository.MemberRepository;
  */
 @Service
 public class SmsService {
-	private final DefaultMessageService messageService;
+	private final MessageSender messageSender;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final MemberRepository memberRepository;
+	private final String senderPhoneNumber;
 
 	private static final String EMAIL_DELIMITER = "@";
 	private static final String MASKING = "*";
-	private static final String coolSmsUrl = "https://api.coolsms.co.kr";
 	private static final long CODE_EXPIRATION = 3;
 	private static final String SIGNUP_KEY = "signup:sms:%s";
 	private static final String RECOVER_LOGIN_ID_KEY = "loginId:sms:%s";
@@ -45,18 +42,16 @@ public class SmsService {
 	private static final String COOLDOWN_SIGNUP_KEY = "cooldown:signup:%s";
 	private static final String COOLDOWN_RECOVER_LOGIN_ID_KEY = "cooldown:loginId:%s";
 
-	@Value("${SENDER_PHONE_NUMBER}")
-	private String senderPhoneNumber;
-
 	public SmsService(
-		@Value("${COOL_SMS_API_KEY}") String apiKey,
-		@Value("${COOL_SMS_SECRET_KEY}") String apiSecret,
+		MessageSender messageSender,
+		@Value("${SENDER_PHONE_NUMBER}") String senderPhoneNumber,
 		RedisTemplate<String, String> redisTemplate,
 		MemberRepository memberRepository
 	) {
-		this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecret, coolSmsUrl);
+		this.messageSender = messageSender;
 		this.redisTemplate = redisTemplate;
 		this.memberRepository = memberRepository;
+		this.senderPhoneNumber = senderPhoneNumber;
 	}
 
 	public void sendSignupCode(String receiverNumber) {
@@ -77,8 +72,7 @@ public class SmsService {
 		message.setText("[cotree]" + "\n" + "인증번호 : " + randomCode);
 
 		try {
-			messageService.sendOne(
-				new SingleMessageSendingRequest(message));
+			messageSender.sendOne(message);
 		} catch (Exception e) {
 			throw new GlobalException(ErrorCode.SMS_SEND_FAILED);
 		}
@@ -124,8 +118,7 @@ public class SmsService {
 		message.setText("[cotree]" + "\n" + "인증번호 : " + randomCode);
 
 		try {
-			messageService.sendOne(
-				new SingleMessageSendingRequest(message));
+			messageSender.sendOne(message);
 		} catch (Exception e) {
 			throw new GlobalException(ErrorCode.SMS_SEND_FAILED);
 		}
