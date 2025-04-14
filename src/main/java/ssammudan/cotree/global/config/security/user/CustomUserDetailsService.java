@@ -57,4 +57,16 @@ public class CustomUserDetailsService implements UserDetailsService {
 		}
 	}
 
+	public CustomUser loadUserByRefreshToken(String refreshToken) {
+		try {
+			Claims claimsFromToken = refreshTokenService.getClaimsFromToken(refreshToken);
+			String id = claimsFromToken.get("mid", String.class);
+			Member member = memberRepository.findById(id)
+				.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+			return new CustomUser(member, null);
+		} catch (Exception e) { // Jwt는 굳이 예외처리하지 않음. 이 후 필터로 전달하기 위해
+			return null;
+		}
+	}
+
 }
