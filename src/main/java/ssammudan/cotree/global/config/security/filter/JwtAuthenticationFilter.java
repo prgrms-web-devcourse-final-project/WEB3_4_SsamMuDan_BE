@@ -70,8 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				filterChain.doFilter(request, response);
 				return;
 			}
-			String memberId = refreshTokenService.getClaimsFromToken(refreshToken).get("mid", String.class);
-			user = customUserDetailsService.loadUserById(memberId);
+			user = customUserDetailsService.loadUserByRefreshToken(refreshToken);
 
 			if (user == null) {
 				filterChain.doFilter(request, response);
