@@ -111,7 +111,7 @@ class CommentControllerTest extends SpringBootTestSupporter {
 	@WithCustomMember
 	@DisplayName("댓글과 대댓글을 조회합니다.")
 	@Test
-	void getNewComment1() throws Exception {
+	void getCommentList1() throws Exception {
 		// given
 		List<Member> saveMemberList = memberRepository.findAll();
 		List<CommunityCategory> saveCommunityCategoryList =
@@ -137,7 +137,7 @@ class CommentControllerTest extends SpringBootTestSupporter {
 
 	@DisplayName("댓글과 대댓글을 조회합니다. 비회원도 조회가 가능합니다.")
 	@Test
-	void getNewComment2() throws Exception {
+	void getCommentList2() throws Exception {
 		// given
 		List<Member> saveMemberList =
 			memberDataFactory.createAndSaveMember(1);

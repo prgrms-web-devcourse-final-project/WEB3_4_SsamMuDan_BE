@@ -54,7 +54,7 @@ public class CommentController {
 
 	@GetMapping
 	@Operation(summary = "댓글/대댓글 조회")
-	public BaseResponse<PageResponse<CommentResponse.CommentInfo>> getNewComment(
+	public BaseResponse<PageResponse<CommentResponse.CommentInfo>> getCommentList(
 			@RequestParam(value = "itemId") Long itemId,
 			@RequestParam(value = "category") CommentCategory category,
 			@RequestParam(value = "page", defaultValue = "0", required = false) int page,
