@@ -3,6 +3,7 @@ package ssammudan.cotree.domain.member.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -12,16 +13,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import ssammudan.cotree.domain.member.dto.MemberOrderResponse;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoRequest;
 import ssammudan.cotree.domain.member.dto.info.MemberInfoResponse;
 import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
+import ssammudan.cotree.domain.member.type.OrderProductCategoryType;
 import ssammudan.cotree.global.error.GlobalException;
+import ssammudan.cotree.global.response.PageResponse;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
+import ssammudan.cotree.model.payment.order.category.repository.OrderCategoryRepository;
 
 /**
  * PackageName : ssammudan.cotree.domain.member.service
@@ -44,6 +53,9 @@ class MemberServiceTest {
 
 	@Mock
 	private PasswordEncoder passwordEncoder;
+
+	@Mock
+	private OrderCategoryRepository orderCategoryRepository;
 
 	private Member mockMember;
 
@@ -186,5 +198,62 @@ class MemberServiceTest {
 		assertThat(memberInfoResponse.nickname()).isEqualTo(mockMember.getNickname());
 		assertThat(memberInfoResponse.role()).isEqualTo(mockMember.getRole());
 		assertThat(memberInfoResponse.createdAt()).isEqualTo(mockMember.getCreatedAt());
+	}
+
+	@Test
+	@DisplayName("구매목록 조회 성공")
+	void getOrderListSuccess() {
+		// given
+		int page = 0;
+		int size = 12;
+		OrderProductCategoryType type = OrderProductCategoryType.TECH_TUBE;
+		String userId = "user123";
+
+		Pageable pageable = PageRequest.of(page, size);
+
+		when(orderCategoryRepository.existsById(type.getId())).thenReturn(true);
+
+		List<MemberOrderResponse> content = List.of(
+			new MemberOrderResponse(1L, "TECH_TUBE", "thumbnail1.jpg", "Java 강의", "홍길동"),
+			new MemberOrderResponse(2L, "TECH_TUBE", "thumbnail2.jpg", "Spring 강의", "김철수")
+		);
+
+		Page<MemberOrderResponse> response = new PageImpl<>(content, pageable, content.size());
+
+		when(memberRepository.getOrderList(pageable, type, userId)).thenReturn(response);
+
+		// when
+		PageResponse<MemberOrderResponse> result = memberService.getOrderList(page, size, type, userId);
+
+		// then
+		assertThat(2).isEqualTo(result.getTotalElements());
+		assertThat(2).isEqualTo(result.getContent().size());
+		assertThat("Java 강의").isEqualTo(result.getContent().get(0).title());
+		assertThat("Spring 강의").isEqualTo(result.getContent().get(1).title());
+
+		verify(orderCategoryRepository).existsById(type.getId());
+		verify(memberRepository).getOrderList(pageable, type, userId);
+	}
+
+	@Test
+	@DisplayName("주문 카테고리가 존재하지 않을 때 ORDER_CATEGORY_NOT_FOUND 발생")
+	void getOrderListWithNotExistsOrderCategory() {
+		// given
+		int page = 0;
+		int size = 12;
+		OrderProductCategoryType type = OrderProductCategoryType.TECH_TUBE;
+		String userId = "user123";
+
+		when(orderCategoryRepository.existsById(type.getId())).thenReturn(false);
+
+		// when
+		// then
+		assertThatThrownBy(() ->
+			memberService.getOrderList(page, size, type, userId))
+			.isInstanceOf(GlobalException.class)
+				.hasMessageContaining("제품 카테고리를 찾을 수 없습니다.");
+
+		verify(orderCategoryRepository).existsById(type.getId());
+		verify(memberRepository, never()).getOrderList(any(), any(), any());
 	}
 }
