@@ -15,8 +15,10 @@ import ssammudan.cotree.domain.payment.dto.PaymentRequest;
 import ssammudan.cotree.domain.payment.dto.PaymentResponse;
 import ssammudan.cotree.domain.payment.dto.PrePaymentValue;
 import ssammudan.cotree.domain.payment.dto.TossPaymentRequest;
+import ssammudan.cotree.domain.payment.dto.TossPaymentResponse;
 import ssammudan.cotree.domain.payment.service.PaymentService;
 import ssammudan.cotree.infra.payment.dto.ApiPaymentRequest;
+import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.payment.order.category.entity.OrderCategory;
 import ssammudan.cotree.model.payment.order.history.entity.OrderHistory;
@@ -27,7 +29,7 @@ import ssammudan.cotree.model.payment.order.type.PaymentStatus;
  * FileName    : OrderFacade
  * Author      : loadingKKamo21
  * Date        : 25. 4. 8.
- * Description : 
+ * Description :
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -65,8 +67,8 @@ public class OrderFacade {
 	/**
 	 * 결제 승인 API 호출
 	 *
-	 * @param request      - 결제 정보 요청 DTO
-	 * @param memberId     - 회원 ID
+	 * @param request  - 결제 정보 요청 DTO
+	 * @param memberId - 회원 ID
 	 * @return PaymentResponse Detail DTO
 	 */
 	@Transactional
@@ -79,25 +81,33 @@ public class OrderFacade {
 
 		//사전 저장된 결제 정보 검증
 		PrePaymentValue verifiedValue = paymentService.verifyPayment(redisKey, tossPaymentRequest, memberId);
+		long educationTypeId = verifiedValue.info().educationType().getId();
+		long itemId = verifiedValue.info().itemId();
 
-		OrderCategory orderCategory = orderCategoryService.findOrderCategoryById(
-			verifiedValue.info().educationType().getId()
-		);
+		OrderCategory orderCategory = orderCategoryService.findOrderCategoryById(educationTypeId);
 
 		OrderHistory orderHistory = orderHistoryService.createOrderHistory(
 			member, orderCategory, tossPaymentRequest.getPaymentKey(), verifiedValue
 		);
 
-		PaymentResponse.PaymentDetail response;
+		TossPaymentResponse response;
 		try {
 			response = paymentService.confirmPaymentRequest(redisKey, tossPaymentRequest);
-			orderHistoryService.updateStatus(orderHistory, response.paymentStatus());
+			orderHistoryService.updateStatus(orderHistory, PaymentStatus.SUCCESS);
 		} catch (Exception e) {
 			orderHistoryService.updateStatus(orderHistory, PaymentStatus.FAILED);
 			throw e;
 		}
 
-		return response;
+		return PaymentResponse.PaymentDetail.of(
+			response.getOrderId(),
+			response.getOrderName(),
+			response.getTotalAmount().intValue(),
+			EducationType.getTechEducationType(educationTypeId),
+			itemId,
+			response.getApprovedAt(),
+			PaymentStatus.SUCCESS
+		);
 	}
 
 	/**
