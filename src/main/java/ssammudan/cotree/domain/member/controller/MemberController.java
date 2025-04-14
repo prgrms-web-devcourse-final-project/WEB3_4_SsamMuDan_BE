@@ -30,6 +30,7 @@ import ssammudan.cotree.domain.member.dto.signin.MemberSigninRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsRequest;
 import ssammudan.cotree.domain.member.dto.signup.MemberSignupSmsVerifyRequest;
+import ssammudan.cotree.domain.member.dto.update.MemberPasswordRequest;
 import ssammudan.cotree.domain.member.service.MemberService;
 import ssammudan.cotree.domain.member.type.OrderProductCategoryType;
 import ssammudan.cotree.global.config.security.jwt.AccessTokenService;
@@ -113,11 +114,11 @@ public class MemberController {
 		return BaseResponse.success(SuccessCode.MEMBER_SIGNOUT_SUCCESS);
 	}
 
-	@PatchMapping("/recovery/password")
+	@PatchMapping("/update/password")
 	@Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
-	public BaseResponse<Void> recoveryPassword(@RequestParam String password,
+	public BaseResponse<Void> recoveryPassword(@RequestBody MemberPasswordRequest request,
 		@AuthenticationPrincipal CustomUser customUser) {
-		memberService.updatePassword(customUser.getId(), password);
+		memberService.updatePassword(customUser.getId(), request.password());
 		return BaseResponse.success(SuccessCode.MEMBER_PASSWORD_UPDATE_SUCCESS);
 	}
 

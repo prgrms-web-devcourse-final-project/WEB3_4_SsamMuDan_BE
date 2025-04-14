@@ -75,6 +75,7 @@ public class SecurityConfig {
 				.requestMatchers(POST, "/api/v1/member/recovery/loginId").permitAll()
 				.requestMatchers(POST, "/api/v1/member/recovery/loginId/verify").permitAll()
 				.requestMatchers(GET, "/oauth2/**", "/login/**").permitAll()
+				.requestMatchers(PATCH, "/api/v1/member/update/password").permitAll()
 
 				// Email Domain
 				.requestMatchers(POST, "/api/v1/email/**").permitAll()
