@@ -35,5 +35,5 @@ public interface MemberService {
 
 	PageResponse<MemberOrderResponse> getOrderList(int page, int size, OrderProductCategoryType type, String id);
 
-	void updatePassword(String memberId, String password);
+	void updatePassword(String email, String password);
 }
