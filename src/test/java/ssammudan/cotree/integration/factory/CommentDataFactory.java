@@ -11,6 +11,7 @@ import ssammudan.cotree.model.common.comment.entity.Comment;
 import ssammudan.cotree.model.common.comment.repository.CommentRepository;
 import ssammudan.cotree.model.community.community.entity.Community;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
 
 /**
  * PackageName : ssammudan.cotree.integration.factory
@@ -43,14 +44,14 @@ public class CommentDataFactory {
 	 * @param communityList 댓글을 작성할 커뮤니티 글 리스트
 	 * @param count 한회원이 하나의 커뮤니티 글에 작성할 댓글/대댓글 개수
 	 */
-	public void createAndSaveCommunityComment(
+	public List<Comment> createAndSaveCommunityComment(
 		final List<Member> memberList,
 		final List<Community> communityList,
 		final int count
 	) {
 
 		if (count == 0) {
-			return;
+			return List.of();
 		}
 
 		List<Comment> parentCommentList = new ArrayList<>();
@@ -65,6 +66,56 @@ public class CommentDataFactory {
 					for (int childIndex = 1; childIndex <= count; childIndex++) {
 						Comment childComment =
 							Comment.createNewCommunityComment(member, community, parentComment, "대댓글");
+						childCommentList.add(childComment);
+					}
+				}
+			}
+		}
+
+		List<Comment> saveCommentList = commentRepository.saveAll(parentCommentList);
+		commentRepository.saveAll(childCommentList);
+
+		em.flush();
+		em.clear();
+
+		return saveCommentList;
+	}
+
+	/**
+	 * 작성되는 댓글 수 : memberList * resumeList * count;
+	 * 작성되는 대댓글 수 : 댓글수 * count;
+	 * 즉, 회원 10명, 글 10개, count 2개 라면
+	 * 		댓글 : 10 * 10 * 2 = 200개
+	 * 		대댓글 : 200 * 2 = 400개
+	 * 		한 resume 댓글 수 : 20개
+	 * 		한 resume 대댓글 수 : 40개
+	 * 		한 resume 총 댓글 수 : 60개
+	 * @param memberList 댓글을 작성할 회원 목록
+	 * @param resumeList 댓글을 작성할 이력서 글 리스트
+	 * @param count 한회원이 하나의 이력서에 작성할 댓글/대댓글 개수
+	 */
+	public void createAndSaveResumeComment(
+		final List<Member> memberList,
+		final List<Resume> resumeList,
+		final int count
+	) {
+
+		if (count == 0) {
+			return;
+		}
+
+		List<Comment> parentCommentList = new ArrayList<>();
+		List<Comment> childCommentList = new ArrayList<>();
+
+		for (int index = 1; index <= count; index++) {
+			for (Member member : memberList) {
+				for (Resume resume : resumeList) {
+					Comment parentComment =
+						Comment.createNewResumeComment(member, resume, null, "댓글");
+					parentCommentList.add(parentComment);
+					for (int childIndex = 1; childIndex <= count; childIndex++) {
+						Comment childComment =
+							Comment.createNewResumeComment(member, resume, parentComment, "대댓글");
 						childCommentList.add(childComment);
 					}
 				}

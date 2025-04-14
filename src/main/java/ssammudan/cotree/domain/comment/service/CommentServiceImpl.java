@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,15 +52,18 @@ public class CommentServiceImpl implements CommentService {
 
 	@Transactional
 	@Override
-	public void postNewComment(final CommentRequest.PostComment postComment, final String memberId) {
-		// 댓글 작성자 조회
-		Member commentAuthor = findCommentAuthor(memberId);
+	public void postNewComment(
+		@NonNull final CommentRequest.PostComment postComment,
+		@NonNull final String memberId
+	) {
+		// 댓글 작성할 member entity 조회
+		Member findMember = findMemberByMemberId(memberId);
 
 		// 부모 댓글 조회
 		Comment parentComment = findParentComment(postComment.getCommentId());
 
 		// 카테고리별 댓글 생성 및 저장
-		Comment newComment = createCommentByCategory(postComment, commentAuthor, parentComment);
+		Comment newComment = createCommentByCategory(postComment, findMember, parentComment);
 
 		commentRepository.save(newComment);
 	}
@@ -66,10 +71,11 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional(readOnly = true)
 	@Override
 	public PageResponse<CommentResponse.CommentInfo> getCommentList(
-		final Pageable pageable,
-		final String memberId,
-		final CommentCategory category,
-		final Long itemId) {
+		@NonNull final Pageable pageable,
+		@Nullable final String memberId,
+		@NonNull final CommentCategory category,
+		@NonNull final Long itemId
+	) {
 
 		// 댓글 데이터 조회
 		List<CommentInfoProjection> commentProjections =
@@ -92,7 +98,7 @@ public class CommentServiceImpl implements CommentService {
 		return PageResponse.of(commentPage);
 	}
 
-	private Member findCommentAuthor(String memberId) {
+	private Member findMemberByMemberId(String memberId) {
 		return memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 	}
@@ -111,7 +117,6 @@ public class CommentServiceImpl implements CommentService {
 		return switch (postComment.getCategory()) {
 			case COMMUNITY -> createCommunityComment(postComment, commentAuthor, parentComment);
 			case RESUME -> createResumeComment(postComment, commentAuthor, parentComment);
-			default -> throw new GlobalException(ErrorCode.POST_COMMENT_FAIL_INVALID_CATEGORY);
 		};
 	}
 

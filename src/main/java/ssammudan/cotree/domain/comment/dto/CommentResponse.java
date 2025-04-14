@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import ssammudan.cotree.model.common.comment.repository.CommentInfoProjection;
 
 /**
@@ -20,10 +21,8 @@ import ssammudan.cotree.model.common.comment.repository.CommentInfoProjection;
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025-04-03     Baekgwa               Initial creation
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentResponse {
-
-	private CommentResponse() {
-	}
 
 	@Getter
 	@Builder(access = AccessLevel.PRIVATE)

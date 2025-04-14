@@ -51,7 +51,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 			return List.of();
 		}
 
-		// 부모 댓글 및 대댓글 전체 조회 - 원시 데이터만 반환
+		// 부모 댓글 및 대댓글 전체 조회
 		return findAllComment(parentCommentIdList, memberId);
 	}
 
