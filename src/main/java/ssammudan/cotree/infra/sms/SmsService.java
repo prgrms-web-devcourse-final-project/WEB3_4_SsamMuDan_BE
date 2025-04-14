@@ -56,7 +56,7 @@ public class SmsService {
 
 	public void sendSignupCode(String receiverNumber) {
 
-		//  쿨다운 키에 존재 시 에러 , 특정 전화번호로 1시간에 최대 5번 시도 가능
+		//  쿨다운 키에 존재 시 에러 , 특정 전화번호로 1시간에 5번 이상 시도하면 3분간 재시도 금지
 		validateSignupCodeSendLimit(receiverNumber);
 
 		// 기존의 인증 코드가 남아있을 경우 삭제

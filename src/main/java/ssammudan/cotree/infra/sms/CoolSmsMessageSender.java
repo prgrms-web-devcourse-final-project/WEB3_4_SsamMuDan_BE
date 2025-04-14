@@ -16,7 +16,7 @@ import ssammudan.cotree.global.response.ErrorCode;
  * FileName    : CoolSmsMessageSender
  * Author      : kwak
  * Date        : 2025. 4. 13.
- * Description : 
+ * Description : 외부 Sms 전송 라이브러리 coolSms 서비스 구현체
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
