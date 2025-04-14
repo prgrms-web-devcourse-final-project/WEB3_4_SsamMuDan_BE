@@ -19,7 +19,6 @@ import ssammudan.cotree.domain.payment.dto.TossPaymentResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.infra.payment.toss.TossPaymentClient;
-import ssammudan.cotree.model.payment.order.type.PaymentStatus;
 
 /**
  * PackageName : ssammudan.cotree.domain.payment.service
@@ -108,18 +107,14 @@ public class PaymentServiceImpl implements PaymentService {
 	/**
 	 * 결제 승인 API 호출
 	 *
-	 * @param redisKey     - Redis 키
-	 * @param request      - 토스 결제 정보 요청 DTO
-	 * @return PaymentResponse Detail DTO
+	 * @param redisKey - Redis 키
+	 * @param request  - 토스 결제 정보 요청 DTO
+	 * @return TossPaymentResponse
 	 */
 	@Override
-	public PaymentResponse.PaymentDetail confirmPaymentRequest(final String redisKey,
-		final TossPaymentRequest request) {
+	public TossPaymentResponse confirmPaymentRequest(final String redisKey, final TossPaymentRequest request) {
 		try {
-			TossPaymentResponse tossPaymentResponse = (TossPaymentResponse)tossPaymentClient.confirmPayment(
-				request
-			);
-			return PaymentResponse.PaymentDetail.from(tossPaymentResponse, PaymentStatus.SUCCESS);
+			return (TossPaymentResponse)tossPaymentClient.confirmPayment(request);
 		} catch (GlobalException e) {
 			throw e;
 		} catch (Exception e) {
