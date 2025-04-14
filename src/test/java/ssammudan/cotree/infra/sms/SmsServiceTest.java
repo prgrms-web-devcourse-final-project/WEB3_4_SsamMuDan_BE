@@ -80,6 +80,22 @@ class SmsServiceTest {
 	}
 
 	@Test
+	@DisplayName("count 5 이상 일 때 MEMBER_SIGNUP_COOLDOWN 발생")
+	void sendSignupCodeFailedWithCooldown() {
+		// given
+		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+		when(valueOperations.increment("signup:limit:%s".formatted(receiverNumber), 1L)).thenReturn(6L);
+
+		// when
+		// smsService.sendSignupCode(receiverNumber);
+		// then
+		// verify(valueOperations).set("cooldown:signup:%s".formatted(receiverNumber), eq("1"), eq(Duration.ofMinutes(3)));
+		assertThatThrownBy(() -> smsService.sendSignupCode(receiverNumber))
+			.isInstanceOf(GlobalException.class)
+			.hasMessageContaining("너무 많이 시도하였습니다. 잠시 후 재시도 해주세요");
+	}
+
+	@Test
 	@DisplayName("인증번호 정상 발송 예외 시 SMS_SEND_FAILED 발생")
 	void failSendSignupCode() {
 		// given
