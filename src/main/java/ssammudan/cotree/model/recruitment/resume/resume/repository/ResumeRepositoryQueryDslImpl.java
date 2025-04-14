@@ -69,7 +69,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.join(resume.resumeTechStacks, resumeTechStack)
 			.join(resumeTechStack.techStack, techStack)
 			.where(whereCondition)
-			.groupBy(resume.id)  // 중복 제거
+			.groupBy(resume.id)
 			.orderBy(getOrderSpecifier(sort))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -93,7 +93,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.stream()
 			.collect(Collectors.groupingBy(
 				tuple -> Optional.ofNullable(tuple.get(resumeDevelopmentPosition.resume.id))
-					.orElseThrow(() -> new GlobalException(ErrorCode.NOR_FOUND_RESUME_ID)),
+					.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_RESUME_ID)),
 				Collectors.mapping(
 					tuple -> tuple.get(developmentPosition.name),
 					Collectors.toList()
@@ -112,7 +112,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.stream()
 			.collect(Collectors.groupingBy(
 				tuple -> Optional.ofNullable(tuple.get(resumeTechStack.resume.id))
-					.orElseThrow(() -> new GlobalException(ErrorCode.NOR_FOUND_RESUME_ID)),
+					.orElseThrow(() -> new GlobalException(ErrorCode.NOT_FOUND_RESUME_ID)),
 				Collectors.mapping(
 					tuple -> tuple.get(techStack.id),
 					Collectors.toList()

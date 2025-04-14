@@ -42,7 +42,7 @@ public enum ErrorCode {
 
 	//Recruitment: 3001 ~ 4000
 	NOT_FOUND_RESUME(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서를 찾을 수 없습니다."),
-	NOR_FOUND_RESUME_ID(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서 ID 를 가져올 수 없습니다."),
+	NOT_FOUND_RESUME_ID(HttpStatus.NOT_FOUND, "3001", "해당하는 이력서 ID 를 가져올 수 없습니다."),
 
 	//Project: 4001 ~ 5000
 	PROJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "4001", "해당하는 프로젝트를 찾을 수 없습니다."),
