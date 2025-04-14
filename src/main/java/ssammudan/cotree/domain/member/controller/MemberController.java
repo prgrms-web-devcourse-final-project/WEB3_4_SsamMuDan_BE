@@ -116,9 +116,8 @@ public class MemberController {
 
 	@PatchMapping("/update/password")
 	@Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
-	public BaseResponse<Void> recoveryPassword(@RequestBody MemberPasswordRequest request,
-		@AuthenticationPrincipal CustomUser customUser) {
-		memberService.updatePassword(customUser.getId(), request.password());
+	public BaseResponse<Void> updatePassword(@RequestBody MemberPasswordRequest request) {
+		memberService.updatePassword(request.email(), request.password());
 		return BaseResponse.success(SuccessCode.MEMBER_PASSWORD_UPDATE_SUCCESS);
 	}
 
