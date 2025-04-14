@@ -21,6 +21,7 @@ import ssammudan.cotree.domain.resume.service.ResumeService;
 import ssammudan.cotree.domain.review.service.TechEducationReviewService;
 import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.sms.MessageSender;
 import ssammudan.cotree.infra.sms.SmsService;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountScheduler;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
@@ -149,6 +150,8 @@ public abstract class SpringBootTestSupporter {
 	private SmsService smsService;
 	@MockitoBean
 	private EmailService emailService;
+	@MockitoBean
+	private MessageSender messageSender;
 	@MockitoBean
 	protected ViewCountStore viewCountStore;
 	@MockitoBean

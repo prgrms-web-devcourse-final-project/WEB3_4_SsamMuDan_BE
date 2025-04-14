@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import ssammudan.cotree.domain.category.CategoryTestHelper;
 import ssammudan.cotree.domain.email.service.EmailService;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.sms.MessageSender;
 import ssammudan.cotree.infra.sms.SmsService;
 
 /**
@@ -51,6 +52,8 @@ class CategoryControllerTest {
 	private S3Uploader s3Uploader;
 	@MockitoBean
 	private SmsService smsService;
+	@MockitoBean
+	private MessageSender messageSender;
 	@MockitoBean
 	private EmailService emailService;
 

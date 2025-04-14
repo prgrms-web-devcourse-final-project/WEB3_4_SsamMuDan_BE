@@ -149,16 +149,16 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void updatePassword(String memberId, String password) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-
+	public void updatePassword(String email, String password) {
 		String redisEmailCode = redisTemplate.opsForValue()
-			.get("signup:email:%s".formatted(member.getEmail()));
+			.get("signup:email:%s".formatted(email));
 		if (redisEmailCode == null) {
 			throw new GlobalException(ErrorCode.EMAIL_VERIFY_FAILED);
 		}
-		redisTemplate.delete("signup:email:%s".formatted(member.getEmail()));
+		redisTemplate.delete("signup:email:%s".formatted(email));
+
+		Member member = memberRepository.findByEmail(email)
+			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
 
 		member.updatePassword(passwordEncoder.encode(password));
 	}

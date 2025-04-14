@@ -63,7 +63,7 @@ public class Career extends BaseEntity {
 	private String description;
 
 	@Column(name = "is_working", nullable = false)
-	private boolean isWorking = false;
+	private boolean isWorking;
 
 	@Column(name = "start_date", nullable = false)
 	private LocalDate startDate;
