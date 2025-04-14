@@ -58,25 +58,21 @@ public class PaymentResponse {
 		String productName,
 		@Schema(description = "결제 금액")
 		int amount,
+		@Schema(description = "TechEducation 타입: TECH_TUBE, TECH_BOOK", example = "TECH_TUBE")
+		EducationType educationType,
+		@Schema(description = "TechEducationItem ID: TechBook ID, TechTube ID", example = "1")
+		long itemId,
 		@Schema(description = "결제 완료 시간")
 		String completedAt,
 		@Schema(description = "결제 상태")
 		PaymentStatus paymentStatus
 	) {
-		public static PaymentDetail from(final TossPaymentResponse response, final PaymentStatus paymentStatus) {
-			return new PaymentDetail(
-				response.getOrderId(),
-				response.getOrderName(),
-				response.getTotalAmount().intValue(),
-				response.getApprovedAt(),
-				paymentStatus
-			);
-		}
-
 		public static PaymentDetail of(
 			final String orderId,
 			final String productName,
 			final int amount,
+			final EducationType educationType,
+			final long itemId,
 			final String completedAt,
 			final PaymentStatus paymentStatus
 		) {
@@ -84,6 +80,8 @@ public class PaymentResponse {
 				orderId,
 				productName,
 				amount,
+				educationType,
+				itemId,
 				completedAt,
 				paymentStatus
 			);
