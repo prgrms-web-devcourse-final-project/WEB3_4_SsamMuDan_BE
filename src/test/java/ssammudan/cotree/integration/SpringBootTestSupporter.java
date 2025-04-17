@@ -16,18 +16,18 @@ import ssammudan.cotree.domain.community.service.CommunityService;
 import ssammudan.cotree.domain.education.techbook.service.TechBookService;
 import ssammudan.cotree.domain.education.techtube.service.TechTubeService;
 import ssammudan.cotree.domain.email.service.EmailService;
-import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
-import ssammudan.cotree.integration.factory.ResumeDataFactory;
 import ssammudan.cotree.domain.resume.service.ResumeService;
 import ssammudan.cotree.domain.review.service.TechEducationReviewService;
+import ssammudan.cotree.global.config.security.user.CustomUserDetailsService;
 import ssammudan.cotree.infra.s3.S3Uploader;
+import ssammudan.cotree.infra.sms.SmsService;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountScheduler;
 import ssammudan.cotree.infra.viewcount.persistence.ViewCountStore;
 import ssammudan.cotree.integration.factory.CommentDataFactory;
-import ssammudan.cotree.infra.sms.SmsService;
 import ssammudan.cotree.integration.factory.CommunityDataFactory;
 import ssammudan.cotree.integration.factory.LikeDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
+import ssammudan.cotree.integration.factory.shared.ResumeProjectTestDataFactory;
 import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
 import ssammudan.cotree.model.community.community.repository.CommunityRepository;
@@ -74,7 +74,7 @@ public abstract class SpringBootTestSupporter {
 	@Autowired
 	protected CommentDataFactory commentDataFactory;
 	@Autowired
-	protected ResumeDataFactory resumeDataFactory;
+	protected ResumeProjectTestDataFactory resumeProjectTestDataFactory;
 
 	/**
 	 * Common
