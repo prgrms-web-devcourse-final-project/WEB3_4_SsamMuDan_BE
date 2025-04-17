@@ -1,4 +1,4 @@
-package ssammudan.cotree.integration.factory;
+package ssammudan.cotree.integration.factory.shared;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -39,9 +39,10 @@ import ssammudan.cotree.model.recruitment.resume.resume.repository.ResumeReposit
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 31.     kwak               Initial creation
+ * 2025. 4. 17.     sangxxjin          Resume, Project 공통 클래스로 변경
  */
 @Component
-public class ResumeDataFactory {
+public class ResumeProjectTestDataFactory {
 	@Autowired
 	private MemberRepository memberRepository;
 

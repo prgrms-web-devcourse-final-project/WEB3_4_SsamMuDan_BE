@@ -85,7 +85,7 @@ class CommentServiceImplTest extends SpringBootTestSupporter {
 		List<DevelopmentPosition> saveDevPosList =
 			developmentPositionDataFactory.createAndSaveDevelopmentPosition();
 		List<Resume> saveResumeList =
-			resumeDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
+			resumeProjectTestDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
 
 		Resume saveResume = saveResumeList.getFirst();
 		Member saveMember = saveMemberList.getFirst();
@@ -164,7 +164,7 @@ class CommentServiceImplTest extends SpringBootTestSupporter {
 			.build();
 
 		// when // then
-		assertThatThrownBy( () -> commentService.postNewComment(postComment, "not_exist_uuid"))
+		assertThatThrownBy(() -> commentService.postNewComment(postComment, "not_exist_uuid"))
 			.isInstanceOf(GlobalException.class)
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.MEMBER_NOT_FOUND);

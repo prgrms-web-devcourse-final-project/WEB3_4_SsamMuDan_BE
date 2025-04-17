@@ -155,7 +155,7 @@ class CommentRepositoryTest extends SpringBootTestSupporter {
 		List<DevelopmentPosition> saveDevPosList =
 			developmentPositionDataFactory.createAndSaveDevelopmentPosition();
 		List<Resume> saveResumeList =
-			resumeDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
+			resumeProjectTestDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
 		// 하나의 게시글에 댓글 10개, 대댓글 100개
 		commentDataFactory.createAndSaveResumeComment(saveMemberList, saveResumeList, 10);
 
@@ -193,7 +193,7 @@ class CommentRepositoryTest extends SpringBootTestSupporter {
 		List<DevelopmentPosition> saveDevPosList =
 			developmentPositionDataFactory.createAndSaveDevelopmentPosition();
 		List<Resume> saveResumeList =
-			resumeDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
+			resumeProjectTestDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
 		// 하나의 게시글에 댓글 10개, 대댓글 100개
 		commentDataFactory.createAndSaveResumeComment(saveMemberList, saveResumeList, 10);
 
@@ -231,7 +231,7 @@ class CommentRepositoryTest extends SpringBootTestSupporter {
 		List<DevelopmentPosition> saveDevPosList =
 			developmentPositionDataFactory.createAndSaveDevelopmentPosition();
 		List<Resume> saveResumeList =
-			resumeDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
+			resumeProjectTestDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
 
 		Resume saveResume = saveResumeList.getFirst();
 		Pageable pageable = PageRequest.of(0, 5);
@@ -284,7 +284,7 @@ class CommentRepositoryTest extends SpringBootTestSupporter {
 		List<DevelopmentPosition> saveDevPosList =
 			developmentPositionDataFactory.createAndSaveDevelopmentPosition();
 		List<Resume> saveResumeList =
-			resumeDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
+			resumeProjectTestDataFactory.createAndSaveResume(saveMemberList, saveTechStackList, saveDevPosList);
 		// 하나의 게시글에 댓글 10개, 대댓글 100개
 		commentDataFactory.createAndSaveResumeComment(saveMemberList, saveResumeList, 10);
 

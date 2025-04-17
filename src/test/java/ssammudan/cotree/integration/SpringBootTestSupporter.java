@@ -30,8 +30,8 @@ import ssammudan.cotree.integration.factory.CommunityDataFactory;
 import ssammudan.cotree.integration.factory.DevelopmentPositionDataFactory;
 import ssammudan.cotree.integration.factory.LikeDataFactory;
 import ssammudan.cotree.integration.factory.MemberDataFactory;
-import ssammudan.cotree.integration.factory.ResumeDataFactory;
 import ssammudan.cotree.integration.factory.TechStackDataFactory;
+import ssammudan.cotree.integration.factory.shared.ResumeProjectTestDataFactory;
 import ssammudan.cotree.model.common.comment.repository.CommentRepository;
 import ssammudan.cotree.model.common.like.repository.LikeRepository;
 import ssammudan.cotree.model.community.category.repository.CommunityCategoryRepository;
@@ -79,7 +79,7 @@ public abstract class SpringBootTestSupporter {
 	@Autowired
 	protected CommentDataFactory commentDataFactory;
 	@Autowired
-	protected ResumeDataFactory resumeDataFactory;
+	protected ResumeProjectTestDataFactory resumeProjectTestDataFactory;
 	@Autowired
 	protected DevelopmentPositionDataFactory developmentPositionDataFactory;
 	@Autowired
