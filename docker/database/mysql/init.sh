@@ -1,12 +1,10 @@
-dos2unix /docker-entrypoint-initdb.d/init.sh
-
 # MySQL 서버가 준비될 때까지 대기
 echo "$(date '+%Y-%m-%d %H:%M:%S') - MySQL 서버 준비 중, 대기 시간: 5초"
 sleep 5
 
 mysql -u root -p${MYSQL_ROOT_PASSWORD} <<EOF
-CREATE DATABASE IF NOT EXISTS cotree;
-USE cotree;
+CREATE DATABASE IF NOT EXISTS dementor_prod;
+USE dementor_prod;
 
 # Exporter 사용자 생성
 CREATE USER IF NOT EXISTS '${EXPORTER_NAME}'@'%' IDENTIFIED BY '${EXPORTER_PASSWORD}' WITH MAX_USER_CONNECTIONS 3;
