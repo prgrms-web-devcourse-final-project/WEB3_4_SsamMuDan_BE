@@ -34,3 +34,16 @@ cloud:
 
 frontend:
   url: ${FRONTEND_URL}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "health", "info", "prometheus", "metrics" ]
+  metrics:
+    tags:
+      application: ${spring.application.name:cotree}
+    prometheus:
+      metrics:
+        export:
+          enabled: true

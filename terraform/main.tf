@@ -510,12 +510,11 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
 
-yum install -y docker
+yum install -y docker git
 systemctl enable docker
 systemctl start docker
 
-docker network create common
-
+docker network create cotree-network
 
 curl -L "https://github.com/docker/compose/releases/download/v2.24.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
