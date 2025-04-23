@@ -1,5 +1,3 @@
-dos2unix /docker-entrypoint-initdb.d/init.sh
-
 # MySQL 서버가 준비될 때까지 대기
 echo "$(date '+%Y-%m-%d %H:%M:%S') - MySQL 서버 준비 중, 대기 시간: 5초"
 sleep 5
