@@ -6,10 +6,8 @@ import static ssammudan.cotree.model.recruitment.resume.developmentposition.enti
 import static ssammudan.cotree.model.recruitment.resume.resume.entity.QResume.*;
 import static ssammudan.cotree.model.recruitment.resume.techstack.entity.QResumeTechStack.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -17,9 +15,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -27,8 +25,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import ssammudan.cotree.domain.resume.dto.ResumeResponse;
 import ssammudan.cotree.domain.resume.type.SearchResumeSort;
-import ssammudan.cotree.global.error.GlobalException;
-import ssammudan.cotree.global.response.ErrorCode;
+import ssammudan.cotree.model.recruitment.resume.resume.repository.dto.ResumeBasicInfoDto;
+import ssammudan.cotree.model.recruitment.resume.resume.repository.dto.ResumePositionDto;
+import ssammudan.cotree.model.recruitment.resume.resume.repository.dto.ResumeTechStackDto;
 
 /**
  * PackageName : ssammudan.cotree.model.recruitment.resume.resume.repository
@@ -53,15 +52,17 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 		BooleanBuilder whereCondition = getWhereCondition(positionIds, skillIds, startYear, endYear);
 
 		// 기본 정보 조회
-		List<Tuple> resumeTuples = jpaQueryFactory
+		List<ResumeBasicInfoDto> resumeBasicInfos = jpaQueryFactory
 			.select(
-				resume.id,
-				resume.profileImage,
-				resume.isOpen,
-				resume.years,
-				getStringTemplate(),
-				resume.viewCount,
-				resume.createdAt
+				Projections.constructor(
+					ResumeBasicInfoDto.class,
+					resume.id,
+					resume.profileImage,
+					resume.isOpen,
+					resume.years,
+					getStringTemplate(),
+					resume.viewCount,
+					resume.createdAt)
 			)
 			.from(resume)
 			.join(resume.resumeDevelopmentPositions, resumeDevelopmentPosition)
@@ -69,22 +70,25 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.join(resume.resumeTechStacks, resumeTechStack)
 			.join(resumeTechStack.techStack, techStack)
 			.where(whereCondition)
-			.groupBy(resume.id)  // 중복 제거
+			.groupBy(resume.id)
 			.orderBy(getOrderSpecifier(sort))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 
 		// resume ID 목록 추출
-		List<Long> resumeIds = resumeTuples.stream()
-			.map(tuple -> tuple.get(resume.id))
+		List<Long> resumeIds = resumeBasicInfos.stream()
+			.map(ResumeBasicInfoDto::id)
 			.collect(Collectors.toList());
 
 		// 각 resume ID에 대한 positions 조회
 		Map<Long, List<String>> positionsMap = jpaQueryFactory
 			.select(
-				resumeDevelopmentPosition.resume.id,
-				developmentPosition.name
+				Projections.constructor(
+					ResumePositionDto.class,
+					resumeDevelopmentPosition.resume.id,
+					developmentPosition.name
+				)
 			)
 			.from(resumeDevelopmentPosition)
 			.join(resumeDevelopmentPosition.developmentPosition, developmentPosition)
@@ -92,18 +96,19 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.fetch()
 			.stream()
 			.collect(Collectors.groupingBy(
-				tuple -> Optional.ofNullable(tuple.get(resumeDevelopmentPosition.resume.id))
-					.orElseThrow(() -> new GlobalException(ErrorCode.NOR_FOUND_RESUME_ID)),
+				ResumePositionDto::resumeId,
 				Collectors.mapping(
-					tuple -> tuple.get(developmentPosition.name),
+					ResumePositionDto::positionName,
 					Collectors.toList()
 				)
 			));
 		// 각 resume ID 에 대한 techStacks 조회
 		Map<Long, List<Long>> techStacksMap = jpaQueryFactory
 			.select(
-				resumeTechStack.resume.id,
-				techStack.id
+				Projections.constructor(
+					ResumeTechStackDto.class,
+					resumeTechStack.resume.id,
+					techStack.id)
 			)
 			.from(resumeTechStack)
 			.join(resumeTechStack.techStack, techStack)
@@ -111,21 +116,18 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.fetch()
 			.stream()
 			.collect(Collectors.groupingBy(
-				tuple -> Optional.ofNullable(tuple.get(resumeTechStack.resume.id))
-					.orElseThrow(() -> new GlobalException(ErrorCode.NOR_FOUND_RESUME_ID)),
+				ResumeTechStackDto::resumeId,
 				Collectors.mapping(
-					tuple -> tuple.get(techStack.id),
+					ResumeTechStackDto::techStackId,
 					Collectors.toList()
 				)
 			));
 
 		// 최종적으로 담아 반환
-		List<ResumeResponse> resumeResponses = resumeTuples.stream()
-			.map(tuple -> {
-				Long resumeId = tuple.get(resume.id);
-				return toResumeResponse(tuple, positionsMap, techStacksMap, resumeId);
-			})
-			.collect(Collectors.toList());
+		List<ResumeResponse> resumeResponses = resumeBasicInfos.stream()
+			.map(resumeBasicInfoDto ->
+				ResumeResponse.of(resumeBasicInfoDto, positionsMap, techStacksMap)
+			).collect(Collectors.toList());
 
 		Long total = jpaQueryFactory
 			.select(resume.countDistinct())
@@ -136,22 +138,6 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.fetchOne();
 
 		return new PageImpl<>(resumeResponses, pageable, total != null ? total : 0);
-	}
-
-	// 결합도가 너무 강해 일단 여기 빼놓음
-	private ResumeResponse toResumeResponse(Tuple tuple, Map<Long, List<String>> positionsMap,
-		Map<Long, List<Long>> techStacksMap, Long resumeId) {
-		return ResumeResponse.builder()
-			.resumeId(resumeId)
-			.profileImage(tuple.get(resume.profileImage))
-			.isOpen(Boolean.TRUE.equals(tuple.get(resume.isOpen)))
-			.positions(positionsMap.getOrDefault(resumeId, Collections.emptyList()))
-			.tackStacksId(techStacksMap.getOrDefault(resumeId, Collections.emptyList()))
-			.year(tuple.get(resume.years))
-			.introduction(tuple.get(getStringTemplate()))
-			.viewCount(tuple.get(resume.viewCount))
-			.createAt(tuple.get(resume.createdAt))
-			.build();
 	}
 
 	private StringTemplate getStringTemplate() {
