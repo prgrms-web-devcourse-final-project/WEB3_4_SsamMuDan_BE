@@ -1,9 +1,9 @@
 package ssammudan.cotree.model.common.comment.repository;
 
-import org.springframework.data.domain.Page;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 
-import ssammudan.cotree.domain.comment.dto.CommentResponse;
 import ssammudan.cotree.domain.comment.type.CommentCategory;
 
 /**
@@ -18,9 +18,13 @@ import ssammudan.cotree.domain.comment.type.CommentCategory;
  * 2025-04-03     Baekgwa               Initial creation
  */
 public interface CommentRepositoryCustom {
-	Page<CommentResponse.CommentInfo> findCommentList(
-			final Pageable pageable,
-			final String memberId,
-			final CommentCategory category,
-			final Long itemId);
+	List<CommentInfoProjection> findCommentListByPaging(
+		final Pageable pageable,
+		final String memberId,
+		final CommentCategory category,
+		final Long itemId);
+
+	Long findCommentListCounts(
+		final CommentCategory category,
+		final Long itemId);
 }

@@ -16,6 +16,7 @@ services:
       - ./mysql/my.cnf:/etc/my.cnf
       - ${MYSQL_QUERY_LOG_PATH}:/var/log/mysql
       - cotree-rdb-data:/var/lib/mysql
+    restart: always
 
   redis:
     image: redis:7.4

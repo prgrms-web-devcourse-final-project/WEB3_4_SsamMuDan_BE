@@ -187,10 +187,10 @@ public class CommunityServiceImpl implements CommunityService {
 	 */
 	private void deleteCommunityDependencies(@NotNull final Long boardId) {
 		// 연관 댓글 삭제 (대댓글 먼저 삭제)
-		commentRepository.deleteChildComments(boardId);
+		commentRepository.deleteCommunityChildComments(boardId);
 
 		// 연관 댓글 삭제 (댓글 먼저 삭제)
-		commentRepository.deleteParentComments(boardId);
+		commentRepository.deleteCommunityParentComments(boardId);
 
 		// 연관 좋아요 삭제
 		likeRepository.deleteAllByCommunityId(boardId);

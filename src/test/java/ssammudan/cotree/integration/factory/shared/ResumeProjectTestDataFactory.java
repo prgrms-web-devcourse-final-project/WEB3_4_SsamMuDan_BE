@@ -1,15 +1,23 @@
-package ssammudan.cotree.integration.factory;
+package ssammudan.cotree.integration.factory.shared;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import ssammudan.cotree.domain.resume.dto.BasicInfo;
+import ssammudan.cotree.domain.resume.dto.CareerInfo;
+import ssammudan.cotree.domain.resume.dto.PortfolioInfo;
+import ssammudan.cotree.domain.resume.dto.ResumeCreateRequest;
 import ssammudan.cotree.model.common.developmentposition.entity.DevelopmentPosition;
 import ssammudan.cotree.model.common.developmentposition.repository.DevelopmentPositionRepository;
 import ssammudan.cotree.model.common.techstack.entity.TechStack;
@@ -18,6 +26,8 @@ import ssammudan.cotree.model.member.member.entity.Member;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 import ssammudan.cotree.model.member.member.type.MemberRole;
 import ssammudan.cotree.model.member.member.type.MemberStatus;
+import ssammudan.cotree.model.recruitment.resume.resume.entity.Resume;
+import ssammudan.cotree.model.recruitment.resume.resume.repository.ResumeRepository;
 
 /**
  * PackageName : ssammudan.cotree.domain.resume.service
@@ -29,9 +39,10 @@ import ssammudan.cotree.model.member.member.type.MemberStatus;
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
  * 2025. 3. 31.     kwak               Initial creation
+ * 2025. 4. 17.     sangxxjin          Resume, Project 공통 클래스로 변경
  */
 @Component
-public class ResumeDataFactory {
+public class ResumeProjectTestDataFactory {
 	@Autowired
 	private MemberRepository memberRepository;
 
@@ -43,6 +54,8 @@ public class ResumeDataFactory {
 
 	@Autowired
 	private EntityManager entityManager;
+	@Autowired
+	private ResumeRepository resumeRepository;
 
 	@Transactional
 	public Member setData() {
@@ -106,4 +119,52 @@ public class ResumeDataFactory {
 		return saverMember;
 	}
 
+	public List<Resume> createAndSaveResume(List<Member> memberList, List<TechStack> saveTechStackList, List<DevelopmentPosition> saveDevPos) {
+		LocalDate startDate = LocalDate.of(2022, Month.JANUARY, 1);
+		LocalDate endDate = LocalDate.of(2023, Month.JANUARY, 1);
+
+		CareerInfo careerInfo = CareerInfo
+			.builder()
+			.startDate(startDate)
+			.endDate(endDate)
+			.position("position1")
+			.companyName("company1")
+			.careerDescription("주요 성과")
+			.isWorking(false)
+			.techStackIds(saveTechStackList.stream().map(TechStack::getId).collect(Collectors.toSet()))
+			.build();
+
+		PortfolioInfo portfolioInfo = PortfolioInfo
+			.builder()
+			.startDate(startDate)
+			.endDate(endDate)
+			.projectName("project1")
+			.projectDescription("project1 성과")
+			.techStackIds(saveTechStackList.stream().map(TechStack::getId).collect(Collectors.toSet()))
+			.build();
+
+		BasicInfo basicInfo = BasicInfo
+			.builder()
+			.email("test1@email.com")
+			.years(1)
+			.introduction("자기소개")
+			.developPositionIds(saveDevPos.stream().map(DevelopmentPosition::getId).collect(Collectors.toSet()))
+			.techStackIds(saveTechStackList.stream().map(TechStack::getId).collect(Collectors.toSet()))
+			.build();
+
+		ResumeCreateRequest resumeCreateRequest = ResumeCreateRequest
+			.builder()
+			.basicInfo(basicInfo)
+			.careerInfos(List.of(careerInfo))
+			.portfolioInfos(List.of(portfolioInfo))
+			.build();
+
+		List<Resume> resumeList = new ArrayList<>();
+		for (Member member : memberList) {
+			Resume resume = Resume.create(resumeCreateRequest, member, saveTechStackList, saveDevPos, null);
+			resumeList.add(resume);
+		}
+
+		return resumeRepository.saveAll(resumeList);
+	}
 }

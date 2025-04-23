@@ -44,7 +44,7 @@ class ResumeServiceImplTest extends SpringBootTestSupporter {
 
 	@BeforeEach
 	void setUp() {
-		memberId = resumeDataFactory.setData().getId();
+		memberId = resumeProjectTestDataFactory.setData().getId();
 	}
 
 	@Test

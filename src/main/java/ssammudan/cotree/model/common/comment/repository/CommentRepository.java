@@ -22,9 +22,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
 
 	@Modifying
 	@Query("DELETE FROM Comment c WHERE c.parentComment.id IS NOT NULL AND c.community.id = :communityId")
-	void deleteChildComments(@Param("communityId") Long communityId);
+	void deleteCommunityChildComments(@Param("communityId") Long communityId);
 
 	@Modifying
 	@Query("DELETE FROM Comment c WHERE c.parentComment.id IS NULL AND c.community.id = :communityId")
-	void deleteParentComments(@Param("communityId") Long communityId);
+	void deleteCommunityParentComments(@Param("communityId") Long communityId);
 }

@@ -46,7 +46,7 @@ class ResumeControllerTest extends SpringBootTestSupporter {
 
 	@BeforeEach
 	void setUp() {
-		member = resumeDataFactory.setData();
+		member = resumeProjectTestDataFactory.setData();
 		customUser = customUserDetailsService.loadUserByUsername(member.getUsername());
 	}
 
@@ -117,7 +117,6 @@ class ResumeControllerTest extends SpringBootTestSupporter {
 		ResumeCreateRequest request = createRegisterRequest();
 		resumeService.register(request, member.getId(), null);
 		resumeService.register(request, member.getId(), null);
-
 
 		ResultActions resultActions = mockMvc
 			.perform(get("/api/v1/recruitment/resume")
