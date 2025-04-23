@@ -22,4 +22,4 @@ scrape_configs:
 
   - job_name: 'mysql'
     static_configs:
-      - targets: [ 'mysql-exporter:9104' ]
+      - targets: [ '3.34.149.144:9104' ]

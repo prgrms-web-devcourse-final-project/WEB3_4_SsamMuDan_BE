@@ -417,29 +417,30 @@ resource "aws_instance" "ec2_db" {
   }
 
   user_data = <<-EOF
-    #!/bin/bash
-    # 가상 메모리 4GB 설정
-    sudo dd if=/dev/zero of=/swapfile bs=128M count=32
-    sudo chmod 600 /swapfile
-    sudo mkswap /swapfile
-    sudo swapon /swapfile
-    echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
+#!/bin/bash
+# 가상 메모리 4GB 설정
+sudo dd if=/dev/zero of=/swapfile bs=128M count=32
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
 
-    yum install docker -y
-    systemctl enable docker
-    systemctl start docker
+yum install -y docker git
+systemctl enable docker
+systemctl start docker
 
-    docker network create common
+docker network create common-network
 
-    sudo yum install -y git
-    sudo git clone https://github.com/prgrms-web-devcourse-final-project/WEB3_4_SsamMuDan_BE.git
-    cd WEB3_4_SsamMuDan_BE/docker/database
-    sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/v2.24.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
-    cat > .env <<ENVVARS
+cd /root
+git clone https://github.com/prgrms-web-devcourse-final-project/WEB3_4_SsamMuDan_BE.git
+cd WEB3_4_SsamMuDan_BE/docker/database
+
+cat > .env <<ENVVARS
 MYSQL_ROOT_PASSWORD=${var.db_password}
-MYSQL_OUT_PORT=3360
+MYSQL_OUT_PORT=3306
 MYSQL_IN_PORT=3306
 MYSQL_TIME_ZONE=Asia/Seoul
 MYSQL_QUERY_LOG_PATH=/var/log/mysql
@@ -452,9 +453,8 @@ REDIS_OUT_PORT=6379
 REDIS_IN_PORT=6379
 ENVVARS
 
-    sudo docker-compose -f db-docker-compose.yml up -d
-
-  EOF
+docker-compose -f db-docker-compose.yml up -d
+EOF
 }
 
 resource "aws_security_group" "sg_monitoring" {
