@@ -502,32 +502,36 @@ resource "aws_instance" "ec2_monitoring" {
   }
 
   user_data = <<-EOF
-    #!/bin/bash
-    # 가상 메모리 4GB 설정
-    sudo dd if=/dev/zero of=/swapfile bs=128M count=32
-    sudo chmod 600 /swapfile
-    sudo mkswap /swapfile
-    sudo swapon /swapfile
-    echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
+#!/bin/bash
+# 가상 메모리 4GB 설정
+sudo dd if=/dev/zero of=/swapfile bs=128M count=32
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
 
-    yum install -y docker
-    systemctl enable docker
-    systemctl start docker
+yum install -y docker
+systemctl enable docker
+systemctl start docker
 
-    docker network create common
+docker network create common
 
-    docker run -d \
-      --name prometheus \
-      --network common \
-      -p 9090:9090 \
-      prom/prometheus
 
-    docker run -d \
-      --name grafana \
-      --network common \
-      -p 3000:3000 \
-      grafana/grafana-oss
-  EOF
+curl -L "https://github.com/docker/compose/releases/download/v2.24.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+cd /root
+git clone https://github.com/prgrms-web-devcourse-final-project/WEB3_4_SsamMuDan_BE.git
+cd WEB3_4_SsamMuDan_BE/docker/monitoring
+
+cat > .env <<ENVVARS
+PROMETHEUS_OUT_PORT=9090
+GRAFANA_OUT_PORT=3000
+ENVVARS
+
+docker-compose -f monitoring-docker-compose.yml up -d
+
+EOF
 }
 
 # Elastic IP 리소스 생성
