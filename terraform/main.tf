@@ -441,6 +441,7 @@ cd WEB3_4_SsamMuDan_BE/docker/database
 cat > .env <<ENVVARS
 MYSQL_ROOT_PASSWORD=${var.db_password}
 MYSQL_OUT_PORT=3306
+
 MYSQL_IN_PORT=3306
 MYSQL_TIME_ZONE=Asia/Seoul
 MYSQL_QUERY_LOG_PATH=/var/log/mysql
