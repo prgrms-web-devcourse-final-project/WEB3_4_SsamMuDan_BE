@@ -4,6 +4,9 @@ spring:
     url: ${RDBMS_URL}
     username: ${RDBMS_USERNAME}
     password: ${RDBMS_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 5
   jpa:
     hibernate:
       ddl-auto: validate
