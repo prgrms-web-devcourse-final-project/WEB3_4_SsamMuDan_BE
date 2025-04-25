@@ -66,6 +66,7 @@ public class SecurityConfig {
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
 					"/swagger-ui.html").permitAll()
 				.requestMatchers(GET, "/actuator/**").permitAll()
+				.requestMatchers(GET, "/health").permitAll()
 
 				// MEMBER Domain
 				.requestMatchers(POST, "/api/v1/member/signup").permitAll()
