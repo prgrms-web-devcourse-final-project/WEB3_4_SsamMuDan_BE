@@ -21,6 +21,7 @@ import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
+import ssammudan.cotree.domain.project.project.type.SearchProjectSort;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
@@ -140,7 +141,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
-		List<Long> devPositionIds, String sort) {
+		List<Long> devPositionIds, SearchProjectSort sort) {
 		return PageResponse.of(projectRepository.findFilteredProjects(pageable, techStackIds,
 			devPositionIds, sort));
 	}

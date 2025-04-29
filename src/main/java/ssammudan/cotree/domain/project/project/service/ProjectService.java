@@ -11,6 +11,7 @@ import ssammudan.cotree.domain.project.project.dto.ProjectInfoResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
+import ssammudan.cotree.domain.project.project.type.SearchProjectSort;
 import ssammudan.cotree.global.response.PageResponse;
 
 /**
@@ -39,7 +40,7 @@ public interface ProjectService {
 
 	PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds,
-		String sort);
+		SearchProjectSort sort);
 
 	void updateRecruitmentStatus(Long projectId, String memberId);
 

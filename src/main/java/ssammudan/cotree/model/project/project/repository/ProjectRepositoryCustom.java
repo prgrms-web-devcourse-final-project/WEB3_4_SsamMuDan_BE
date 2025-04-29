@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.project.type.SearchProjectSort;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.project.entity.Project;
 
@@ -32,7 +33,7 @@ public interface ProjectRepositoryCustom {
 	List<ProjectListResponse> findHotProjectsForProject(int limit);
 
 	Page<ProjectListResponse> findFilteredProjects(Pageable pageable, List<Long> techStackIds,
-		List<Long> devPositionIds, String sort);
+		List<Long> devPositionIds, SearchProjectSort sort);
 
 	List<ProjectDevPosition> findAllByProjectId(Long projectId);
 

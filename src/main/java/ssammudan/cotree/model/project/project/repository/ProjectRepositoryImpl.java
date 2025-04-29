@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -22,6 +21,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.QProjectListResponse;
+import ssammudan.cotree.domain.project.project.type.SearchProjectSort;
 import ssammudan.cotree.model.common.like.entity.QLike;
 import ssammudan.cotree.model.common.techstack.entity.QTechStack;
 import ssammudan.cotree.model.member.member.entity.QMember;
@@ -111,33 +111,49 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 	}
 
 	@Override
-	public Page<ProjectListResponse> findFilteredProjects(Pageable pageable, List<Long> techStackIds,
-		List<Long> devPositionIds, String sort) {
+	public Page<ProjectListResponse> findFilteredProjects(
+		Pageable pageable,
+		List<Long> techStackIds,
+		List<Long> devPositionIds,
+		SearchProjectSort sort
+	) {
+		boolean hasTechStack = techStackIds != null && !techStackIds.isEmpty();
+		boolean hasDevPosition = devPositionIds != null && !devPositionIds.isEmpty();
 
-		BooleanBuilder whereBuilder = new BooleanBuilder();
-		if (techStackIds != null && !techStackIds.isEmpty()) {
-			whereBuilder.and(PROJECT_TECH_STACK.techStack.id.in(techStackIds));
-		}
-		if (devPositionIds != null && !devPositionIds.isEmpty()) {
-			whereBuilder.and(PROJECT_DEV_POSITION.developmentPosition.id.in(devPositionIds));
-		}
+		List<Long> filteredIds;
 
-		List<Long> filteredIds = queryFactory
-			.select(PROJECT.id)
-			.from(PROJECT)
-			.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK)
-			.leftJoin(PROJECT.projectDevPositions, PROJECT_DEV_POSITION)
-			.where(whereBuilder)
-			.groupBy(PROJECT.id)
-			.having(
-				techStackIds != null && !techStackIds.isEmpty()
-					? PROJECT_TECH_STACK.techStack.id.countDistinct().eq((long)techStackIds.size())
-					: null,
-				devPositionIds != null && !devPositionIds.isEmpty()
-					? PROJECT_DEV_POSITION.developmentPosition.id.countDistinct().eq((long)devPositionIds.size())
-					: null
-			)
-			.fetch();
+		if (hasTechStack || hasDevPosition) {
+			BooleanBuilder whereBuilder = new BooleanBuilder();
+			if (hasTechStack)
+				whereBuilder.and(PROJECT_TECH_STACK.techStack.id.in(techStackIds));
+			if (hasDevPosition)
+				whereBuilder.and(PROJECT_DEV_POSITION.developmentPosition.id.in(devPositionIds));
+
+			filteredIds = queryFactory
+				.select(PROJECT.id)
+				.from(PROJECT)
+				.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK)
+				.leftJoin(PROJECT.projectDevPositions, PROJECT_DEV_POSITION)
+				.where(whereBuilder)
+				.groupBy(PROJECT.id)
+				.having(
+					hasTechStack
+						? PROJECT_TECH_STACK.techStack.id.countDistinct().eq((long)techStackIds.size())
+						: null,
+					hasDevPosition
+						? PROJECT_DEV_POSITION.developmentPosition.id.countDistinct().eq((long)devPositionIds.size())
+						: null
+				)
+				.fetch();
+		} else {
+			filteredIds = queryFactory
+				.select(PROJECT.id)
+				.from(PROJECT)
+				.orderBy(sort.getOrderSpecifier(PROJECT))
+				.offset(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.fetch();
+		}
 
 		if (filteredIds.isEmpty()) {
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
@@ -145,10 +161,6 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 		NumberTemplate<Long> likeCountExpr = Expressions.numberTemplate(Long.class,
 			"(select count(l1.id) from Like l1 where l1.project.id = {0})", PROJECT.id);
-		OrderSpecifier<?> orderSpecifier = "like".equalsIgnoreCase(sort)
-			? likeCountExpr.desc()
-			: PROJECT.createdAt.desc();
-
 		NumberTemplate<Integer> recruitmentCountExpr = Expressions.numberTemplate(Integer.class,
 			"(select coalesce(sum(pdp.amount), 0) from ProjectDevPosition pdp where pdp.project.id = {0})",
 			PROJECT.id);
@@ -191,7 +203,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.leftJoin(PROJECT.member, QMember.member)
 			.where(PROJECT.id.in(filteredIds))
 			.groupBy(PROJECT.id)
-			.orderBy(orderSpecifier)
+			.orderBy(sort.getOrderSpecifier(PROJECT))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch()
@@ -201,9 +213,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			))
 			.toList();
 
-		long total = filteredIds.size();
-
-		return new PageImpl<>(finalContent, pageable, total);
+		return new PageImpl<>(finalContent, pageable, filteredIds.size());
 	}
 
 	@Override
