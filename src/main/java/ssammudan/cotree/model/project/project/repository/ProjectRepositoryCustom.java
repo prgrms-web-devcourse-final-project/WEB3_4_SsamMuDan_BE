@@ -31,7 +31,7 @@ public interface ProjectRepositoryCustom {
 
 	List<ProjectListResponse> findHotProjectsForProject(int limit);
 
-	Page<ProjectListResponse> findByFilters(Pageable pageable, List<Long> techStackIds,
+	Page<ProjectListResponse> findFilteredProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort);
 
 	List<ProjectDevPosition> findAllByProjectId(Long projectId);

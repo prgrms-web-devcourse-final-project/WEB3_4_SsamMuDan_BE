@@ -141,7 +141,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional(readOnly = true)
 	public PageResponse<ProjectListResponse> getProjects(Pageable pageable, List<Long> techStackIds,
 		List<Long> devPositionIds, String sort) {
-		return PageResponse.of(projectRepository.findByFilters(pageable, techStackIds,
+		return PageResponse.of(projectRepository.findFilteredProjects(pageable, techStackIds,
 			devPositionIds, sort));
 	}
 
