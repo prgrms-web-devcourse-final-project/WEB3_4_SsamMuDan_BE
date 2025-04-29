@@ -121,6 +121,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		boolean hasDevPosition = devPositionIds != null && !devPositionIds.isEmpty();
 
 		List<Long> filteredIds;
+		long total;
 
 		if (hasTechStack || hasDevPosition) {
 			BooleanBuilder whereBuilder = new BooleanBuilder();
@@ -129,7 +130,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			if (hasDevPosition)
 				whereBuilder.and(PROJECT_DEV_POSITION.developmentPosition.id.in(devPositionIds));
 
-			filteredIds = queryFactory
+			List<Long> allMatchingIds = queryFactory
 				.select(PROJECT.id)
 				.from(PROJECT)
 				.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK)
@@ -145,7 +146,18 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 						: null
 				)
 				.fetch();
+
+			total = allMatchingIds.size();
+			filteredIds = allMatchingIds.stream()
+				.skip(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.toList();
 		} else {
+			total = queryFactory
+				.select(PROJECT.count())
+				.from(PROJECT)
+				.fetchOne();
+
 			filteredIds = queryFactory
 				.select(PROJECT.id)
 				.from(PROJECT)
@@ -156,7 +168,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		}
 
 		if (filteredIds.isEmpty()) {
-			return new PageImpl<>(Collections.emptyList(), pageable, 0);
+			return new PageImpl<>(Collections.emptyList(), pageable, total);
 		}
 
 		NumberTemplate<Long> likeCountExpr = Expressions.numberTemplate(Long.class,
@@ -204,8 +216,6 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.where(PROJECT.id.in(filteredIds))
 			.groupBy(PROJECT.id)
 			.orderBy(sort.getOrderSpecifier(PROJECT))
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
 			.fetch()
 			.stream()
 			.map(project -> project.withTechStacks(
@@ -213,7 +223,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			))
 			.toList();
 
-		return new PageImpl<>(finalContent, pageable, filteredIds.size());
+		return new PageImpl<>(finalContent, pageable, total);
 	}
 
 	@Override
