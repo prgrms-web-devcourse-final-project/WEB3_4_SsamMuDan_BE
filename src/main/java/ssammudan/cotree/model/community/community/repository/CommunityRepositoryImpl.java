@@ -1,7 +1,10 @@
 package ssammudan.cotree.model.community.community.repository;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,6 +17,7 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -32,7 +36,7 @@ import ssammudan.cotree.model.member.member.entity.QMember;
  * FileName    : CommunityRepositoryImpl
  * Author      : Baekgwa
  * Date        : 2025-04-01
- * Description : 
+ * Description :
  * =====================================================================================================================
  * DATE          AUTHOR               NOTE
  * ---------------------------------------------------------------------------------------------------------------------
@@ -59,10 +63,30 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 		final String memberId) {
 
 		OrderSpecifier<?> orderSpecifier = createOrderSpecifier(sort);
-		BooleanBuilder whereCondition = createWhereCondition(category, keyword);
+		BooleanBuilder whereCondition = createWhereCondition(category);
 		LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
 
-		// 쿼리 실행 - 데이터 조회
+		// 키워드가 있을때만, Ngram fulltext 검색 추가
+		if (keyword != null && !keyword.isBlank()) {
+			NumberTemplate<Double> score = fullTextBooleanTemplate(keyword);
+			whereCondition.and(score.gt(0));
+		}
+
+		// 1단계: 먼저 필터링 및 정렬된 커뮤니티 ID 조회
+		List<Long> communityIds = jpaQueryFactory
+			.select(community.id)
+			.from(community)
+			.where(whereCondition)
+			.orderBy(orderSpecifier)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		if (communityIds.isEmpty()) {
+			return new PageImpl<>(List.of(), pageable, 0L);
+		}
+
+		// 2단계: Ids 기반 필요 정보 검색
 		List<CommunityResponse.BoardListDetail> content = jpaQueryFactory
 			.select(Projections.constructor(CommunityResponse.BoardListDetail.class,
 				community.id,
@@ -93,11 +117,15 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 			.from(community)
 			.join(member).on(community.member.id.eq(member.id))
 			.join(communityCategory).on(community.communityCategory.id.eq(communityCategory.id))
-			.where(whereCondition)
-			.orderBy(orderSpecifier)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
+			.where(community.id.in(communityIds))
 			.fetch();
+
+		// ID 목록 순서에 맞게 정렬
+		Map<Long, Integer> idPositionMap = new HashMap<>();
+		for (int i = 0; i < communityIds.size(); i++) {
+			idPositionMap.put(communityIds.get(i), i);
+		}
+		content.sort(Comparator.comparing(board -> idPositionMap.getOrDefault(board.id(), Integer.MAX_VALUE)));
 
 		// 전체 개수 조회
 		Long total = jpaQueryFactory
@@ -165,22 +193,27 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 	/**
 	 * 검색 조건 생성
 	 */
-	private BooleanBuilder createWhereCondition(SearchBoardCategory category, String keyword) {
+	private BooleanBuilder createWhereCondition(SearchBoardCategory category) {
 		BooleanBuilder builder = new BooleanBuilder();
 
-		// 카테고리 조건
 		if (category != SearchBoardCategory.TOTAL) {
 			builder.and(communityCategory.name.eq(category.getData()));
 		}
 
-		// 키워드 검색 조건
-		if (keyword != null && !keyword.isEmpty()) {
-			builder.and(
-				community.title.containsIgnoreCase(keyword)
-					.or(community.content.containsIgnoreCase(keyword))
-			);
-		}
-
 		return builder;
+	}
+
+	/**
+	 * keyword 검색 조건 생성
+	 * keyword 가 빈값이 들어와서는 안됨
+	 * @param keyword 키워드
+	 * @return NumberTemplate
+	 */
+	private NumberTemplate<Double> fullTextBooleanTemplate(String keyword) {
+		if (keyword == null || keyword.isBlank()) {
+			throw new IllegalArgumentException("keyword is null or blank");
+		}
+		return  Expressions.numberTemplate(
+			Double.class, "function('match_against', {0}, {1}, {2})", community.title, community.content, keyword);
 	}
 }
