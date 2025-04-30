@@ -16,6 +16,7 @@ services:
       - ./mysql/my.cnf:/etc/my.cnf
       - ${MYSQL_QUERY_LOG_PATH}:/var/log/mysql
       - cotree-rdb-data:/var/lib/mysql
+    restart: always
 
   redis:
     image: redis:7.4
@@ -30,6 +31,20 @@ services:
     volumes:
       - redis_data:/data
     command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes" ]
+
+  mysql-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: mysql-exporter
+    environment:
+      - MYSQLD_EXPORTER_PASSWORD=${EXPORTER_PASSWORD}
+    networks:
+      - common-network
+    ports:
+      - "9104:9104"
+    command:
+      - "--mysqld.username=${EXPORTER_NAME}"
+      - "--mysqld.address=cotreeDb:3306"
+    restart: always
 
 networks:
   common-network:

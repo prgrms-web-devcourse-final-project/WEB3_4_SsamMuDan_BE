@@ -4,6 +4,8 @@ server:
     threads:
       max: 200
       min-spare: 10
+    mbeanregistry:
+      enabled: true
     max-connections: 8192
     accept-count: 100
     uri-encoding: UTF-8
@@ -34,3 +36,16 @@ cloud:
 
 frontend:
   url: ${FRONTEND_URL}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "health", "info", "prometheus", "metrics" ]
+  metrics:
+    tags:
+      application: ${spring.application.name:cotree}
+    prometheus:
+      metrics:
+        export:
+          enabled: true

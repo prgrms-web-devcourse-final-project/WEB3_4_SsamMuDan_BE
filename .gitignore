@@ -39,6 +39,7 @@ out/
 ### .env ###
 /.env
 /docker/database/.env
+/docker/monitoring/.env
 
 ### .DS_Store ###
 .DS_Store

@@ -1,0 +1,32 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    networks:
+      - cotree-network
+    ports:
+      - ${PROMETHEUS_OUT_PORT}:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    networks:
+      - cotree-network
+    ports:
+      - ${GRAFANA_OUT_PORT}:3000
+    environment:
+      - TZ=Asia/Seoul
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: always
+
+networks:
+  cotree-network:
+    external: true
+
+volumes:
+  grafana-data:
+

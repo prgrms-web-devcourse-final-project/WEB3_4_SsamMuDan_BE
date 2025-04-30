@@ -263,8 +263,8 @@ frontend http_front
 
 backend http_back_1
     balance roundrobin
-    option httpchk GET /actuator/health
-    default-server inter 2s rise 1 fall 1 init-addr last,libc,none resolvers docker
+    option httpchk GET /health
+    default-server inter 4s rise 3 fall 3 init-addr last,libc,none resolvers docker
     option redispatch
     http-response lua.retry_on_502_504
 
@@ -329,36 +329,11 @@ echo "${var.github_access_token_1}" | docker login ghcr.io -u ${var.github_acces
 END_OF_FILE
 }
 
-# 최신 Amazon Linux 2023 AMI 조회 (프리 티어 호환)
-data "aws_ami" "latest_amazon_linux" {
-  most_recent = true
-  owners = ["amazon"]
-
-  filter {
-    name = "name"
-    values = ["al2023-ami-2023.*-x86_64"]
-  }
-
-  filter {
-    name = "architecture"
-    values = ["x86_64"]
-  }
-
-  filter {
-    name = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  filter {
-    name = "root-device-type"
-    values = ["ebs"]
-  }
-}
 
 # EC2 인스턴스 생성
 resource "aws_instance" "ec2_1" {
   # 사용할 AMI ID
-  ami = data.aws_ami.latest_amazon_linux.id
+  ami = "ami-070e986143a3041b6"
   # EC2 인스턴스 유형
   instance_type = "t3.micro"
   # 사용할 서브넷 ID
@@ -387,6 +362,177 @@ resource "aws_instance" "ec2_1" {
 ${local.ec2_user_data_base}
 EOF
 }
+# EC2 for DB (MySQL + Redis)
+
+resource "aws_security_group" "sg_db" {
+  name   = "${var.prefix}-sg-db"
+  vpc_id = aws_vpc.vpc_1.id
+
+  ingress {
+    description = "MySQL"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Redis"
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.prefix}-sg-db"
+    Team = var.team_tag
+  }
+}
+
+resource "aws_instance" "ec2_db" {
+  ami                         = "ami-070e986143a3041b6"
+  instance_type               = "t3.micro"
+  subnet_id                   = aws_subnet.subnet_3.id
+  vpc_security_group_ids = [aws_security_group.sg_db.id]
+  associate_public_ip_address = true
+
+  iam_instance_profile = aws_iam_instance_profile.instance_profile_1.name
+
+  tags = {
+    Name = "${var.prefix}-ec2-db"
+    Team = var.team_tag
+  }
+
+  root_block_device {
+    volume_type = "gp3"
+    volume_size = 30
+  }
+
+  user_data = <<-EOF
+#!/bin/bash
+# 가상 메모리 4GB 설정
+sudo dd if=/dev/zero of=/swapfile bs=128M count=32
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
+
+yum install -y docker git
+systemctl enable docker
+systemctl start docker
+
+docker network create common-network
+
+curl -L "https://github.com/docker/compose/releases/download/v2.24.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+cd /root
+git clone https://github.com/prgrms-web-devcourse-final-project/WEB3_4_SsamMuDan_BE.git
+cd WEB3_4_SsamMuDan_BE/docker/database
+
+cat > .env <<ENVVARS
+MYSQL_ROOT_PASSWORD=${var.db_password}
+MYSQL_OUT_PORT=3306
+MYSQL_IN_PORT=3306
+MYSQL_TIME_ZONE=Asia/Seoul
+MYSQL_QUERY_LOG_PATH=/var/log/mysql
+
+EXPORTER_NAME=${var.exporter}
+EXPORTER_PASSWORD=${var.exporter_password}
+
+REDIS_PASSWORD=${var.db_password}
+REDIS_OUT_PORT=6379
+REDIS_IN_PORT=6379
+ENVVARS
+
+docker-compose -f db-docker-compose.yml up -d
+EOF
+}
+
+resource "aws_security_group" "sg_monitoring" {
+  name   = "${var.prefix}-sg-monitoring"
+  vpc_id = aws_vpc.vpc_1.id
+
+  ingress {
+    description = "Grafana Web"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.prefix}-sg-monitoring"
+    Team = var.team_tag
+  }
+}
+
+resource "aws_instance" "ec2_monitoring" {
+  ami                         = "ami-070e986143a3041b6"
+  instance_type               = "t3.micro"
+  subnet_id                   = aws_subnet.subnet_4.id
+  vpc_security_group_ids = [aws_security_group.sg_monitoring.id]
+  associate_public_ip_address = true
+
+  iam_instance_profile = aws_iam_instance_profile.instance_profile_1.name
+
+  tags = {
+    Name = "${var.prefix}-ec2-monitoring"
+    Team = var.team_tag
+  }
+
+  root_block_device {
+    volume_type = "gp3"
+    volume_size = 20
+  }
+
+  user_data = <<-EOF
+#!/bin/bash
+# 가상 메모리 4GB 설정
+sudo dd if=/dev/zero of=/swapfile bs=128M count=32
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab
+
+yum install -y docker git
+systemctl enable docker
+systemctl start docker
+
+docker network create cotree-network
+
+curl -L "https://github.com/docker/compose/releases/download/v2.24.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+cd /root
+git clone https://github.com/prgrms-web-devcourse-final-project/WEB3_4_SsamMuDan_BE.git
+cd WEB3_4_SsamMuDan_BE/docker/monitoring
+
+cat > .env <<ENVVARS
+PROMETHEUS_OUT_PORT=9090
+GRAFANA_OUT_PORT=3000
+ENVVARS
+
+docker-compose -f monitoring-docker-compose.yml up -d
+
+EOF
+}
+
 # Elastic IP 리소스 생성
 resource "aws_eip" "eip_1" {
   instance = aws_instance.ec2_1.id
