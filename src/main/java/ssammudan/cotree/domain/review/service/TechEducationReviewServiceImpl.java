@@ -1,5 +1,7 @@
 package ssammudan.cotree.domain.review.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,22 +128,25 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 		final TechEducationReviewRequest.ReviewRead requestDto, final Pageable pageable
 	) {
 		Double avgRating = Double.NaN;
+		long totalReviewCount = 0L;
+
 		if (requestDto.techEducationType() == EducationType.TECH_TUBE) {
 			TechTubeSimpleInfoDto techTubeSimpleInfoDto = techTubeQueryRepository.findSimpleInfoById(
 					requestDto.itemId())
 				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND));
-			avgRating = techTube.getTotalRating() * 1.0 / techTube.getTotalReviewCount();
 			avgRating = techTubeSimpleInfoDto.totalRating() * 1.0 / techTubeSimpleInfoDto.totalReviewCount();
+			totalReviewCount = techTubeSimpleInfoDto.totalReviewCount();
 		} else {
 			TechBookSimpleInfoDto techBookSimpleInfoDto = techBookQueryRepository.findSimpleInfoById(
 					requestDto.itemId())
 				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
-			avgRating = techBook.getTotalRating() * 1.0 / techBook.getTotalReviewCount();
 			avgRating = techBookSimpleInfoDto.totalRating() * 1.0 / techBookSimpleInfoDto.totalReviewCount();
+			totalReviewCount = techBookSimpleInfoDto.totalReviewCount();
 		}
-		return PageResponse.from(techEducationReviewRepository.findReviews(
+		List<TechEducationReviewResponse.ReviewDetail> reviewList = techEducationReviewRepository.findReviewList(
 			EducationType.getTechEducationTypeId(requestDto.techEducationType()), requestDto.itemId(), pageable
-		), avgRating.isNaN() ? 0.0 : avgRating);
+		);
+		return PageResponse.from(reviewList, pageable, totalReviewCount, avgRating.isNaN() ? 0.0 : avgRating);
 	}
 
 }
