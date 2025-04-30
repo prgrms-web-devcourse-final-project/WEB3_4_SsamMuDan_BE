@@ -11,6 +11,7 @@ import ssammudan.cotree.global.config.security.jwt.RefreshTokenService;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.model.member.member.entity.Member;
+import ssammudan.cotree.model.member.member.entity.MemberFactory;
 import ssammudan.cotree.model.member.member.repository.MemberRepository;
 
 /**
@@ -35,13 +36,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public CustomUser loadUserByUsername(String username) throws UsernameNotFoundException {
 		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-		return new CustomUser(member, null);
-	}
-
-	public CustomUser loadUserById(String id) throws UsernameNotFoundException {
-		Member member = memberRepository.findById(id)
-			.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
-		// new UsernameNotFoundException("id에 맞는 멤버가 존재하지 않습니다.");
 		return new CustomUser(member, null);
 	}
 
