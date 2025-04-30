@@ -38,49 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final CustomUserDetailsService customUserDetailsService;
 
 	private static final List<String> PERMIT_ALL_URIS = List.of(
-		// H2, Swagger, 에러
-		"/h2-console",
-		"/error",
-		"/favicon.ico",
-		"/swagger-ui",
-		"/v3/api-docs",
-		"/swagger-resources",
-		"/swagger-ui.html",
-		"/actuator/health",
-
 		// MEMBER Domain
 		"/api/v1/member/signup",
-		"/api/v1/member/signin",
-		"/api/v1/member/signup/phone",
-		"/api/v1/member/signup/phone/verify",
-		"/api/v1/member/recovery/loginId",
-		"/api/v1/member/recovery/loginId/verify",
-		"/api/v1/member/update/password",
-		"/oauth2",
-		"/login",
-
-		// Email
-		"/api/v1/email",
-
-		// Category
-		"/api/v1/category",
-
-		// Comment
-		"/api/v1/comment",
-
-		// Community
-		"/api/v1/community/board",
-
-		// Education
-		"/api/v1/education/techbook",
-		"/api/v1/education/techtube",
-		"/api/v1/education/review",
-
-		// Resume
-		"/api/v1/recruitment/resume",
-
-		// Project
-		"/api/v1/project/team"
+		"/api/v1/member/signin"
 	);
 
 	private boolean isPermitAllUri(HttpServletRequest request) {
@@ -131,7 +91,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 			// 헤더에 accessToken을 추가
 			accessTokenService.generateTokenToCookie(user, response);
-			log.error("accessToken 재발급");
 		}
 
 		// 로그인 처리

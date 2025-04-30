@@ -49,8 +49,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 		try {
 			Claims claimsFromToken = accessTokenService.getClaimsFromToken(accessToken);
 			String id = claimsFromToken.get("mid", String.class);
-			Member member = memberRepository.findById(id)
-				.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+			String email = claimsFromToken.get("sub", String.class);
+			Member member = MemberFactory.createByAccessToken(id, email);
 			return new CustomUser(member, null);
 		} catch (Exception e) { // Jwt는 굳이 예외처리하지 않음. 이 후 필터로 전달하기 위해
 			return null;
@@ -61,8 +61,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		try {
 			Claims claimsFromToken = refreshTokenService.getClaimsFromToken(refreshToken);
 			String id = claimsFromToken.get("mid", String.class);
-			Member member = memberRepository.findById(id)
-				.orElseThrow(() -> new GlobalException(ErrorCode.MEMBER_NOT_FOUND));
+			Member member = MemberFactory.createByRefreshToken(id);
 			return new CustomUser(member, null);
 		} catch (Exception e) { // Jwt는 굳이 예외처리하지 않음. 이 후 필터로 전달하기 위해
 			return null;

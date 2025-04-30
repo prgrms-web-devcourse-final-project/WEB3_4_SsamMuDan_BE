@@ -23,4 +23,19 @@ public class MemberFactory {
 			.phoneNumber(request.phoneNumber()
 			).build();
 	}
+
+	public static Member createByAccessToken(String id, String email) {
+		return Member.builder()
+			.id(id)
+			.email(email)
+			.password("")
+			.build();
+	}
+
+	public static Member createByRefreshToken(String id) {
+		return Member.builder()
+			.id(id)
+			.password("")
+			.build();
+	}
 }
