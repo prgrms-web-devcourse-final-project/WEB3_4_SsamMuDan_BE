@@ -261,15 +261,16 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	 * @return BooleanExpression
 	 */
 	private BooleanExpression getSearchCondition(final String keyword) {
-		BooleanExpression expression = null;
-
-		if (StringUtils.hasText(keyword)) {
-			expression = techBook.title.contains(keyword)
-				.or(techBook.description.contains(keyword))
-				.or(techBook.introduction.contains(keyword));
-		}
-
-		return expression;
+		if (!StringUtils.hasText(keyword))
+			return null;
+		return Expressions.numberTemplate(
+			Double.class,
+			"function('full_text_boolean_search_param_3', {0}, {1}, {2}, {3})",
+			techBook.title,
+			techBook.description,
+			techBook.introduction,
+			Expressions.constant(keyword)
+		).gt(0);
 	}
 
 	/**
