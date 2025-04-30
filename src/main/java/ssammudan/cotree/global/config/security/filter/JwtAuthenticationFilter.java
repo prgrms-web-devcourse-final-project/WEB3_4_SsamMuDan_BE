@@ -37,6 +37,59 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final RefreshTokenService refreshTokenService;
 	private final CustomUserDetailsService customUserDetailsService;
 
+	private static final List<String> PERMIT_ALL_URIS = List.of(
+		// H2, Swagger, 에러
+		"/h2-console",
+		"/error",
+		"/favicon.ico",
+		"/swagger-ui",
+		"/v3/api-docs",
+		"/swagger-resources",
+		"/swagger-ui.html",
+		"/actuator/health",
+
+		// MEMBER Domain
+		"/api/v1/member/signup",
+		"/api/v1/member/signin",
+		"/api/v1/member/signup/phone",
+		"/api/v1/member/signup/phone/verify",
+		"/api/v1/member/recovery/loginId",
+		"/api/v1/member/recovery/loginId/verify",
+		"/api/v1/member/update/password",
+		"/oauth2",
+		"/login",
+
+		// Email
+		"/api/v1/email",
+
+		// Category
+		"/api/v1/category",
+
+		// Comment
+		"/api/v1/comment",
+
+		// Community
+		"/api/v1/community/board",
+
+		// Education
+		"/api/v1/education/techbook",
+		"/api/v1/education/techtube",
+		"/api/v1/education/review",
+
+		// Resume
+		"/api/v1/recruitment/resume",
+
+		// Project
+		"/api/v1/project/team"
+	);
+
+	private boolean isPermitAllUri(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+
+		// "/swagger-ui/index.html"처럼 접두사만 비교할 수 있도록 startsWith 사용
+		return PERMIT_ALL_URIS.stream().anyMatch(uri::startsWith);
+	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws
@@ -46,8 +99,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		if (List.of("/api/v1/member/signup", "/api/v1/member/signin").contains(request.getRequestURI())) {
-			filterChain.doFilter(request, response);
+		if (isPermitAllUri(request)) {
+			filterChain.doFilter(request, response); // JWT 인증 없이 통과
 			return;
 		}
 
