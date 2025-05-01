@@ -101,8 +101,8 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 				techBook.createdAt,
 				memberId != null
 					? JPAExpressions.select(orderHistory.count()).from(orderHistory)
-					.join(orderHistory).on(orderHistory.orderCategory.id.eq(orderCategory.id))
-					.where(orderHistory.customer.id.eq(memberId)
+					.where(orderHistory.orderCategory.id.eq(orderCategory.id)
+						.and(orderHistory.customer.id.eq(memberId))
 						.and(orderHistory.productId.eq(techBookId))
 						.and(orderCategory.name.eq("TechBook")))
 					.exists()
@@ -162,6 +162,18 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	public Page<TechBookResponse.ListInfo> findTechBooks(
 		final String keyword, final String memberId, final Long educationId, final Pageable pageable
 	) {
+		List<Long> techBookIds = jpaQueryFactory.select(techBook.id)
+			.from(techBook)
+			.join(member).on(techBook.writer.id.eq(member.id))
+			.where(getSearchCondition(keyword))
+			.orderBy(getSortCondition(pageable))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		if (techBookIds.isEmpty())
+			return Page.empty();
+
 		JPAQuery<TechBookResponse.ListInfo> contentJpaQuery = jpaQueryFactory.select(Projections.constructor(
 				TechBookResponse.ListInfo.class,
 				techBook.id,
@@ -181,10 +193,8 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 					: Expressions.constant(Boolean.FALSE)
 			)).from(techBook)
 			.join(member).on(techBook.writer.id.eq(member.id))
-			.where(getSearchCondition(keyword))
-			.orderBy(getSortCondition(pageable))
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize());
+			.where(techBook.id.in(techBookIds))
+			.orderBy(getSortCondition(pageable));
 
 		addJoinByEducationCategory(contentJpaQuery, educationId);
 
@@ -208,6 +218,19 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	 */
 	@Override
 	public Page<TechBookResponse.ListInfo> findLikeTechBooks(final String memberId, final Pageable pageable) {
+		List<Long> techBookIds = jpaQueryFactory.select(techBook.id)
+			.from(techBook)
+			.join(member).on(techBook.writer.id.eq(member.id))
+			.join(like).on(like.techBook.id.eq(techBook.id))
+			.where(like.member.id.eq(memberId))
+			.orderBy(getSortCondition(pageable))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		if (techBookIds.isEmpty())
+			return Page.empty();
+
 		List<TechBookResponse.ListInfo> content = jpaQueryFactory.select(Projections.constructor(
 				TechBookResponse.ListInfo.class,
 				techBook.id,
@@ -226,10 +249,8 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 			)).from(techBook)
 			.join(member).on(techBook.writer.id.eq(member.id))
 			.join(like).on(like.techBook.id.eq(techBook.id))
-			.where(like.member.id.eq(memberId))
-			.orderBy(like.createdAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize()).fetch();
+			.where(techBook.id.in(techBookIds))
+			.orderBy(like.createdAt.desc()).fetch();
 
 		JPAQuery<Long> countJpaQuery = jpaQueryFactory.select(techBook.count())
 			.from(techBook)
