@@ -39,7 +39,7 @@ public class WithCustomMemberSecurityContextFactory implements WithSecurityConte
 	public SecurityContext createSecurityContext(WithCustomMember annotation) {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 
-		Member newMember = MemberFactory.createSignUpMember(
+		Member newMember = MemberFactory.createBySignupRequest(
 			new MemberSignupRequest("mockMember", "!asdf1234", "mock member", "mock member nickname",
 				MemberRole.USER.getRole(), "01099999999")
 		);

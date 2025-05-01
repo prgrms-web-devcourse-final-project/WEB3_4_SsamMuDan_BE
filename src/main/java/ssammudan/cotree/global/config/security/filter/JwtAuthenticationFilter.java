@@ -37,6 +37,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final RefreshTokenService refreshTokenService;
 	private final CustomUserDetailsService customUserDetailsService;
 
+	private static final List<String> PERMIT_ALL_URIS = List.of(
+		// MEMBER Domain
+		"/api/v1/member/signup",
+		"/api/v1/member/signin"
+	);
+
+	private boolean isPermitAllUri(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+
+		// "/swagger-ui/index.html"처럼 접두사만 비교할 수 있도록 startsWith 사용
+		return PERMIT_ALL_URIS.stream().anyMatch(uri::startsWith);
+	}
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws
@@ -46,8 +59,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		if (List.of("/api/v1/member/signup", "/api/v1/member/signin").contains(request.getRequestURI())) {
-			filterChain.doFilter(request, response);
+		if (isPermitAllUri(request)) {
+			filterChain.doFilter(request, response); // JWT 인증 없이 통과
 			return;
 		}
 
@@ -78,7 +91,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 			// 헤더에 accessToken을 추가
 			accessTokenService.generateTokenToCookie(user, response);
-			log.error("accessToken 재발급");
 		}
 
 		// 로그인 처리

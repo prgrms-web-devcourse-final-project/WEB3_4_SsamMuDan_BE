@@ -1,6 +1,7 @@
 package ssammudan.cotree.model.education.techbook.techbook.repository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -101,8 +102,8 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 				techBook.createdAt,
 				memberId != null
 					? JPAExpressions.select(orderHistory.count()).from(orderHistory)
-					.join(orderHistory).on(orderHistory.orderCategory.id.eq(orderCategory.id))
-					.where(orderHistory.customer.id.eq(memberId)
+					.where(orderHistory.orderCategory.id.eq(orderCategory.id)
+						.and(orderHistory.customer.id.eq(memberId))
 						.and(orderHistory.productId.eq(techBookId))
 						.and(orderCategory.name.eq("TechBook")))
 					.exists()
@@ -162,6 +163,18 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	public Page<TechBookResponse.ListInfo> findTechBooks(
 		final String keyword, final String memberId, final Long educationId, final Pageable pageable
 	) {
+		List<Long> techBookIds = jpaQueryFactory.select(techBook.id)
+			.from(techBook)
+			.join(member).on(techBook.writer.id.eq(member.id))
+			.where(getSearchCondition(keyword))
+			.orderBy(getSortCondition(pageable))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		if (techBookIds.isEmpty())
+			return Page.empty();
+
 		JPAQuery<TechBookResponse.ListInfo> contentJpaQuery = jpaQueryFactory.select(Projections.constructor(
 				TechBookResponse.ListInfo.class,
 				techBook.id,
@@ -181,10 +194,8 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 					: Expressions.constant(Boolean.FALSE)
 			)).from(techBook)
 			.join(member).on(techBook.writer.id.eq(member.id))
-			.where(getSearchCondition(keyword))
-			.orderBy(getSortCondition(pageable))
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize());
+			.where(techBook.id.in(techBookIds))
+			.orderBy(getSortCondition(pageable));
 
 		addJoinByEducationCategory(contentJpaQuery, educationId);
 
@@ -208,6 +219,19 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	 */
 	@Override
 	public Page<TechBookResponse.ListInfo> findLikeTechBooks(final String memberId, final Pageable pageable) {
+		List<Long> techBookIds = jpaQueryFactory.select(techBook.id)
+			.from(techBook)
+			.join(member).on(techBook.writer.id.eq(member.id))
+			.join(like).on(like.techBook.id.eq(techBook.id))
+			.where(like.member.id.eq(memberId))
+			.orderBy(getSortCondition(pageable))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		if (techBookIds.isEmpty())
+			return Page.empty();
+
 		List<TechBookResponse.ListInfo> content = jpaQueryFactory.select(Projections.constructor(
 				TechBookResponse.ListInfo.class,
 				techBook.id,
@@ -226,10 +250,11 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 			)).from(techBook)
 			.join(member).on(techBook.writer.id.eq(member.id))
 			.join(like).on(like.techBook.id.eq(techBook.id))
-			.where(like.member.id.eq(memberId))
-			.orderBy(like.createdAt.desc())
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize()).fetch();
+			.where(techBook.id.in(techBookIds))
+			.fetch()
+			.stream()
+			.sorted(Comparator.comparing(TechBookResponse.ListInfo::likeCount).reversed())
+			.toList();
 
 		JPAQuery<Long> countJpaQuery = jpaQueryFactory.select(techBook.count())
 			.from(techBook)
@@ -261,15 +286,16 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 	 * @return BooleanExpression
 	 */
 	private BooleanExpression getSearchCondition(final String keyword) {
-		BooleanExpression expression = null;
-
-		if (StringUtils.hasText(keyword)) {
-			expression = techBook.title.contains(keyword)
-				.or(techBook.description.contains(keyword))
-				.or(techBook.introduction.contains(keyword));
-		}
-
-		return expression;
+		if (!StringUtils.hasText(keyword))
+			return null;
+		return Expressions.numberTemplate(
+			Double.class,
+			"function('full_text_boolean_search_param_3', {0}, {1}, {2}, {3})",
+			techBook.title,
+			techBook.description,
+			techBook.introduction,
+			Expressions.constant(keyword)
+		).gt(0);
 	}
 
 	/**

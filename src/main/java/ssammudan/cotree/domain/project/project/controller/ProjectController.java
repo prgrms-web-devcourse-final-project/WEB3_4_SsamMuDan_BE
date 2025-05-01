@@ -31,6 +31,7 @@ import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
 import ssammudan.cotree.domain.project.project.dto.UpdateProjectPositionRequest;
 import ssammudan.cotree.domain.project.project.service.ProjectService;
+import ssammudan.cotree.domain.project.project.type.SearchProjectSort;
 import ssammudan.cotree.global.config.security.user.CustomUser;
 import ssammudan.cotree.global.response.BaseResponse;
 import ssammudan.cotree.global.response.PageResponse;
@@ -113,8 +114,9 @@ public class ProjectController {
 		@RequestParam(value = "devPosition", required = false) List<Long> devPositionIds
 	) {
 		Pageable pageable = PageRequest.of(page, size);
+		SearchProjectSort sortEnum = SearchProjectSort.from(sort);
 		return BaseResponse.success(SuccessCode.PROJECT_LIST_SEARCH_SUCCESS,
-			projectService.getProjects(pageable, techStackIds, devPositionIds, sort));
+			projectService.getProjects(pageable, techStackIds, devPositionIds, sortEnum));
 	}
 
 	@PatchMapping("/{projectId}/status")
