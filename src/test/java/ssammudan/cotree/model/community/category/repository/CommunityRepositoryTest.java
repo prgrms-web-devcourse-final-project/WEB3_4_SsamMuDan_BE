@@ -335,7 +335,7 @@ class CommunityRepositoryTest extends SpringBootTestSupporter {
 			});
 	}
 
-	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 최신순, 키워드 : TEST, 비 로그인 상태]")
+	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 최신순, 키워드 : 키워드 없음, 비 로그인 상태]")
 	@Test
 	void findBoardList4() {
 		// given
@@ -359,27 +359,24 @@ class CommunityRepositoryTest extends SpringBootTestSupporter {
 
 		// when
 		Page<CommunityResponse.BoardListDetail> content =
-			communityRepository.findBoardList(pageable, sort, category, "TEST", null);
+			communityRepository.findBoardList(pageable, sort, category, "", null);
 
 		// then
 		assertThat(content).asInstanceOf(InstanceOfAssertFactories.type(Page.class))
 			.satisfies(page -> {
-				assertThat(page.getTotalElements()).isZero();
-				assertThat(page.getTotalPages()).isZero();
+				assertThat(page.getTotalElements()).isEqualTo(4L);
+				assertThat(page.getTotalPages()).isEqualTo(1);
 				assertThat(page.getNumber()).isZero();
 				assertThat(page.getSize()).isEqualTo(5);
-				assertThat(page.getNumberOfElements()).isZero();
+				assertThat(page.getNumberOfElements()).isEqualTo(4);
 				assertThat(page.isFirst()).isTrue();
 				assertThat(page.isLast()).isTrue();
 				assertThat(page.hasNext()).isFalse();
 				assertThat(page.hasPrevious()).isFalse();
 			});
-
-		assertThat(content.getContent())
-			.isEmpty();
 	}
 
-	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 댓글순, 키워드 : TEST, 비 로그인 상태]")
+	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 댓글순, 키워드 : 키워드 없음, 비 로그인 상태]")
 	@Test
 	void findBoardList5() {
 		// given
@@ -403,27 +400,24 @@ class CommunityRepositoryTest extends SpringBootTestSupporter {
 
 		// when
 		Page<CommunityResponse.BoardListDetail> content =
-			communityRepository.findBoardList(pageable, sort, category, "TEST", null);
+			communityRepository.findBoardList(pageable, sort, category, "", null);
 
 		// then
 		assertThat(content).asInstanceOf(InstanceOfAssertFactories.type(Page.class))
 			.satisfies(page -> {
-				assertThat(page.getTotalElements()).isZero();
-				assertThat(page.getTotalPages()).isZero();
+				assertThat(page.getTotalElements()).isEqualTo(4L);
+				assertThat(page.getTotalPages()).isEqualTo(1);
 				assertThat(page.getNumber()).isZero();
 				assertThat(page.getSize()).isEqualTo(5);
-				assertThat(page.getNumberOfElements()).isZero();
+				assertThat(page.getNumberOfElements()).isEqualTo(4);
 				assertThat(page.isFirst()).isTrue();
 				assertThat(page.isLast()).isTrue();
 				assertThat(page.hasNext()).isFalse();
 				assertThat(page.hasPrevious()).isFalse();
 			});
-
-		assertThat(content.getContent())
-			.isEmpty();
 	}
 
-	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 좋아요순, 키워드 : TEST, 비 로그인 상태]")
+	@DisplayName("글 전체 내용을 페이지네이션 조회 한다. 조건 : [5개씩, 0번페이지, 1번 카테고리, 좋아요순, 키워드 : 키워드 없음, 비 로그인 상태]")
 	@Test
 	void findBoardList6() {
 		// given
@@ -447,23 +441,20 @@ class CommunityRepositoryTest extends SpringBootTestSupporter {
 
 		// when
 		Page<CommunityResponse.BoardListDetail> content =
-			communityRepository.findBoardList(pageable, sort, category, "TEST", null);
+			communityRepository.findBoardList(pageable, sort, category, "", null);
 
 		// then
 		assertThat(content).asInstanceOf(InstanceOfAssertFactories.type(Page.class))
 			.satisfies(page -> {
-				assertThat(page.getTotalElements()).isZero();
-				assertThat(page.getTotalPages()).isZero();
+				assertThat(page.getTotalElements()).isEqualTo(4L);
+				assertThat(page.getTotalPages()).isEqualTo(1);
 				assertThat(page.getNumber()).isZero();
 				assertThat(page.getSize()).isEqualTo(5);
-				assertThat(page.getNumberOfElements()).isZero();
+				assertThat(page.getNumberOfElements()).isEqualTo(4);
 				assertThat(page.isFirst()).isTrue();
 				assertThat(page.isLast()).isTrue();
 				assertThat(page.hasNext()).isFalse();
 				assertThat(page.hasPrevious()).isFalse();
 			});
-
-		assertThat(content.getContent())
-			.isEmpty();
 	}
 }

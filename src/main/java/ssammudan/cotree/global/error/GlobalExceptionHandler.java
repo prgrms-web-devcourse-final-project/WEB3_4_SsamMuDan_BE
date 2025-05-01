@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<BaseResponse<Void>> handleException(Exception e) {
-		log.error(e.getMessage());
+		log.error(e.getMessage(), e);
 		final ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
 		return ResponseEntity.status(errorCode.getStatus())
 			.body(BaseResponse.fail(errorCode));
