@@ -214,6 +214,6 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 			throw new IllegalArgumentException("keyword is null or blank");
 		}
 		return  Expressions.numberTemplate(
-			Double.class, "function('match_against', {0}, {1}, {2})", community.title, community.content, keyword);
+			Double.class, "function('full_text_boolean_search_param_2', {0}, {1}, {2})", community.title, community.content, keyword);
 	}
 }
