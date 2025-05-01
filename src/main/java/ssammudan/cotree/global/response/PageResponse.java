@@ -3,6 +3,7 @@ package ssammudan.cotree.global.response;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -66,6 +67,31 @@ public class PageResponse<T> {
 			.isFirst(page.isFirst())
 			.hasNext(page.hasNext())
 			.hasPrevious(page.hasPrevious())
+			.reviewAvgRating(reviewAvgRating)
+			.build();
+	}
+
+	public static <T> PageResponse<T> from(List<T> content, Pageable pageable, long totalElements,
+		Double reviewAvgRating) {
+		int pageSize = pageable.getPageSize();
+		int pageNo = pageable.getPageNumber();
+		boolean isLast = (pageable.getOffset() + content.size()) >= totalElements;
+		boolean isFirst = pageNo == 0;
+		boolean hasNext = !isLast;
+		boolean hasPrevious = pageNo > 0;
+		int totalPages = (int)Math.ceil((double)totalElements / pageSize);
+
+		return PageResponse
+			.<T>builder()
+			.content(content)
+			.pageNo(pageNo)
+			.pageSize(pageSize)
+			.totalElements(totalElements)
+			.totalPages(totalPages)
+			.isLast(isLast)
+			.isFirst(isFirst)
+			.hasNext(hasNext)
+			.hasPrevious(hasPrevious)
 			.reviewAvgRating(reviewAvgRating)
 			.build();
 	}

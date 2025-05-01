@@ -1,18 +1,22 @@
 package ssammudan.cotree.domain.review.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import ssammudan.cotree.domain.education.techbook.dto.TechBookSimpleInfoDto;
+import ssammudan.cotree.domain.education.techtube.dto.TechTubeSimpleInfoDto;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewRequest;
 import ssammudan.cotree.domain.review.dto.TechEducationReviewResponse;
 import ssammudan.cotree.global.error.GlobalException;
 import ssammudan.cotree.global.response.ErrorCode;
 import ssammudan.cotree.global.response.PageResponse;
-import ssammudan.cotree.model.education.techbook.techbook.entity.TechBook;
+import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookQueryRepository;
 import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRepository;
-import ssammudan.cotree.model.education.techtube.techtube.entity.TechTube;
+import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeQueryRepository;
 import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
 import ssammudan.cotree.model.education.type.EducationType;
 import ssammudan.cotree.model.member.member.entity.Member;
@@ -45,7 +49,10 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 	private final MemberRepository memberRepository;
 	private final TechEducationTypeRepository techEducationTypeRepository;
 	private final TechTubeRepository techTubeRepository;
+	private final TechTubeQueryRepository techTubeQueryRepository;
 	private final TechBookRepository techBookRepository;
+	private final TechBookQueryRepository techBookQueryRepository;
+
 	private final OrderHistoryRepository orderHistoryRepository;
 	private final OrderCategoryRepository orderCategoryRepository;
 
@@ -121,18 +128,25 @@ public class TechEducationReviewServiceImpl implements TechEducationReviewServic
 		final TechEducationReviewRequest.ReviewRead requestDto, final Pageable pageable
 	) {
 		Double avgRating = Double.NaN;
+		long totalReviewCount = 0L;
+
 		if (requestDto.techEducationType() == EducationType.TECH_TUBE) {
-			TechTube techTube = techTubeRepository.findById(requestDto.itemId())
+			TechTubeSimpleInfoDto techTubeSimpleInfoDto = techTubeQueryRepository.findSimpleInfoById(
+					requestDto.itemId())
 				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_TUBE_NOT_FOUND));
-			avgRating = techTube.getTotalRating() * 1.0 / techTube.getTotalReviewCount();
+			avgRating = techTubeSimpleInfoDto.totalRating() * 1.0 / techTubeSimpleInfoDto.totalReviewCount();
+			totalReviewCount = techTubeSimpleInfoDto.totalReviewCount();
 		} else {
-			TechBook techBook = techBookRepository.findById(requestDto.itemId())
+			TechBookSimpleInfoDto techBookSimpleInfoDto = techBookQueryRepository.findSimpleInfoById(
+					requestDto.itemId())
 				.orElseThrow(() -> new GlobalException(ErrorCode.TECH_BOOK_NOT_FOUND));
-			avgRating = techBook.getTotalRating() * 1.0 / techBook.getTotalReviewCount();
+			avgRating = techBookSimpleInfoDto.totalRating() * 1.0 / techBookSimpleInfoDto.totalReviewCount();
+			totalReviewCount = techBookSimpleInfoDto.totalReviewCount();
 		}
-		return PageResponse.from(techEducationReviewRepository.findReviews(
+		List<TechEducationReviewResponse.ReviewDetail> reviewList = techEducationReviewRepository.findReviewList(
 			EducationType.getTechEducationTypeId(requestDto.techEducationType()), requestDto.itemId(), pageable
-		), avgRating.isNaN() ? 0.0 : avgRating);
+		);
+		return PageResponse.from(reviewList, pageable, totalReviewCount, avgRating.isNaN() ? 0.0 : avgRating);
 	}
 
 }

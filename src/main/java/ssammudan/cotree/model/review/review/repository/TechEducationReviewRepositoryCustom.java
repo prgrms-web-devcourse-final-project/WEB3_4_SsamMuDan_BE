@@ -1,5 +1,7 @@
 package ssammudan.cotree.model.review.review.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,4 +29,7 @@ public interface TechEducationReviewRepositoryCustom {
 		final Long techEducationTypeId, final Long itemId, final Pageable pageable
 	);
 
+	List<TechEducationReviewResponse.ReviewDetail> findReviewList(
+		final Long techEducationTypeId, final Long itemId, final Pageable pageable
+	);
 }

@@ -46,7 +46,7 @@ public class MemberDataFactory {
 
 		for (int index = 1; index <= count; index++) {
 
-			newMemberList.add(MemberFactory.createSignUpMember(new MemberSignupRequest(
+			newMemberList.add(MemberFactory.createBySignupRequest(new MemberSignupRequest(
 				String.format("email%d@email.com", index),
 				passwordEncoder.encode(String.format("패스워드%d", index)),
 				String.format("이름%d", index),

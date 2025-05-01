@@ -36,6 +36,9 @@ public class CustomUser implements OAuth2User, UserDetails {
 
 	@Override
 	public String getUsername() {
+		if (member.getUsername() == null) {
+			return "actor";
+		}
 		return member.getUsername();
 	}
 
@@ -51,6 +54,9 @@ public class CustomUser implements OAuth2User, UserDetails {
 
 	@Override
 	public String getName() {
+		if (member.getUsername() == null) {
+			return "actor";
+		}
 		return member.getUsername();
 	}
 

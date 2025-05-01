@@ -103,6 +103,31 @@ public class TechEducationReviewRepositoryImpl implements TechEducationReviewRep
 		return PageableExecutionUtils.getPage(content, pageable, countJpaQuery::fetchOne);
 	}
 
+	@Override
+	public List<TechEducationReviewResponse.ReviewDetail> findReviewList(
+		final Long techEducationTypeId, final Long itemId, final Pageable pageable
+	) {
+		List<TechEducationReviewResponse.ReviewDetail> content = jpaQueryFactory.select(Projections.constructor(
+				TechEducationReviewResponse.ReviewDetail.class,
+				techEducationReview.id,
+				techEducationType.id,
+				techEducationReview.itemId,
+				member.nickname,
+				member.profileImageUrl,
+				techEducationReview.rating,
+				techEducationReview.content,
+				techEducationReview.createdAt
+			)).from(techEducationReview)
+			.join(member).on(techEducationReview.reviewer.id.eq(member.id))
+			.where(techEducationReview.techEducationType.id.eq(techEducationTypeId)
+				.and(techEducationReview.itemId.eq(itemId)))
+			.orderBy(getSortCondition(pageable))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+		return content;
+	}
+
 	/**
 	 * 페이징 객체에 포함된 정렬 조건에 따라 OrderSpecifier[] 생성
 	 * @param pageable            - 페이징 객체
