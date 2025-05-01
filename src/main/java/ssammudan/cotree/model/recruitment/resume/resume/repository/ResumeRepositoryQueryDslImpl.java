@@ -53,7 +53,7 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 
 		// 기본 정보 조회
 		List<ResumeBasicInfoDto> resumeBasicInfos = jpaQueryFactory
-			.select(
+			.selectDistinct(
 				Projections.constructor(
 					ResumeBasicInfoDto.class,
 					resume.id,
@@ -70,7 +70,6 @@ public class ResumeRepositoryQueryDslImpl implements ResumeRepositoryQueryDsl {
 			.join(resume.resumeTechStacks, resumeTechStack)
 			.join(resumeTechStack.techStack, techStack)
 			.where(whereCondition)
-			.groupBy(resume.id)
 			.orderBy(getOrderSpecifier(sort))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
