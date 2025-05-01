@@ -1,6 +1,7 @@
 package ssammudan.cotree.model.education.techbook.techbook.repository;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -250,7 +251,10 @@ public class TechBookRepositoryImpl implements TechBookRepositoryCustom {
 			.join(member).on(techBook.writer.id.eq(member.id))
 			.join(like).on(like.techBook.id.eq(techBook.id))
 			.where(techBook.id.in(techBookIds))
-			.orderBy(like.createdAt.desc()).fetch();
+			.fetch()
+			.stream()
+			.sorted(Comparator.comparing(TechBookResponse.ListInfo::likeCount).reversed())
+			.toList();
 
 		JPAQuery<Long> countJpaQuery = jpaQueryFactory.select(techBook.count())
 			.from(techBook)
