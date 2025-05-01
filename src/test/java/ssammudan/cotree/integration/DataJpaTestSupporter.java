@@ -15,7 +15,6 @@ import ssammudan.cotree.model.education.techbook.techbook.repository.TechBookRep
 import ssammudan.cotree.model.education.techtube.category.repository.TechTubeEducationCategoryRepository;
 import ssammudan.cotree.model.education.techtube.techtube.repository.TechTubeRepository;
 import ssammudan.cotree.model.project.project.mapper.ProjectMapper;
-import ssammudan.cotree.model.project.project.repository.support.ProjectQuerySupport;
 import ssammudan.cotree.model.review.review.repository.TechEducationReviewRepository;
 import ssammudan.cotree.model.review.reviewtype.repository.TechEducationTypeRepository;
 
@@ -69,9 +68,6 @@ public abstract class DataJpaTestSupporter {
 
 	@Autowired
 	protected TechTubeEducationCategoryRepository techTubeEducationCategoryRepository;
-
-	@MockitoBean
-	protected ProjectQuerySupport projectQuerySupport;
 
 	@MockitoBean
 	protected ProjectMapper projectMapper;

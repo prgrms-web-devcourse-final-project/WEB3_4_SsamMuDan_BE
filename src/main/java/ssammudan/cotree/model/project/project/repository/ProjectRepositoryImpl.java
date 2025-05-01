@@ -1,8 +1,11 @@
 package ssammudan.cotree.model.project.project.repository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -10,19 +13,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import ssammudan.cotree.domain.project.project.dto.ProjectLikeListResponse;
 import ssammudan.cotree.domain.project.project.dto.ProjectListResponse;
+import ssammudan.cotree.domain.project.project.dto.QProjectListResponse;
+import ssammudan.cotree.domain.project.project.type.SearchProjectSort;
 import ssammudan.cotree.model.common.like.entity.QLike;
+import ssammudan.cotree.model.common.techstack.entity.QTechStack;
+import ssammudan.cotree.model.member.member.entity.QMember;
 import ssammudan.cotree.model.project.devposition.entity.ProjectDevPosition;
 import ssammudan.cotree.model.project.devposition.entity.QProjectDevPosition;
 import ssammudan.cotree.model.project.membership.entity.QProjectMembership;
 import ssammudan.cotree.model.project.project.entity.Project;
 import ssammudan.cotree.model.project.project.entity.QProject;
 import ssammudan.cotree.model.project.project.mapper.ProjectMapper;
-import ssammudan.cotree.model.project.project.repository.support.ProjectQuerySupport;
 import ssammudan.cotree.model.project.techstack.entity.QProjectTechStack;
 
 /**
@@ -44,15 +52,13 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 	private static final QProjectDevPosition PROJECT_DEV_POSITION = QProjectDevPosition.projectDevPosition;
 	private static final QLike LIKE = QLike.like;
 	private static final QProjectMembership PROJECT_MEMBERSHIP = QProjectMembership.projectMembership;
+	private static final QTechStack TECH_STACK = QTechStack.techStack;
 
 	private final JPAQueryFactory queryFactory;
-	private final ProjectQuerySupport projectQuerySupport;
 	private final ProjectMapper projectMapper;
 
-	public ProjectRepositoryImpl(JPAQueryFactory queryFactory, ProjectQuerySupport projectQuerySupport,
-		ProjectMapper projectMapper) {
+	public ProjectRepositoryImpl(JPAQueryFactory queryFactory, ProjectMapper projectMapper) {
 		this.queryFactory = queryFactory;
-		this.projectQuerySupport = projectQuerySupport;
 		this.projectMapper = projectMapper;
 	}
 
@@ -105,38 +111,119 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 	}
 
 	@Override
-	public Page<ProjectListResponse> findByFilters(Pageable pageable, List<Long> techStackIds,
-		List<Long> devPositionIds, String sort) {
-		BooleanBuilder where = projectQuerySupport.buildFilterConditions(techStackIds, devPositionIds);
+	public Page<ProjectListResponse> findFilteredProjects(
+		Pageable pageable,
+		List<Long> techStackIds,
+		List<Long> devPositionIds,
+		SearchProjectSort sort
+	) {
+		boolean hasTechStack = techStackIds != null && !techStackIds.isEmpty();
+		boolean hasDevPosition = devPositionIds != null && !devPositionIds.isEmpty();
 
-		List<Long> filteredProjectIds = queryFactory
-			.select(PROJECT.id)
+		List<Long> filteredIds;
+		long total;
+
+		if (hasTechStack || hasDevPosition) {
+			BooleanBuilder whereBuilder = new BooleanBuilder();
+			if (hasTechStack)
+				whereBuilder.and(PROJECT_TECH_STACK.techStack.id.in(techStackIds));
+			if (hasDevPosition)
+				whereBuilder.and(PROJECT_DEV_POSITION.developmentPosition.id.in(devPositionIds));
+
+			List<Long> allMatchingIds = queryFactory
+				.select(PROJECT.id)
+				.from(PROJECT)
+				.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK)
+				.leftJoin(PROJECT.projectDevPositions, PROJECT_DEV_POSITION)
+				.where(whereBuilder)
+				.groupBy(PROJECT.id)
+				.having(
+					hasTechStack
+						? PROJECT_TECH_STACK.techStack.id.countDistinct().eq((long)techStackIds.size())
+						: null,
+					hasDevPosition
+						? PROJECT_DEV_POSITION.developmentPosition.id.countDistinct().eq((long)devPositionIds.size())
+						: null
+				)
+				.fetch();
+
+			total = allMatchingIds.size();
+			filteredIds = allMatchingIds.stream()
+				.skip(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.toList();
+		} else {
+			total = queryFactory
+				.select(PROJECT.count())
+				.from(PROJECT)
+				.fetchOne();
+
+			filteredIds = queryFactory
+				.select(PROJECT.id)
+				.from(PROJECT)
+				.orderBy(sort.getOrderSpecifier(PROJECT))
+				.offset(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.fetch();
+		}
+
+		if (filteredIds.isEmpty()) {
+			return new PageImpl<>(Collections.emptyList(), pageable, total);
+		}
+
+		NumberTemplate<Long> likeCountExpr = Expressions.numberTemplate(Long.class,
+			"(select count(l1.id) from Like l1 where l1.project.id = {0})", PROJECT.id);
+		NumberTemplate<Integer> recruitmentCountExpr = Expressions.numberTemplate(Integer.class,
+			"(select coalesce(sum(pdp.amount), 0) from ProjectDevPosition pdp where pdp.project.id = {0})",
+			PROJECT.id);
+
+		Map<Long, List<String>> techStackImageUrlMap = queryFactory
+			.select(PROJECT.id, TECH_STACK.imageUrl)
+			.from(PROJECT)
+			.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK)
+			.leftJoin(PROJECT_TECH_STACK.techStack, TECH_STACK)
+			.where(PROJECT.id.in(filteredIds))
+			.fetch()
+			.stream()
+			.collect(Collectors.groupingBy(
+				tuple -> tuple.get(PROJECT.id),
+				Collectors.collectingAndThen(
+					Collectors.mapping(tuple -> tuple.get(TECH_STACK.imageUrl), Collectors.toSet()),
+					ArrayList::new
+				)
+			));
+
+		List<ProjectListResponse> finalContent = queryFactory
+			.select(new QProjectListResponse(
+				PROJECT.id,
+				PROJECT.title,
+				PROJECT.description,
+				PROJECT.projectImageUrl,
+				PROJECT.viewCount,
+				likeCountExpr,
+				recruitmentCountExpr,
+				PROJECT.isOpen,
+				PROJECT.startDate,
+				PROJECT.endDate,
+				Expressions.constant(Collections.emptyList()),
+				QMember.member.username,
+				QMember.member.profileImageUrl
+			))
 			.from(PROJECT)
 			.leftJoin(PROJECT.projectTechStacks, PROJECT_TECH_STACK)
 			.leftJoin(PROJECT.projectDevPositions, PROJECT_DEV_POSITION)
-			.where(where)
+			.leftJoin(PROJECT.member, QMember.member)
+			.where(PROJECT.id.in(filteredIds))
 			.groupBy(PROJECT.id)
-			.having(
-				techStackIds != null && !techStackIds.isEmpty() ?
-					PROJECT_TECH_STACK.techStack.id.countDistinct().eq((long)techStackIds.size()) :
-					null,
-				devPositionIds != null && !devPositionIds.isEmpty() ?
-					PROJECT_DEV_POSITION.developmentPosition.id.countDistinct().eq((long)devPositionIds.size()) :
-					null
-			)
-			.fetch();
+			.orderBy(sort.getOrderSpecifier(PROJECT))
+			.fetch()
+			.stream()
+			.map(project -> project.withTechStacks(
+				techStackImageUrlMap.getOrDefault(project.getId(), Collections.emptyList())
+			))
+			.toList();
 
-		if (filteredProjectIds.isEmpty())
-			return new PageImpl<>(Collections.emptyList(), pageable, 0);
-
-		List<Long> sortedIds = projectQuerySupport.sortFilteredProjects(filteredProjectIds, sort, pageable);
-		if (sortedIds.isEmpty())
-			return new PageImpl<>(Collections.emptyList(), pageable, 0);
-
-		List<Project> projects = fetchProjectsWithDetails(sortedIds);
-		List<ProjectListResponse> content = projectMapper.toDtoOrdered(projects, sortedIds);
-
-		return new PageImpl<>(content, pageable, filteredProjectIds.size());
+		return new PageImpl<>(finalContent, pageable, total);
 	}
 
 	@Override
